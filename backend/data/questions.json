@@ -1,0 +1,1102 @@
+[
+  {
+    "ques": "Criminal Law Question 1?",
+    "options": [
+      "Article 21",
+      "Article 19",
+      "Article 14",
+      "Article 32"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 2?",
+    "options": [
+      "Tort Law",
+      "Contract Law",
+      "Family Law",
+      "Property Law"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 3?",
+    "options": [
+      "Directive Principles",
+      "Judicial Review",
+      "Fundamental Rights",
+      "Preamble"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 4?",
+    "options": [
+      "Section 302",
+      "Section 377",
+      "Section 420",
+      "Section 379"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 5?",
+    "options": [
+      "Article 21",
+      "Article 19",
+      "Article 32",
+      "Article 14"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 6?",
+    "options": [
+      "Family Law",
+      "Property Law",
+      "Contract Law",
+      "Tort Law"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 7?",
+    "options": [
+      "Judicial Review",
+      "Preamble",
+      "Directive Principles",
+      "Fundamental Rights"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 8?",
+    "options": [
+      "Section 377",
+      "Section 420",
+      "Section 379",
+      "Section 302"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 9?",
+    "options": [
+      "Article 19",
+      "Article 21",
+      "Article 32",
+      "Article 14"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 10?",
+    "options": [
+      "Family Law",
+      "Contract Law",
+      "Property Law",
+      "Tort Law"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 11?",
+    "options": [
+      "Directive Principles",
+      "Fundamental Rights",
+      "Preamble",
+      "Judicial Review"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 12?",
+    "options": [
+      "Section 420",
+      "Section 302",
+      "Section 377",
+      "Section 379"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 13?",
+    "options": [
+      "Article 19",
+      "Article 14",
+      "Article 32",
+      "Article 21"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 14?",
+    "options": [
+      "Contract Law",
+      "Property Law",
+      "Family Law",
+      "Tort Law"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 15?",
+    "options": [
+      "Judicial Review",
+      "Fundamental Rights",
+      "Directive Principles",
+      "Preamble"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 16?",
+    "options": [
+      "Section 379",
+      "Section 377",
+      "Section 420",
+      "Section 302"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 17?",
+    "options": [
+      "Article 19",
+      "Article 21",
+      "Article 32",
+      "Article 14"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 18?",
+    "options": [
+      "Tort Law",
+      "Contract Law",
+      "Property Law",
+      "Family Law"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 19?",
+    "options": [
+      "Judicial Review",
+      "Preamble",
+      "Fundamental Rights",
+      "Directive Principles"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 20?",
+    "options": [
+      "Section 302",
+      "Section 377",
+      "Section 379",
+      "Section 420"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 21?",
+    "options": [
+      "Article 32",
+      "Article 19",
+      "Article 14",
+      "Article 21"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 22?",
+    "options": [
+      "Tort Law",
+      "Property Law",
+      "Family Law",
+      "Contract Law"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 23?",
+    "options": [
+      "Fundamental Rights",
+      "Preamble",
+      "Directive Principles",
+      "Judicial Review"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 24?",
+    "options": [
+      "Section 420",
+      "Section 377",
+      "Section 302",
+      "Section 379"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Criminal Law Question 25?",
+    "options": [
+      "Article 32",
+      "Article 14",
+      "Article 21",
+      "Article 19"
+    ],
+    "correctIndex": 0,
+    "category": "criminal"
+  },
+  {
+    "ques": "Civil Law Question 1?",
+    "options": [
+      "Article 14",
+      "Article 19",
+      "Article 21",
+      "Article 32"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 2?",
+    "options": [
+      "Property Law",
+      "Contract Law",
+      "Tort Law",
+      "Family Law"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 3?",
+    "options": [
+      "Preamble",
+      "Fundamental Rights",
+      "Directive Principles",
+      "Judicial Review"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 4?",
+    "options": [
+      "Section 379",
+      "Section 302",
+      "Section 377",
+      "Section 420"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 5?",
+    "options": [
+      "Article 19",
+      "Article 21",
+      "Article 14",
+      "Article 32"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 6?",
+    "options": [
+      "Family Law",
+      "Contract Law",
+      "Tort Law",
+      "Property Law"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 7?",
+    "options": [
+      "Fundamental Rights",
+      "Judicial Review",
+      "Directive Principles",
+      "Preamble"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 8?",
+    "options": [
+      "Section 379",
+      "Section 377",
+      "Section 420",
+      "Section 302"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 9?",
+    "options": [
+      "Article 14",
+      "Article 19",
+      "Article 21",
+      "Article 32"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 10?",
+    "options": [
+      "Contract Law",
+      "Property Law",
+      "Family Law",
+      "Tort Law"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 11?",
+    "options": [
+      "Judicial Review",
+      "Directive Principles",
+      "Fundamental Rights",
+      "Preamble"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 12?",
+    "options": [
+      "Section 302",
+      "Section 420",
+      "Section 379",
+      "Section 377"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 13?",
+    "options": [
+      "Article 21",
+      "Article 32",
+      "Article 14",
+      "Article 19"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 14?",
+    "options": [
+      "Tort Law",
+      "Family Law",
+      "Property Law",
+      "Contract Law"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 15?",
+    "options": [
+      "Judicial Review",
+      "Preamble",
+      "Fundamental Rights",
+      "Directive Principles"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 16?",
+    "options": [
+      "Section 379",
+      "Section 377",
+      "Section 420",
+      "Section 302"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 17?",
+    "options": [
+      "Article 19",
+      "Article 14",
+      "Article 32",
+      "Article 21"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 18?",
+    "options": [
+      "Contract Law",
+      "Tort Law",
+      "Property Law",
+      "Family Law"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 19?",
+    "options": [
+      "Directive Principles",
+      "Preamble",
+      "Judicial Review",
+      "Fundamental Rights"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 20?",
+    "options": [
+      "Section 377",
+      "Section 302",
+      "Section 379",
+      "Section 420"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 21?",
+    "options": [
+      "Article 21",
+      "Article 14",
+      "Article 32",
+      "Article 19"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 22?",
+    "options": [
+      "Family Law",
+      "Contract Law",
+      "Tort Law",
+      "Property Law"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 23?",
+    "options": [
+      "Directive Principles",
+      "Judicial Review",
+      "Preamble",
+      "Fundamental Rights"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 24?",
+    "options": [
+      "Section 302",
+      "Section 420",
+      "Section 379",
+      "Section 377"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Civil Law Question 25?",
+    "options": [
+      "Article 32",
+      "Article 19",
+      "Article 14",
+      "Article 21"
+    ],
+    "correctIndex": 0,
+    "category": "civil"
+  },
+  {
+    "ques": "Constitutional Law Question 1?",
+    "options": [
+      "Article 21",
+      "Article 32",
+      "Article 19",
+      "Article 14"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 2?",
+    "options": [
+      "Family Law",
+      "Property Law",
+      "Tort Law",
+      "Contract Law"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 3?",
+    "options": [
+      "Directive Principles",
+      "Preamble",
+      "Judicial Review",
+      "Fundamental Rights"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 4?",
+    "options": [
+      "Section 377",
+      "Section 420",
+      "Section 379",
+      "Section 302"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 5?",
+    "options": [
+      "Article 14",
+      "Article 21",
+      "Article 32",
+      "Article 19"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 6?",
+    "options": [
+      "Contract Law",
+      "Family Law",
+      "Tort Law",
+      "Property Law"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 7?",
+    "options": [
+      "Fundamental Rights",
+      "Preamble",
+      "Judicial Review",
+      "Directive Principles"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 8?",
+    "options": [
+      "Section 379",
+      "Section 420",
+      "Section 302",
+      "Section 377"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 9?",
+    "options": [
+      "Article 21",
+      "Article 32",
+      "Article 14",
+      "Article 19"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 10?",
+    "options": [
+      "Contract Law",
+      "Property Law",
+      "Family Law",
+      "Tort Law"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 11?",
+    "options": [
+      "Fundamental Rights",
+      "Directive Principles",
+      "Preamble",
+      "Judicial Review"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 12?",
+    "options": [
+      "Section 379",
+      "Section 302",
+      "Section 420",
+      "Section 377"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 13?",
+    "options": [
+      "Article 19",
+      "Article 21",
+      "Article 14",
+      "Article 32"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 14?",
+    "options": [
+      "Tort Law",
+      "Family Law",
+      "Contract Law",
+      "Property Law"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 15?",
+    "options": [
+      "Preamble",
+      "Judicial Review",
+      "Fundamental Rights",
+      "Directive Principles"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 16?",
+    "options": [
+      "Section 420",
+      "Section 379",
+      "Section 377",
+      "Section 302"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 17?",
+    "options": [
+      "Article 32",
+      "Article 19",
+      "Article 14",
+      "Article 21"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 18?",
+    "options": [
+      "Family Law",
+      "Property Law",
+      "Tort Law",
+      "Contract Law"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 19?",
+    "options": [
+      "Preamble",
+      "Fundamental Rights",
+      "Judicial Review",
+      "Directive Principles"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 20?",
+    "options": [
+      "Section 379",
+      "Section 302",
+      "Section 420",
+      "Section 377"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 21?",
+    "options": [
+      "Article 32",
+      "Article 14",
+      "Article 19",
+      "Article 21"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 22?",
+    "options": [
+      "Family Law",
+      "Tort Law",
+      "Property Law",
+      "Contract Law"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 23?",
+    "options": [
+      "Fundamental Rights",
+      "Preamble",
+      "Judicial Review",
+      "Directive Principles"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 24?",
+    "options": [
+      "Section 420",
+      "Section 379",
+      "Section 302",
+      "Section 377"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Constitutional Law Question 25?",
+    "options": [
+      "Article 19",
+      "Article 21",
+      "Article 14",
+      "Article 32"
+    ],
+    "correctIndex": 0,
+    "category": "constitutional"
+  },
+  {
+    "ques": "Indian Penal Code Question 1?",
+    "options": [
+      "Article 19",
+      "Article 32",
+      "Article 21",
+      "Article 14"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 2?",
+    "options": [
+      "Family Law",
+      "Contract Law",
+      "Tort Law",
+      "Property Law"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 3?",
+    "options": [
+      "Preamble",
+      "Judicial Review",
+      "Fundamental Rights",
+      "Directive Principles"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 4?",
+    "options": [
+      "Section 302",
+      "Section 420",
+      "Section 377",
+      "Section 379"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 5?",
+    "options": [
+      "Article 32",
+      "Article 21",
+      "Article 19",
+      "Article 14"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 6?",
+    "options": [
+      "Tort Law",
+      "Property Law",
+      "Family Law",
+      "Contract Law"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 7?",
+    "options": [
+      "Fundamental Rights",
+      "Directive Principles",
+      "Judicial Review",
+      "Preamble"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 8?",
+    "options": [
+      "Section 379",
+      "Section 377",
+      "Section 302",
+      "Section 420"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 9?",
+    "options": [
+      "Article 19",
+      "Article 14",
+      "Article 32",
+      "Article 21"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 10?",
+    "options": [
+      "Tort Law",
+      "Property Law",
+      "Family Law",
+      "Contract Law"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 11?",
+    "options": [
+      "Fundamental Rights",
+      "Judicial Review",
+      "Directive Principles",
+      "Preamble"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 12?",
+    "options": [
+      "Section 379",
+      "Section 420",
+      "Section 302",
+      "Section 377"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 13?",
+    "options": [
+      "Article 21",
+      "Article 14",
+      "Article 32",
+      "Article 19"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 14?",
+    "options": [
+      "Property Law",
+      "Family Law",
+      "Tort Law",
+      "Contract Law"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 15?",
+    "options": [
+      "Preamble",
+      "Fundamental Rights",
+      "Judicial Review",
+      "Directive Principles"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 16?",
+    "options": [
+      "Section 302",
+      "Section 420",
+      "Section 379",
+      "Section 377"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 17?",
+    "options": [
+      "Article 14",
+      "Article 32",
+      "Article 21",
+      "Article 19"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 18?",
+    "options": [
+      "Property Law",
+      "Tort Law",
+      "Family Law",
+      "Contract Law"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 19?",
+    "options": [
+      "Judicial Review",
+      "Fundamental Rights",
+      "Preamble",
+      "Directive Principles"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 20?",
+    "options": [
+      "Section 379",
+      "Section 377",
+      "Section 302",
+      "Section 420"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 21?",
+    "options": [
+      "Article 19",
+      "Article 14",
+      "Article 32",
+      "Article 21"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 22?",
+    "options": [
+      "Family Law",
+      "Contract Law",
+      "Tort Law",
+      "Property Law"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 23?",
+    "options": [
+      "Preamble",
+      "Directive Principles",
+      "Judicial Review",
+      "Fundamental Rights"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 24?",
+    "options": [
+      "Section 379",
+      "Section 420",
+      "Section 377",
+      "Section 302"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  },
+  {
+    "ques": "Indian Penal Code Question 25?",
+    "options": [
+      "Article 32",
+      "Article 14",
+      "Article 21",
+      "Article 19"
+    ],
+    "correctIndex": 0,
+    "category": "ipc"
+  }
+]
