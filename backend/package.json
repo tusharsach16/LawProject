@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "seed:questions": "ts-node src/scripts/seedQuestions.ts",
-    "seed:categories": "ts-node src/scripts/seedCategories.ts"
+    "seed:categories": "ts-node src/scripts/seedCategories.ts",
+    "seed:mockTrails": "ts-node src/scripts/seedMockTrial.ts"
   },
   "keywords": [],
   "author": "",

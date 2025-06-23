@@ -1,0 +1,102 @@
+[
+  {
+    "title": "Chain Snatching Case in Delhi Metro",
+    "description": "A man is accused of snatching a woman’s gold chain in a crowded metro train. Eyewitnesses are uncertain, and CCTV footage is inconclusive.",
+    "slug": "criminal"
+  },
+  {
+    "title": "Hit and Run Case",
+    "description": "A car allegedly hits a pedestrian and flees the scene. The accused claims it was a medical emergency and unintentional.",
+    "slug": "criminal"
+  },
+  {
+    "title": "Cyberbullying Incident",
+    "description": "A teenager is accused of harassing a classmate online. The defense claims the account was hacked.",
+    "slug": "criminal"
+  },
+  {
+    "title": "ATM Card Fraud",
+    "description": "A man is caught on CCTV using someone else’s ATM card to withdraw money. He claims the card was given voluntarily.",
+    "slug": "criminal"
+  },
+  {
+    "title": "College Fight Turns Criminal",
+    "description": "An argument between two college students turns violent. Both sides claim self-defense and allege the other started it.",
+    "slug": "criminal"
+  },
+  {
+    "title": "Property Boundary Dispute Between Neighbors",
+    "description": "A wall construction leads to a property line dispute between two families in the same locality.",
+    "slug": "civil"
+  },
+  {
+    "title": "Rent Not Paid for 6 Months",
+    "description": "A landlord sues a tenant who hasn’t paid rent for 6 months and refuses to vacate the property.",
+    "slug": "civil"
+  },
+  {
+    "title": "Construction Delay by Real Estate Builder",
+    "description": "A buyer files a civil case as their flat possession has been delayed for over 2 years despite full payment.",
+    "slug": "civil"
+  },
+  {
+    "title": "Breach of Marriage Contract",
+    "description": "A family backs out of a wedding after accepting money and gifts as dowry. The bride’s family files a case.",
+    "slug": "civil"
+  },
+  {
+    "title": "Hotel Overbooking Compensation Case",
+    "description": "A luxury hotel canceled a confirmed booking citing overbooking, ruining a honeymoon plan. The couple sues for damages.",
+    "slug": "civil"
+  },
+  {
+    "title": "Freedom of Speech vs Hate Speech",
+    "description": "A politician's social media post is taken down for violating hate speech policies. He challenges the action under Article 19(1)(a).",
+    "slug": "constitutional"
+  },
+  {
+    "title": "Right to Privacy Violation",
+    "description": "A telecom company is accused of leaking customer data to advertisers. A PIL is filed under the right to privacy.",
+    "slug": "constitutional"
+  },
+  {
+    "title": "Ban on Public Gatherings",
+    "description": "A district administration bans public gatherings citing security threats. Citizens challenge the ban under Article 19.",
+    "slug": "constitutional"
+  },
+  {
+    "title": "Reservation in Promotions",
+    "description": "A general category government employee sues after being denied promotion due to reservation policy. Is it justified under the Constitution?",
+    "slug": "constitutional"
+  },
+  {
+    "title": "Dress Code vs Right to Religion",
+    "description": "A student suspended for wearing religious attire challenges the school’s dress code policy as unconstitutional.",
+    "slug": "constitutional"
+  },
+  {
+    "title": "Dowry Harassment Case",
+    "description": "A newly married woman files a complaint under Section 498A of the IPC against her husband and in-laws for mental and physical abuse.",
+    "slug": "ipc"
+  },
+  {
+    "title": "Section 302 Murder Allegation",
+    "description": "A man is accused of murdering his wife. He claims she committed suicide, while the family alleges dowry pressure.",
+    "slug": "ipc"
+  },
+  {
+    "title": "Section 375 – Rape Under False Promise",
+    "description": "A woman accuses a colleague of rape under the pretense of marriage. He claims the relationship was consensual.",
+    "slug": "ipc"
+  },
+  {
+    "title": "Section 420 – Cheating in Business",
+    "description": "A shopkeeper is accused of taking advance payment from multiple customers and not delivering the goods.",
+    "slug": "ipc"
+  },
+  {
+    "title": "Section 326 – Acid Attack Attempt",
+    "description": "A man is arrested for allegedly attempting to throw acid on a girl after she rejected his proposal.",
+    "slug": "ipc"
+  }
+]

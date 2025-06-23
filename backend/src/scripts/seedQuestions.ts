@@ -36,14 +36,14 @@ const seedQuestions = async () => {
       .filter(Boolean); // remove nulls
 
     await Questions.deleteMany({});
-    console.log("🗑️ Old questions removed");
+    console.log(" Old questions removed");
 
     await Questions.insertMany(formattedQuestions);
-    console.log(`✅ ${formattedQuestions.length} questions inserted successfully!`);
+    console.log(` ${formattedQuestions.length} questions inserted successfully!`);
 
     process.exit(0);
   } catch (error) {
-    console.error("❌ Seeding error:", error);
+    console.error(" Seeding error:", error);
     process.exit(1);
   }
 };
