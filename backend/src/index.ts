@@ -6,6 +6,7 @@ import connectDB from './config/db';
 import path from 'path';
 import authRoutes from './routes/authRoutes';
 import quizRoutes from './routes/QuizRoutes';
+import mockTrail from './routes/MockTrailRoute';
 
 const envPath = path.resolve(__dirname, "../.env");
 console.log("🔍 Looking for .env at:", envPath);
@@ -22,7 +23,9 @@ app.use(express.json());
 console.log("✅ Loaded Mongo URL:", process.env.MONGODB_URL?.slice(0, 25) + "...");
 
 app.use('/api', authRoutes);
-app.use('/quiz', quizRoutes)
+app.use('/quiz', quizRoutes);
+app.use('/mockTrail', mockTrail);
+
 
 connectDB();
 
