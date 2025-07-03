@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { signUp } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 type FormData = {
   name: string;
   email: string;
+  username: string;
   password: string;
   confirmPassword: string;
   role: string;
@@ -10,9 +12,11 @@ type FormData = {
 };
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
+    username: '',
     password: '',
     confirmPassword: '',
     role: '',
@@ -38,15 +42,17 @@ const SignUp = () => {
       const user = await signUp({
         name: formData.name,
         email: formData.email,
+        username: formData.username,
         password: formData.password,
         role: formData.role,
         phoneNumber: formData.phoneNumber
       });
       console.log('User signed up: ', user);
       alert('User signed up.');
+      navigate('/dashboard');
     } catch(error: any) {
       console.error('Signup failed:', error.response?.data || error.message);
-      alert('Signup failed. Please try again.');
+      alert(error.response?.data.message);
     }
   };
 
@@ -78,6 +84,19 @@ const SignUp = () => {
             id="email"
             name="email"
             value={formData.email}
+            onChange={handleChange}
+            required
+            className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label htmlFor="email" className="mb-1 text-sm font-medium">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={formData.username}
             onChange={handleChange}
             required
             className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"

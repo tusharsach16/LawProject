@@ -3,6 +3,7 @@ import api from "./api";
 interface SignupData {
   name: string;
   email: string;
+  username: string;
   password: string;
   role: string;
   phoneNumber: string;

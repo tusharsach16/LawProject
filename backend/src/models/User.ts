@@ -1,17 +1,21 @@
-import mongoose, {Schema, Document} from 'mongoose';
+import mongoose, {Schema, Document, mongo} from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 interface Iuser extends Document {
   name: string;
+  username: string;
   email: string;
   phoneNumber: string;
   password: string;
   role: 'general' | 'lawstudent' | 'lawyer';
   comparePassword: (userPassword: string) => Promise<boolean>; // Changed Boolean to boolean
+  friends: mongoose.Types.ObjectId[],
+  _id: mongoose.Types.ObjectId
 }
 
 const userSchema = new Schema<Iuser>({
   name: { type: String, required: true },
+  username: {type: String, required: true, unique: true},
   email: { type: String, required: true, unique: true },
   phoneNumber: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -19,7 +23,8 @@ const userSchema = new Schema<Iuser>({
     type: String, 
     required: true, 
     enum: ['general', 'lawstudent', 'lawyer'] 
-  }
+  },
+  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] }]
 }, { timestamps: true });
 
 // Add password comparison method
