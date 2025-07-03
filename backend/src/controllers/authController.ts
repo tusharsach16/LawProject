@@ -9,7 +9,7 @@ import { GeneralUser } from '../models/GeneralUser';
 import authMiddleware from '../middleware/authMiddleware';
 const signupUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, phoneNumber, password, role, ...extraData } = req.body;
+    const { name, username, email, phoneNumber, password, role, ...extraData } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -21,6 +21,7 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
 
     const user = await User.create({
       name,
+      username,
       email,
       phoneNumber,
       password: hashedPassword,
@@ -61,7 +62,7 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
     const { password: _, ...userData } = user.toObject();
 
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, username: user.username },
       process.env.JWT_SECRET!,
       { expiresIn: '1d' }
     );

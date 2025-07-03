@@ -49,7 +49,8 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         required: true,
         enum: ['general', 'lawstudent', 'lawyer']
-    }
+    },
+    friends: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User", default: [] }]
 }, { timestamps: true });
 // Add password comparison method
 userSchema.methods.comparePassword = async function (userPassword) {
