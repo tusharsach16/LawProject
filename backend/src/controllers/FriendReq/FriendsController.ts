@@ -119,3 +119,101 @@ export const acceptRequest = async (req: Request, res: Response): Promise<void> 
   }
 };
 
+
+export const getFriendRequest = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const currentUserId = req.user?.id;
+    if(!currentUserId) {
+      res.status(401).json({ msg: "Unauthenticated" });
+      return;
+    }
+    const receiverObjId = new mongoose.Types.ObjectId(currentUserId); // bcz in mongo reciever if ek object h not string.
+    const pending = await Friends.find({
+      receiverId: receiverObjId,
+      status: 'pending'
+    })
+    res.status(200).json(pending)
+    return;
+  } catch(e) {
+    console.error("acceptRequest error:", e);
+    res.status(500).json({ msg: "Something went wrong", error: e });
+  }
+}
+
+
+export const getFriends = async (req: Request, res: Response): Promise<void> =>{
+  try {
+    const currentUserId = req.user?.id;
+    if(!currentUserId) {
+      res.status(401).json({ msg: "Unauthenticated" });
+      return;
+    }
+    const user = await User.findById(currentUserId).populate({path: "friends", select: "username name role"});
+    const totalFriends = user?.friends.length;
+    if(!user) {
+      res.status(401).json({ msg: "User not found" });
+      return;
+    }
+
+    res.status(200).json({
+      total: totalFriends,
+      friends: user.friends
+    })
+  } catch(e) {
+    console.error("acceptRequest error:", e);
+    res.status(500).json({ msg: "Something went wrong", error: e });
+  }
+}
+
+
+export const removeFriend = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { friendIdToRemove } = req.body;
+    if(!friendIdToRemove) {
+      res.status(400).json({msg: "Id iss required"});
+      return;
+    }
+    const userId = req.user?.id;
+    if(!userId) {
+      res.status(401).json({ msg: "Unauthenticated" });
+      return;
+    }
+
+    const user = await User.findById(userId);
+    const friend = await User.findById(friendIdToRemove);
+    if(!user || !friend) {
+      res.status(401).json({ msg: "User or Friend not found" });
+      return;
+    }
+
+    // await User.updateOne(
+    //   { _id: userId },
+    //   { $pull: { friends: friendIdToRemove } }
+    // );
+
+    // await User.updateOne(
+    //   { _id: friendIdToRemove },
+    //   { $pull: { friends: userId } }
+    // );
+    await user.updateOne(
+      { $pull: { friends: friendIdToRemove } }
+    )
+    await friend.updateOne(
+      { $pull: { friends: userId } }
+    )
+    await Friends.updateOne(
+      {
+        $or: [
+          { senderId: userId, receiverId: friendIdToRemove },
+          { senderId: friendIdToRemove, receiverId: userId }
+        ]
+      },
+      { $set: { status: "unfriended" } }
+    );
+    res.status(200).json({msg: "Friend Removed"});
+    return;
+  } catch(e) {  
+    console.error("acceptRequest error:", e);
+    res.status(500).json({ msg: "Something went wrong", error: e });
+  }
+}

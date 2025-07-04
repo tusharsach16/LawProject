@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 interface IFriends extends Document {
   senderId: mongoose.Types.ObjectId;
   receiverId: mongoose.Types.ObjectId;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected' | 'unfriended';
 }
 
 const friendsSchema = new Schema<IFriends>({
@@ -19,7 +19,7 @@ const friendsSchema = new Schema<IFriends>({
   },
   status: {
     type: String,
-    enum: ['pending', 'accepted', 'rejected'],
+    enum: ['pending', 'accepted', 'rejected', 'unfriended'],
     default: 'pending'
   }
 }, { timestamps: true });

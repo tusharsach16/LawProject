@@ -12,5 +12,7 @@ router.get('/situationsCategory', authMiddleware, getSituationsCat);
 router.post('/mockJoin', authMiddleware, postMockJoin);
 router.post('/messages', authMiddleware, postMockMessage);
 
+// router.get(result ) is still pending now.
+
 router.get('/:trailId', getMockTrialById );
 export default router;
