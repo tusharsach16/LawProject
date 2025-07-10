@@ -2,14 +2,14 @@ import Featuresection from "../components/Featuresection"
 import Footer from "../components/Footer"
 import Headers from "../components/Headers"
 import Herosection from "../components/Herosection"
-import VoiceChat from "../components/VoiceChat"
+import Stats from "../components/Stats"
 const Home = () => {
   return (
     <>
       <Headers/>
       <Herosection/>
       <Featuresection/>
-      <VoiceChat/>
+      <Stats/>
       <Footer/>
     </>
   )
