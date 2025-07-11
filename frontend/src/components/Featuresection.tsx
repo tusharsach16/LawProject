@@ -92,14 +92,14 @@ const Featuresection = () => {
             ease: "power2.out",
           });
         
-          gsap.to(icon, {
-            rotation: 0,
-            duration: 0.3,
-            ease: "power2.out",
-          });
+          // gsap.to(icon, {
+          //   rotation: 0,
+          //   duration: 0.3,
+          //   ease: "power2.out",
+          // });
         };
         card?.addEventListener("mouseenter", handleEnter);
-        card?.addEventListener("mouseenter", handleEnter);
+        card?.addEventListener("mouseleave", handleLeave);
   
         return () => {
           card?.removeEventListener("mouseenter", handleEnter);
