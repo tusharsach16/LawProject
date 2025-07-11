@@ -59,16 +59,16 @@ export const getSituationsCat = async (req: Request, res: Response): Promise<voi
 
 export const postMockJoin = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { situationId, side } = req.body;          // body validation
+    const { situationId, side } = req.body;         
     const userId = req.user?.id;
-    const role = req.user?.role;
+    const role = req.user?.role; 
 
     if (!situationId || !side || !["plaintiff", "defendant"].includes(side)) {
       res.status(400).json({ msg: "Fields are required" });
       return;
     }
     if (!userId) {
-      res.status(401).json({ msg: "Unauthenticated" });  // or 500 fallback
+      res.status(401).json({ msg: "Unauthenticated" });   
       return;
     }
     if (role !== "lawstudent") {
@@ -80,7 +80,7 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
       res.status(404).json({ msg: "Mock trial situation not found" });
       return;
     }
-    // 1️⃣  Check user already in active trial
+    // Check user already in active trial
     const active = await MockTrial.findOne({
       status: "active",
       $or: [
