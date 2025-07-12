@@ -1,54 +1,67 @@
+import React from 'react'
+import { Scale } from 'lucide-react'
+import { Link } from 'react-router-dom';
+
+const sections = [
+  {
+    title: "Services",
+    items: ["Legal Consultation", "IPC Guidance", "Mock Trials", "Case Studies"],
+  },
+  {
+    title: "Support",
+    items: ["Help Center", "Contact Us", "Privacy Policy", "Terms of Service"],
+  },
+  {
+    title: "Languages",
+    items: ["Hindi", "English", "Tamil", "Bengali"],
+  },
+];
+
 const Footer = () => {
   return (
-    <footer className="border-t bg-white">
-      <div className="container mx-auto px-6 py-10 md:py-12">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
-          {/* Logo + Description */}
-          <div>
-            <h2 className="font-bold text-lg text-gray-800">VoiceFirst Legal Guardian</h2>
-            <p className="mt-4 text-sm text-gray-600">
-              Making legal literacy accessible to everyone through voice-first technology.
-            </p>
+    <footer className='bg-gradient-to-r from-gray-900 to-black text-white py-16 px-4 relative overflow-hidden'>
+      <div className="absolute inset-0 opacity-5">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(45deg, transparent, transparent 10px, #ffffff 10px, #ffffff 11px)",
+          }}
+        />
+      </div>
+      
+      <div className='container mx-auto px-4 relative z-10'>
+        <div className='grid md:grid-cols-4 gap-8'>
+          <div className='group'>
+            <div className='flex items-center space-x-3 mb-6'>
+              <Scale className="h-8 w-8 text-white group-hover:rotate-12 transition-transform"/>
+              <span className="text-2xl font-bold">LegalGuide</span>
+            </div>
+            <p className="text-gray-400 leading-relaxed">Making legal guidance accessible to everyone in India</p>
           </div>
 
-          {/* Resources */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-800">Resources</h3>
-            <ul className="mt-4 space-y-2 text-sm text-gray-600">
-              <li><a href="#">Legal Guides</a></li>
-              <li><a href="#">Common Legal Terms</a></li>
-              <li><a href="#">Legal Aid Directory</a></li>
-            </ul>
-          </div>
+          {sections.map((section, index) => (
+            <div key={index}>
+              <h3 className="font-bold text-lg mb-6 text-white">{section.title}</h3>
+              <ul className="space-y-3">
+                {section.items.map((item, itemIndex) => ((
+                  <li key={itemIndex} className='text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"'>
+                    <Link to='/'/>
+                    {item}
+                  </li>
+                )))}
+              </ul>
+            </div>
+          ))}
 
-          {/* Support */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-800">Support</h3>
-            <ul className="mt-4 space-y-2 text-sm text-gray-600">
-              <li><a href="#">Help Center</a></li>
-              <li><a href="#">Contact Us</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-            </ul>
-          </div>
-
-          {/* Social */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-800">Connect</h3>
-            <ul className="mt-4 space-y-2 text-sm text-gray-600">
-              <li><a href="#">Twitter</a></li>
-              <li><a href="#">Instagram</a></li>
-              <li><a href="#">Facebook</a></li>
-            </ul>
-          </div>
+        </div>    
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+            <p className="text-gray-400">&copy; 2024 LegalGuide. All rights reserved.</p>
         </div>
       </div>
 
-      {/* Bottom Copyright */}
-      <div className="text-center text-sm text-gray-500 mt-6 py-4 border-t">
-        © {new Date().getFullYear()} VoiceFirst Legal Guardian. All rights reserved.
-      </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

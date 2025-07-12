@@ -1,16 +1,22 @@
 import { useState, type FormEvent } from "react";
 import { signin } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import { Scale, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react"
+
 
 type FormData = {
   email: string;
   password: string;
+  rememberMe: boolean;
 };
 
 const Signin = () => {
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState<FormData>({
     email: '',
-    password: ''
+    password: '',
+    rememberMe: false
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,6 +30,7 @@ const Signin = () => {
   const navigate = useNavigate();
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const res = await signin({
         email: formData.email,
