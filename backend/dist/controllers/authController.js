@@ -23,7 +23,7 @@ const LawStudent_1 = require("../models/LawStudent");
 const GeneralUser_1 = require("../models/GeneralUser");
 const signupUser = async (req, res) => {
     try {
-        const _a = req.body, { name, username, email, phoneNumber, password, role } = _a, extraData = __rest(_a, ["name", "username", "email", "phoneNumber", "password", "role"]);
+        const _a = req.body, { name, lastname, username, email, phoneNumber, password, role } = _a, extraData = __rest(_a, ["name", "lastname", "username", "email", "phoneNumber", "password", "role"]);
         const existingUser = await User_1.User.findOne({ email });
         if (existingUser) {
             res.status(400).json({ message: 'Email already in use' });
@@ -32,6 +32,7 @@ const signupUser = async (req, res) => {
         const hashedPassword = await bcryptjs_1.default.hash(password, 10);
         const user = await User_1.User.create({
             name,
+            lastname,
             username,
             email,
             phoneNumber,

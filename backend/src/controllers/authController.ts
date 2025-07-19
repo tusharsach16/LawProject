@@ -9,7 +9,7 @@ import { GeneralUser } from '../models/GeneralUser';
 import authMiddleware from '../middleware/authMiddleware';
 const signupUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, username, email, phoneNumber, password, role, ...extraData } = req.body;
+    const { name, lastname, username, email, phoneNumber, password, role, ...extraData } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -21,6 +21,7 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
 
     const user = await User.create({
       name,
+      lastname,
       username,
       email,
       phoneNumber,

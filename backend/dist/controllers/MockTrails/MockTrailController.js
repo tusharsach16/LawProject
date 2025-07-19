@@ -61,7 +61,7 @@ exports.getSituationsCat = getSituationsCat;
 const postMockJoin = async (req, res) => {
     var _a, _b;
     try {
-        const { situationId, side } = req.body; // body validation
+        const { situationId, side } = req.body;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         const role = (_b = req.user) === null || _b === void 0 ? void 0 : _b.role;
         if (!situationId || !side || !["plaintiff", "defendant"].includes(side)) {
@@ -69,7 +69,7 @@ const postMockJoin = async (req, res) => {
             return;
         }
         if (!userId) {
-            res.status(401).json({ msg: "Unauthenticated" }); // or 500 fallback
+            res.status(401).json({ msg: "Unauthenticated" });
             return;
         }
         if (role !== "lawstudent") {
@@ -81,7 +81,7 @@ const postMockJoin = async (req, res) => {
             res.status(404).json({ msg: "Mock trial situation not found" });
             return;
         }
-        // 1️⃣  Check user already in active trial
+        // Check user already in active trial
         const active = await Mock_1.MockTrial.findOne({
             status: "active",
             $or: [
