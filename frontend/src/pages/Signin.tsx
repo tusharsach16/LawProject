@@ -1,5 +1,4 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { signin } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox";
@@ -60,7 +59,7 @@ const Signin = () => {
 
       // local storage
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      // localStorage.setItem("user", JSON.stringify(res.data.user));
       
       if (formData.rememberMe) {
         localStorage.setItem("rememberMe", "true");

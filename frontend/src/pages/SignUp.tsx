@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from "react";
-import { signUp } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Lock, Mail, Phone, Scale, Eye, EyeOff } from "lucide-react";

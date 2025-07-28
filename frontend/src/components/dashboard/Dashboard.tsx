@@ -1,10 +1,7 @@
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import Main from "./Main";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Chatbot from "./sidebarComponents/Chatbot";
-import LawInfo from "./sidebarComponents/LawInfo";
 import ConnectLawyers from "./sidebarComponents/ConnectLawyers";
 
 const Dashboard = () => {
@@ -16,7 +13,7 @@ const Dashboard = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token"); // token stored after login
-        const res = await axios.get("http://localhost:5000/api/get", {
+        const res = await axios.get("http://localhost:3000/api/get", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
