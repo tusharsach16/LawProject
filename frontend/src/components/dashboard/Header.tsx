@@ -1,37 +1,48 @@
-import { Bell, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
+import { useAppSelector } from "../../redux/hooks";
 
-const Header = ({ toggleSidebar, user }: 
-  { 
-    toggleSidebar: () => void,
-    user: {name: string, role: string};
-   }) => {
-  const name = user?.name || "Guest";
-  const role = user?.role || "Unknown";
+type HeaderProps = {
+  onToggleSidebar: () => void;
+};
+
+function Header({ onToggleSidebar }: HeaderProps) {
+  const { user } = useAppSelector((s) => s.user);
 
   return (
-    <header className="w-full px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-white">
-      {/* Left: Menu button for mobile */}
-      <div className="flex items-center gap-4">
-        <button onClick={toggleSidebar}>
-          <Menu />
+    <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 border-b dark:border-gray-800 shadow-sm">
+      {/* Left: toggle */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onToggleSidebar}
+          aria-label="Toggle sidebar"
+          className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition lg:hidden" 
+        >
+          <Menu size={20} />
         </button>
-        <h2 className="text-xl font-bold text-gray-800">LegalAssist Pro</h2>
+
+        {/* Logo + Site name */}
+        <div className="flex items-center gap-2 ml-1">
+          <span className="text-lg font-semibold text-gray-900 dark:text-gray-100 leading-none">
+            MyDashboard
+          </span>
+        </div>
       </div>
 
-      {/* Right: Notification & Profile */}
-      <div className="flex items-center gap-4">
-        <button className="relative">
-          <Bell className="h-5 w-5 text-gray-600" />
-          <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
-        </button>
-
-        <div className="flex flex-col items-end text-sm">
-          <span className="font-medium text-gray-800">{name}</span>
-          <span className="text-gray-500 text-xs">{role}</span>
+      {/* Right: profile */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 px-3 py-1 rounded-full border border-transparent dark:border-gray-700 shadow-sm">
+          <div className="hidden sm:flex flex-col text-right">
+            <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
+              {user?.name ?? "Guest"}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {user?.role ?? "Visitor"}
+            </span>
+          </div>
         </div>
       </div>
     </header>
   );
-};
+}
 
 export default Header;

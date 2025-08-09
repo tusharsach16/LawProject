@@ -1,25 +1,30 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
 import axios from 'axios'
 
+// Types
+interface User {
+  id: string
+  name: string
+  email: string
+  role?: string
+}
+
 interface UserState {
-  user: null | {
-    id: string
-    name: string
-    email: string
-  },
-  status: boolean
+  user: User | null
+  status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error: string | null
 }
 
 const initialState: UserState = {
   user: null,
-  status: false,
+  status: 'idle',
   error: null,
 }
 
-export const fetchUser = createAsyncThunk(
-  'user/fetchUser',
-  async (_, thunkAPI) => {
+// Async thunk
+export const fetchCurrentUser = createAsyncThunk<User, void, { rejectValue: string }>(
+  'user/fetchCurrentUser',
+  async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
       const response = await axios.get('http://localhost:3000/api/get', {
@@ -27,32 +32,39 @@ export const fetchUser = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       })
-      return response.data.user 
+      return response.data.user as User
     } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.response.data.message || 'Failed to fetch user')
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch user')
     }
   }
 )
 
-export const userSlice = createSlice({
+const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+    clearUser: (state) => {
+      state.user = null
+      state.status = 'idle'
+      state.error = null
+    },
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUser.pending, (state) => {
-        state.status = true
+      .addCase(fetchCurrentUser.pending, (state) => {
+        state.status = 'loading'
         state.error = null
       })
-      .addCase(fetchUser.fulfilled, (state, action) => {
+      .addCase(fetchCurrentUser.fulfilled, (state, action: PayloadAction<User>) => {
         state.user = action.payload
-        state.status = false
+        state.status = 'succeeded'
       })
-      .addCase(fetchUser.rejected, (state, action) => {
-        state.status = false
+      .addCase(fetchCurrentUser.rejected, (state, action) => {
+        state.status = 'failed'
         state.error = action.payload as string
       })
   },
 })
 
+export const { clearUser } = userSlice.actions
 export default userSlice.reducer
