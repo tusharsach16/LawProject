@@ -1,3 +1,5 @@
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom'; 
 import {
   Home,
   MessageCircle,
@@ -14,10 +16,16 @@ import {
 type SidebarProps = {
   isOpen: boolean;
   onClose: () => void;
-  onNavigate: (page: string) => void;
 };
 
-const Sidebar = ({ isOpen, onClose, onNavigate }: SidebarProps) => {
+const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+  const navigate = useNavigate();
+  // Logout logic
+  const handleLogout = () => {
+    console.log("Logging out...");
+    localStorage.removeItem('token');
+    navigate('/');  };
+
   return (
     <>
       <div
@@ -34,27 +42,28 @@ const Sidebar = ({ isOpen, onClose, onNavigate }: SidebarProps) => {
       >
         <nav className="flex flex-col h-full p-4 text-sm font-medium text-gray-700">
           <div className="space-y-2 flex-1">
-            <SidebarLink icon={<Home size={18} />} label="Overview" onClick={() => onNavigate('overview')} />
-            <SidebarLink icon={<MessageCircle size={18} />} label="AI Legal Chatbot" onClick={() => onNavigate('chatbot')} />
-            <SidebarLink icon={<Book size={18} />} label="Law Info Hub" onClick={() => onNavigate('law-info')} />
-            <SidebarLink icon={<Users size={18} />} label="Connect with Lawyers" onClick={() => onNavigate('connect')} />
-            <SidebarLink icon={<Briefcase size={18} />} label="Case Practice" onClick={() => onNavigate('case-practice')} />
-            <SidebarLink icon={<HelpCircle size={18} />} label="Quiz Section" onClick={() => onNavigate('quiz')} />
-            <SidebarLink icon={<Gavel size={18} />} label="Mock Trials" onClick={() => onNavigate('mock-trials')} />
+            <SidebarLink icon={<Home size={18} />} label="Overview" to="/dashboard1" />
+            <SidebarLink icon={<MessageCircle size={18} />} label="AI Legal Chatbot" to="/dashboard1/chatbot" />
+            <SidebarLink icon={<Book size={18} />} label="Law Info Hub" to="/dashboard1/law-info" />
+            <SidebarLink icon={<Users size={18} />} label="Connect with Lawyers" to="/dashboard1/connect" />
+            <SidebarLink icon={<Briefcase size={18} />} label="Case Practice" to="/dashboard1/case-practice" />
+            <SidebarLink icon={<HelpCircle size={18} />} label="Quiz Section" to="/dashboard1/quiz" />
+            <SidebarLink icon={<Gavel size={18} />} label="Mock Trials" to="/dashboard1/mock-trials" />
 
             <div className="mt-6 border-t pt-4 space-y-1">
-              <SidebarLink icon={<User size={18} />} label="Profile" onClick={() => onNavigate('profile')} />
-              <SidebarLink icon={<Settings size={18} />} label="Settings" onClick={() => onNavigate('settings')} />
+              <SidebarLink icon={<User size={18} />} label="Profile" to="/dashboard1/profile" />
+              <SidebarLink icon={<Settings size={18} />} label="Settings" to="/dashboard1/settings" />
             </div>
           </div>
 
           <div className="border-t pt-4">
-            <SidebarLink
-              icon={<LogOut size={18} />}
-              label="Logout"
-              extraClasses="bg-red-50 text-red-600 hover:bg-red-100 rounded-lg"
-              onClick={() => { /* Logout logic */ }}
-            />
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition"
+            >
+              <LogOut size={18} />
+              <span>Logout</span>
+            </button>
           </div>
         </nav>
       </aside>
@@ -65,18 +74,27 @@ const Sidebar = ({ isOpen, onClose, onNavigate }: SidebarProps) => {
 type SidebarLinkProps = {
   icon: React.ReactNode;
   label: string;
+  to: string;
   extraClasses?: string;
-  onClick: () => void;
 };
 
-const SidebarLink = ({ icon, label, extraClasses = "", onClick }: SidebarLinkProps) => (
-  <button
-    onClick={onClick}
-    className={`w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition ${extraClasses}`}
-  >
-    <span className="text-gray-600">{icon}</span>
-    <span>{label}</span>
-  </button>
-);
+const SidebarLink: React.FC<SidebarLinkProps> = ({ icon, label, to, extraClasses = "" }) => {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+
+  return (
+    <Link
+      to={to}
+      className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition ${extraClasses} ${
+        isActive 
+          ? 'bg-blue-100 text-blue-700 font-semibold' // Active link ke liye style
+          : 'hover:bg-gray-100'
+      }`}
+    >
+      <span className={isActive ? 'text-blue-700' : 'text-gray-600'}>{icon}</span>
+      <span>{label}</span>
+    </Link>
+  );
+};
 
 export default Sidebar;

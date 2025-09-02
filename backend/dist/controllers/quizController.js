@@ -21,7 +21,10 @@ const getQuizQues = async (req, res) => {
             }
             filter = { categoryId: categoryDoc._id };
         }
-        const quiz = await Question_1.Questions.find(filter).limit(limit).lean();
+        const quiz = await Question_1.Questions.aggregate([
+            { $match: filter },
+            { $sample: { size: limit } }
+        ]);
         res.status(200).json({ quiz });
     }
     catch (e) {

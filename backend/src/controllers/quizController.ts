@@ -4,12 +4,13 @@ import { Questions } from "../models/quiz/Question";
 import { Attempts } from "../models/quiz/userQuizAttempt";
 import mongoose from "mongoose";
 
+
 export const getQuizQues = async (req: Request, res: Response): Promise<void> => {
   try {
     const slug = req.query.category as string;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    let filter = {};
+    let filter: any = {};
     if (slug) {
       const categoryDoc = await Category.findOne({ slug: slug });
       if (!categoryDoc) {
@@ -19,13 +20,20 @@ export const getQuizQues = async (req: Request, res: Response): Promise<void> =>
       filter = { categoryId: categoryDoc._id };
     }
 
-    const quiz = await Questions.find(filter).limit(limit).lean();
+
+    const quiz = await Questions.aggregate([
+      { $match: filter },           
+      { $sample: { size: limit } }   
+    ]);
+
     res.status(200).json({ quiz });
 
   } catch (e) {
      res.status(500).json({ message: "Something went wrong", e });
   }
 };
+
+
 
 
 export const submitAttempt = async (req: Request, res: Response):Promise<void> => {

@@ -27,7 +27,7 @@ export const fetchCurrentUser = createAsyncThunk<User, void, { rejectValue: stri
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await axios.get('http://localhost:3000/api/get', {
+      const response = await axios.get('http://localhost:5000/api/get', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
