@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import Signupui from "@/components/Signupui";
 import axios from "axios";
-
-
+import { setUser } from "../redux/slices/userSlice";
+import { useDispatch } from "react-redux"; 
 
 type FormData = {
   email: string;
@@ -16,6 +16,7 @@ type FormData = {
 };
 
 const Signin = () => {
+  const dispatch = useDispatch(); // <-- FIX: 2. Initialize the dispatch function
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState<FormData>({
@@ -39,7 +40,7 @@ const Signin = () => {
     const user = localStorage.getItem("user");
     const rememberMe = localStorage.getItem("rememberMe");
 
-    if(token && user && rememberMe === "true") {
+    if (token && user && rememberMe === "true") {
       // User is already logged in, redirect to dashboard
       navigate("/dashboard1");
     }
@@ -49,7 +50,7 @@ const Signin = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/login", 
+      const res = await axios.post("http://localhost:5000/api/login",
         {
           email: formData.email,
           password: formData.password,
@@ -57,10 +58,11 @@ const Signin = () => {
       )
       // const {token, user} = res.data
 
+      dispatch(setUser(res.data.user));
       // local storage
       localStorage.setItem("token", res.data.token);
       // localStorage.setItem("user", JSON.stringify(res.data.user));
-      
+
       if (formData.rememberMe) {
         localStorage.setItem("rememberMe", "true");
       }
@@ -71,13 +73,15 @@ const Signin = () => {
     } catch (error: any) {
       console.error("Signin failed:", error.response?.data || error.message);
       alert("Signin failed. Please try again.");
+    } finally {
+        setIsLoading(false);
     }
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
       <div className="hidden lg:block">
-        <Signupui/>
+        <Signupui />
       </div>
       <div className="flex flex-col items-center justify-center bg-gray-100 p-4">
         <div className="w-full max-w-md space-y-8">
@@ -155,7 +159,7 @@ const Signin = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-black text-white font-semibold py-2 rounded-md transition duration-300 hover:bg-gray-800"
+                className="w-full bg-black text-white font-semibold py-2 rounded-md transition duration-300 hover:bg-gray-800 disabled:bg-gray-500"
               >
                 {isLoading ? "Signing in..." : (
                   <span className="flex items-center justify-center">
@@ -213,7 +217,6 @@ const Signin = () => {
         </div>
       </div>
     </div>
- 
   );
 };
 

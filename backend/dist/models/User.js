@@ -42,8 +42,8 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     lastname: { type: String },
-    username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     phoneNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: {
@@ -51,9 +51,26 @@ const userSchema = new mongoose_1.Schema({
         required: true,
         enum: ['general', 'lawstudent', 'lawyer']
     },
+    bio: {
+        type: String,
+        default: 'Welcome to my profile!',
+        maxlength: 160
+    },
+    location: {
+        type: String,
+        default: '',
+        maxlength: 50
+    },
+    profileImageUrl: {
+        type: String,
+        default: 'https://placehold.co/150x150/7c3aed/ffffff?text=User'
+    },
+    bannerImageUrl: {
+        type: String,
+        default: 'https://placehold.co/600x200/1e293b/ffffff?text=Profile'
+    },
     friends: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User", default: [] }]
 }, { timestamps: true });
-// Add password comparison method
 userSchema.methods.comparePassword = async function (userPassword) {
     return await bcryptjs_1.default.compare(userPassword, this.password);
 };
