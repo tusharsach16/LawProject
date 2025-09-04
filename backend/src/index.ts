@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes';
 import quizRoutes from './routes/QuizRoutes';
 import mockTrail from './routes/MockTrailRoute';
 import friendRoute from './routes/FriendRequest';
+import profile from './routes/profileRoutes';
 
 const envPath = path.resolve(__dirname, "../.env");
 console.log("🔍 Looking for .env at:", envPath);
@@ -30,6 +31,7 @@ app.use('/api', authRoutes);
 app.use('/quiz', quizRoutes);
 app.use('/mockTrail', mockTrail);
 app.use('/apiFriend', friendRoute);
+app.use('/edit', profile);
 
 connectDB();
 

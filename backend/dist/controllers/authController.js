@@ -21,6 +21,26 @@ const User_1 = require("../models/User");
 const Lawyer_1 = require("../models/Lawyer");
 const LawStudent_1 = require("../models/LawStudent");
 const GeneralUser_1 = require("../models/GeneralUser");
+// --- HELPER FUNCTION (This is excellent!) ---
+const getFullUserProfile = async (userId) => {
+    const user = await User_1.User.findById(userId).select('-password').lean();
+    if (!user) {
+        return null;
+    }
+    let roleData = {};
+    switch (user.role) {
+        case 'general':
+            roleData = await GeneralUser_1.GeneralUser.findOne({ userId: user._id }).lean();
+            break;
+        case 'lawstudent':
+            roleData = await LawStudent_1.LawStudent.findOne({ userId: user._id }).lean();
+            break;
+        case 'lawyer':
+            roleData = await Lawyer_1.Lawyer.findOne({ userId: user._id }).lean();
+            break;
+    }
+    return Object.assign(Object.assign({}, user), { roleData: roleData || {} });
+};
 const signupUser = async (req, res) => {
     try {
         const _a = req.body, { name, lastname, username, email, phoneNumber, password, role } = _a, extraData = __rest(_a, ["name", "lastname", "username", "email", "phoneNumber", "password", "role"]);
@@ -31,13 +51,7 @@ const signupUser = async (req, res) => {
         }
         const hashedPassword = await bcryptjs_1.default.hash(password, 10);
         const user = await User_1.User.create({
-            name,
-            lastname,
-            username,
-            email,
-            phoneNumber,
-            password: hashedPassword,
-            role
+            name, lastname, username, email, phoneNumber, password: hashedPassword, role
         });
         if (role === 'lawyer') {
             await Lawyer_1.Lawyer.create(Object.assign({ userId: user._id }, extraData));
@@ -48,7 +62,16 @@ const signupUser = async (req, res) => {
         else {
             await GeneralUser_1.GeneralUser.create(Object.assign({ userId: user._id }, extraData));
         }
-        res.status(201).json({ message: 'Signup successful', user });
+        // --- FIX 1: SIGNUP KE BAAD TOKEN CREATE KARNA ---
+        const token = jsonwebtoken_1.default.sign({ id: user._id, role: user.role, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        // Poora user profile fetch karein taaki frontend ko saari details mil jayein
+        const fullUserProfile = await getFullUserProfile(user._id.toString());
+        // --- FIX 2: TOKEN KO RESPONSE MEIN BHEJNA ---
+        res.status(201).json({
+            message: 'Signup successful',
+            token, // Ab frontend ko token mil jayega
+            user: fullUserProfile
+        });
     }
     catch (error) {
         console.error(error);
@@ -60,18 +83,13 @@ const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User_1.User.findOne({ email });
-        if (!user) {
+        if (!user || !(await user.comparePassword(password))) {
             res.status(400).json({ message: 'Invalid credentials' });
             return;
         }
-        const isMatch = await user.comparePassword(password);
-        if (!isMatch) {
-            res.status(400).json({ message: 'Invalid credentials' });
-            return;
-        }
-        const _a = user.toObject(), { password: _ } = _a, userData = __rest(_a, ["password"]);
+        const fullUserProfile = await getFullUserProfile(user._id.toString());
         const token = jsonwebtoken_1.default.sign({ id: user._id, role: user.role, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        res.status(200).json({ message: 'Login successful', token, user: userData });
+        res.status(200).json({ message: 'Login successful', token, user: fullUserProfile });
     }
     catch (error) {
         console.error(error);
@@ -81,13 +99,15 @@ const loginUser = async (req, res) => {
 exports.loginUser = loginUser;
 const getUser = async (req, res) => {
     try {
-        const userId = req.user.id; // Type-cast to access custom `user` property
-        const user = await User_1.User.findById(userId).select('-password');
-        if (!user) {
+        const userId = req.user.id;
+        const fullUserProfile = await getFullUserProfile(userId);
+        if (!fullUserProfile) {
             res.status(404).json({ message: 'User not found' });
             return;
         }
-        res.status(200).json({ user });
+        // --- FIX 3: API RESPONSE KO CONSISTENT BANANA ---
+        // Ab frontend ko hamesha { user: {...} } milega.
+        res.status(200).json({ user: fullUserProfile });
     }
     catch (error) {
         console.error(error);
