@@ -8,6 +8,7 @@ import Sidebar from '../components/dashboard/Sidebar';
 import Overview from './Overview';
 import AiChatbot from './AIchatbot'; 
 import QuizPage from './QuizPage';
+import ProfilePage from  './ProfilePage';
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -46,6 +47,7 @@ const Dashboard: React.FC = () => {
             <Route index element={<Overview />} /> 
             <Route path="chatbot" element={<AiChatbot />} />
             <Route path="quiz" element={<QuizPage />} />
+            <Route path='profile' element={<ProfilePage/>} />
           </Routes>
         </main>
       </div>
