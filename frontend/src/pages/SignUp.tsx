@@ -7,7 +7,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import Signupui from "@/components/Signupui";
 import axios from "axios";
-
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/slices/userSlice";
 
 type FormData = {
   name: string;
@@ -23,6 +24,7 @@ type FormData = {
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -51,9 +53,8 @@ const SignUp = () => {
       return;
     }
 
-
     try{
-      const user = await axios.post("http://localhost:5000/api/signup",{
+      const response = await axios.post("http://localhost:5000/api/signup", {
         name: formData.name,
         lastname: formData.lastname,
         email: formData.email,
@@ -62,12 +63,23 @@ const SignUp = () => {
         role: formData.role,
         phoneNumber: formData.phoneNumber
       });
-      console.log('User signed up: ', user);
-      alert('User signed up.');
-      navigate('/dashboard');
+      
+      console.log('User signed up, response:', response.data);
+      
+      const { token, user } = response.data;
+
+      if (token && user) {
+        localStorage.setItem('token', token);
+        //  Redux store ko naye user ke data se update kara hai
+        dispatch(setUser(user));
+        alert('User signed up successfully.');
+        navigate('/dashboard1');
+      } else {
+        throw new Error("Token or user data missing in signup response.");
+      }
     } catch(error: any) {
       console.error('Signup failed:', error.response?.data || error.message);
-      alert(error.response?.data.message);
+      alert(error.response?.data.message || 'An error occurred during signup.');
     }
   };
 
@@ -114,12 +126,12 @@ const SignUp = () => {
                   </div>
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="name" className="mb-1 text-sm font-medium">Last Name</label>
+                  <label htmlFor="lastname" className="mb-1 text-sm font-medium">Last Name</label>
                   <div className="relative">
                     <CiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-700 h-4 w-4" />
                     <input
                       type="text"
-                      id="name"
+                      id="lastname"
                       name="lastname"
                       placeholder="Malik"
                       value={formData.lastname}
@@ -132,7 +144,7 @@ const SignUp = () => {
               </div>
 
               <div className="flex flex-col">
-                <label htmlFor="email" className="mb-1 text-sm font-medium">Email Adress</label>
+                <label htmlFor="email" className="mb-1 text-sm font-medium">Email Address</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-700 h-4 w-4" />
                   <input
@@ -149,7 +161,7 @@ const SignUp = () => {
               </div>
 
               <div className="flex flex-col">
-                <label htmlFor="email" className="mb-1 text-sm font-medium">Username</label>
+                <label htmlFor="username" className="mb-1 text-sm font-medium">Username</label>
                 <input
                   type="text"
                   id="username"
@@ -277,7 +289,7 @@ const SignUp = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <button className="flex items-center justify-center gap-2 py-2 px-4 border rounded hover:bg-gray-100">
-                  <FaGoogle className="h-4 w-4" />
+                   <FaGoogle className="h-4 w-4" />
                   <span className="text-sm font-medium">Google</span>
                 </button>
                 <button className="flex items-center justify-center gap-2 py-2 px-4 border rounded hover:bg-gray-100">
@@ -303,3 +315,4 @@ const SignUp = () => {
 };
 
 export default SignUp;
+
