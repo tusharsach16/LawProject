@@ -39,3 +39,7 @@ Desktop.ini
 # ─────────────────────────────
 # TypeScript build info
 *.tsbuildinfo
+
+# Temporary Uploads
+# Backend ke temporary uploads folder ko ignore karein
+/backend/uploads/
