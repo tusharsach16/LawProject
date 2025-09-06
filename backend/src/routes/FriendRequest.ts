@@ -1,6 +1,6 @@
 import express from "express";
 import { acceptRequest, getFriendRequest, getFriends, removeFriend, sendfriendRequest } from "../controllers/FriendReq/FriendsController";
-import { getUserProfileByUsername } from "../controllers/FriendReq/getUserProfileByUsername";
+import { getUserProfileByUsername, searchUsers } from "../controllers/FriendReq/getUserProfileByUsername";
 import authMiddleware from "../middleware/authMiddleware";
 
 const router = express.Router();
@@ -16,4 +16,7 @@ router.get('/getFriends', authMiddleware, getFriends);
 router.post('/removeFriend',  authMiddleware, removeFriend);
 
 router.get('/profile/:username', authMiddleware, getUserProfileByUsername);
+
+router.get('/search', authMiddleware, searchUsers);
+
 export default router;
