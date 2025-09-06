@@ -84,3 +84,30 @@ export const uploadBannerImage = async (imageFile: File) => {
 
   return response.data; // Yeh { msg, imageUrl } wapas dega
 };
+
+
+export const getConnections = async () => {
+  const token = localStorage.getItem('token');
+  const response = await axios.get(
+    'http://localhost:5000/apiFriend/getFriends', 
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  ); 
+  return response.data;
+};
+
+export const getUserProfile = async (username: string) => {
+  const token = localStorage.getItem('token');
+  const response = await axios.get(
+    `http://localhost:5000/apiFriend/profile/${username}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
