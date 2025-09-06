@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface UnfollowModalProps {
   username: string;
   onConfirm: () => void;
