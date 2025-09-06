@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { ArrowLeft, Search } from 'lucide-react';
 import EditProfileModal from '../components/EditProfileModel'; 
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { updateProfile } from '../redux/slices/userSlice';
 import { uploadProfileImage, uploadBannerImage } from '../services/authService'; 
-
+import { Link } from 'react-router-dom'; 
 interface UserProfile {
  _id: string;
  name: string;
@@ -79,12 +79,14 @@ const ProfileBody = ({ user, onEditClick }: ProfileBodyProps) => {
         </div>
         
         <div className="flex items-center gap-5 text-zinc-500 text-sm">
-           <p>
-            <span className="text-zinc-900 font-bold mr-1">
-              {user.friends ? user.friends.length : 0}
-            </span> 
-            Connections
-          </p>
+          <Link to="/dashboard1/connections" className="hover:underline cursor-pointer">
+            <p>
+              <span className="text-zinc-900 font-bold mr-1">
+                {user.friends ? user.friends.length : 0}
+              </span> 
+              Connections
+            </p>
+          </Link>
         </div>
       </div>
     </div>
@@ -120,13 +122,9 @@ const ProfilePage = () => {
         console.log("New profile image URL:", newProfileImageUrl);
       }
       
-      // --- YEH NAYA LOGIC ADD KIYA GAYA HAI ---
-      // Agar user ne nayi banner image select ki hai...
       if (formData.bannerImageFile) {
         console.log("Uploading new banner image...");
-        // ...to usse bhi upload karein
         const bannerUploadResponse = await uploadBannerImage(formData.bannerImageFile);
-        // Aur naye URL ko save kar lein
         newBannerImageUrl = bannerUploadResponse.imageUrl;
         console.log("New banner image URL:", newBannerImageUrl);
       }
@@ -136,7 +134,7 @@ const ProfilePage = () => {
         bio: formData.bio,
         location: formData.location,
         profileImageUrl: newProfileImageUrl,
-        bannerImageUrl: newBannerImageUrl, // Naya banner URL yahan daalein
+        bannerImageUrl: newBannerImageUrl,
       };
 
       const finalPayload = {
