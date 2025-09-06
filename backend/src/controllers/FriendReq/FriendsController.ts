@@ -148,7 +148,10 @@ export const getFriends = async (req: Request, res: Response): Promise<void> =>{
       res.status(401).json({ msg: "Unauthenticated" });
       return;
     }
-    const user = await User.findById(currentUserId).populate({path: "friends", select: "username name role"});
+    const user = await User.findById(currentUserId).populate({
+      path: "friends",
+      select: "username name role profileImageUrl bio" 
+    });
     const totalFriends = user?.friends.length;
     if(!user) {
       res.status(401).json({ msg: "User not found" });
