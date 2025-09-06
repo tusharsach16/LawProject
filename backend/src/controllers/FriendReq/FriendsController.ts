@@ -1,4 +1,3 @@
-// controllers/friendRequestController.ts
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 import { User } from "../../models/User";
@@ -10,7 +9,6 @@ export const sendfriendRequest = async (req: Request, res: Response): Promise<vo
     const senderId = req.user?.id;
     const { username } = req.body as { username: string };
 
-    /* 1. Basic validations */
     if (!username) {
       res.status(400).json({ msg: "Receiver username is required" });
       return;
@@ -20,7 +18,6 @@ export const sendfriendRequest = async (req: Request, res: Response): Promise<vo
       return;
     }
 
-    /* 2. Fetch users */
     const sender   = await User.findById(senderId);
     const receiver = await User.findOne({ username: username.toLowerCase() });
 
@@ -37,13 +34,13 @@ export const sendfriendRequest = async (req: Request, res: Response): Promise<vo
       return;
     }
 
-    /* 3. Already friends? */
+    // Already friends? 
     if (sender?.friends.includes(receiver._id)) {
       res.status(400).json({ msg: "Already friends" });
       return;
     }
 
-    /* 4. Pending request already exists? */
+    // Pending request already exists? 
     const duplicate = await Friends.findOne({
       $or: [
         { senderId: sender._id,   receiverId: receiver._id },
@@ -57,7 +54,7 @@ export const sendfriendRequest = async (req: Request, res: Response): Promise<vo
       return;
     }
 
-    /* 5. Create new friend request */
+    // Create new friend request
     const request = await Friends.create({
       senderId:   sender._id,
       receiverId: receiver._id,
