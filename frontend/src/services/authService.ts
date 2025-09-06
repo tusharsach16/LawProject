@@ -111,3 +111,17 @@ export const getUserProfile = async (username: string) => {
   );
   return response.data;
 };
+
+export const removeFriend = async (friendIdToRemove: string) => {
+  const token = localStorage.getItem('token');
+  const response = await axios.post(
+    'http://localhost:5000/apiFriend/removeFriend', 
+    { friendIdToRemove },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  ); 
+  return response.data;
+};
