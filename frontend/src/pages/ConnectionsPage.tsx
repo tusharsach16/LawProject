@@ -57,10 +57,7 @@ const ConnectionsPage = () => {
   }
 
   return (
-    // --- YEH CONTAINER UPDATE KIYA GAYA HAI ---
-    // max-w-2xl aur mx-auto classes hata di gayi hain
     <div className="w-full min-h-full">
-      {/* Header */}
       <header className="sticky top-0 z-10 flex items-center p-3 bg-white/80 backdrop-blur-sm border-b border-gray-200">
         <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-gray-100">
           <ArrowLeft size={20} />
@@ -70,7 +67,6 @@ const ConnectionsPage = () => {
         </div>
       </header>
 
-      {/* Connections List */}
       <div>
         {connections.length === 0 ? (
           <p className="p-6 text-center text-gray-500">You don't have any connections yet.</p>
