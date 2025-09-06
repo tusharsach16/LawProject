@@ -1,9 +1,7 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
-// NEW: Make sure to import your updateUserProfile function
-import { updateUserProfile } from '../../services/authService'; // Adjust the path if it's different
+import api from '../../services/api';
+import { updateUserProfile } from '../../services/authService';
 
-// --- (Your interfaces and initial state are unchanged) ---
 interface UserProfile {
   _id: string;
   name: string;
@@ -30,22 +28,12 @@ const initialState: UserState = {
   error: null,
 };
 
-
-// --- ASYNC THUNKS ---
-
 export const fetchCurrentUser = createAsyncThunk(
   'user/fetchCurrentUser',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return rejectWithValue('No token found');
-      }
-      const response = await axios.get('/api/auth/user', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      // Assuming the backend returns the user object directly in the payload
-      return response.data as UserProfile;
+      const response = await api.get('/auth/user');
+      return response.data.user as UserProfile;
     } catch (error: any) {
       localStorage.removeItem('token');
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch user');
@@ -53,13 +41,11 @@ export const fetchCurrentUser = createAsyncThunk(
   }
 );
 
-// asyncThunk for updating the profile
 export const updateProfile = createAsyncThunk(
   'user/updateProfile',
   async (profileData: { commonData?: any; roleSpecificData?: any }, { rejectWithValue }) => {
     try {
       const data = await updateUserProfile(profileData);
-      // The API should return an object with the updated user => { user: { ... } }
       return data.user;
     } catch (error: any) {
       const message = error.response?.data?.msg || error.message || 'Failed to update profile';
@@ -67,7 +53,6 @@ export const updateProfile = createAsyncThunk(
     }
   }
 );
-
 
 const userSlice = createSlice({
   name: 'user',
@@ -96,14 +81,11 @@ const userSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-
-      //to handle the updateProfile lifecycle
       .addCase(updateProfile.pending, (state) => {
-        state.status = 'loading'; // Show loading state while updating
+        state.status = 'loading';
       })
       .addCase(updateProfile.fulfilled, (state, action: PayloadAction<UserProfile>) => {
         state.status = 'succeeded';
-        // Update the user state with the fresh data from the backend
         state.user = action.payload;
       })
       .addCase(updateProfile.rejected, (state, action) => {
