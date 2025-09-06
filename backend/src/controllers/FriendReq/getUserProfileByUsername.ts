@@ -50,3 +50,33 @@ export const getUserProfileByUsername = async (req: Request, res: Response): Pro
   }
 };
 
+
+export const searchUsers = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const query = req.query.q as string;
+
+    if (!query || query.trim().length < 2) {
+      res.status(200).json([]);
+      return; 
+    }
+
+    // Ek regular expression banayein jo case-insensitive match karega
+    const searchRegex = new RegExp(query, 'i');
+
+    const users = await User.find({
+      $or: [
+        { name: { $regex: searchRegex } },
+        { username: { $regex: searchRegex } }
+      ]
+    })
+    .select('name username profileImageUrl') // Sirf imp details bhejein
+    .limit(10); // Result ko 10 tak limit karein
+
+    res.status(200).json(users);
+
+  } catch (error) {
+    console.error("Error searching users:", error);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
