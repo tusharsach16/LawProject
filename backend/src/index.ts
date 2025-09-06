@@ -9,6 +9,7 @@ import quizRoutes from './routes/QuizRoutes';
 import mockTrail from './routes/MockTrailRoute';
 import friendRoute from './routes/FriendRequest';
 import profile from './routes/profileRoutes';
+import uploadRoutes from './routes/uploadRoutes'; 
 
 const envPath = path.resolve(__dirname, "../.env");
 console.log("🔍 Looking for .env at:", envPath);
@@ -24,14 +25,14 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(express.json());
 
-// ✅ Optional debug check
 console.log("✅ Loaded Mongo URL:", process.env.MONGODB_URL?.slice(0, 25) + "...");
 
 app.use('/api', authRoutes);
 app.use('/quiz', quizRoutes);
 app.use('/mockTrail', mockTrail);
 app.use('/apiFriend', friendRoute);
-app.use('/edit', profile);
+app.use('/api', profile);
+app.use('/api/upload', uploadRoutes);
 
 connectDB();
 
