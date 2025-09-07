@@ -10,21 +10,24 @@ import {
   Gavel,
   User,
   Settings,
-  LogOut
+  LogOut,
+  Search, 
+  Bell    
 } from "lucide-react";
 
 type SidebarProps = {
   isOpen: boolean;
   onClose: () => void;
+  onSearchClick: () => void; // for searchbar
 };
 
-const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+const Sidebar = ({ isOpen, onClose, onSearchClick }: SidebarProps) => {
   const navigate = useNavigate();
-  // Logout logic
   const handleLogout = () => {
     console.log("Logging out...");
     localStorage.removeItem('token');
-    navigate('/');  };
+    navigate('/'); 
+  };
 
   return (
     <>
@@ -34,7 +37,6 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         }`}
         onClick={onClose}
       />
-
       <aside
         className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg flex flex-col transition-transform duration-200 ease-in-out z-50
         ${isOpen ? "translate-x-0" : "-translate-x-full"} 
@@ -43,19 +45,30 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         <nav className="flex flex-col h-full p-4 text-sm font-medium text-gray-700">
           <div className="space-y-2 flex-1">
             <SidebarLink icon={<Home size={18} />} label="Overview" to="/dashboard1" />
+            
+            <button
+              onClick={() => {
+                onSearchClick(); 
+                onClose();      // Mobile par sidebar band kar dein
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-md transition hover:bg-gray-100 text-gray-700"
+            >
+              <span className="text-gray-600"><Search size={18} /></span>
+              <span>Search</span>
+            </button>
+
+            <SidebarLink icon={<Bell size={18} />} label="Notifications" to="/dashboard1/notifications" />
             <SidebarLink icon={<MessageCircle size={18} />} label="AI Legal Chatbot" to="/dashboard1/chatbot" />
             <SidebarLink icon={<Book size={18} />} label="Law Info Hub" to="/dashboard1/law-info" />
             <SidebarLink icon={<Users size={18} />} label="Connect with Lawyers" to="/dashboard1/connect" />
             <SidebarLink icon={<Briefcase size={18} />} label="Case Practice" to="/dashboard1/case-practice" />
             <SidebarLink icon={<HelpCircle size={18} />} label="Quiz Section" to="/dashboard1/quiz" />
             <SidebarLink icon={<Gavel size={18} />} label="Mock Trials" to="/dashboard1/mock-trials" />
-
             <div className="mt-6 border-t pt-4 space-y-1">
               <SidebarLink icon={<User size={18} />} label="Profile" to="/dashboard1/profile" />
               <SidebarLink icon={<Settings size={18} />} label="Settings" to="/dashboard1/settings" />
             </div>
           </div>
-
           <div className="border-t pt-4">
             <button
               onClick={handleLogout}
@@ -87,7 +100,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ icon, label, to, extraClasses
       to={to}
       className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition ${extraClasses} ${
         isActive 
-          ? 'bg-blue-100 text-blue-700 font-semibold' // Active link ke liye style
+          ? 'bg-blue-100 text-blue-700 font-semibold'
           : 'hover:bg-gray-100'
       }`}
     >
@@ -98,3 +111,4 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ icon, label, to, extraClasses
 };
 
 export default Sidebar;
+
