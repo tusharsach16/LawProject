@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { getUserProfile } from '../services/authService'; 
+import { getUserProfile, sendFriendRequest } from '../services/authService'; 
 
 // User ke data ke liye type
 interface UserProfileData {
@@ -17,7 +17,6 @@ interface UserProfileData {
 }
 
 const UserProfilePage = () => {
-  // URL se username nikalein (e.g., 'vrinda26')
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
 
@@ -25,13 +24,18 @@ const UserProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
+  const [requestStatus, setRequestStatus] = useState<'idle' | 'pending' | 'sent'>('idle');
+  const [isProcessing, setIsProcessing] = useState(false); // Button ko disable karne ke liye
+
   useEffect(() => {
-    // Agar URL mein username nahi hai, to kuch na karein
     if (!username) return;
 
     const fetchUserProfile = async () => {
       try {
         setLoading(true);
+        // Reset request status when profile changes
+        setRequestStatus('idle'); 
         const data = await getUserProfile(username);
         setUser(data);
       } catch (err) {
@@ -43,7 +47,26 @@ const UserProfilePage = () => {
     };
 
     fetchUserProfile();
-  }, [username]); // Jab bhi URL ka username badlega, yeh effect dobara chalega
+  }, [username]);
+
+  const handleFollow = async () => {
+    if (!user) return;
+
+    setIsProcessing(true); // Request shuru button disable karein
+    try {
+      // API call bhejein
+      await sendFriendRequest(user.username);
+      // Success hone par button ka text Pending kar dein
+      setRequestStatus('sent'); 
+      alert("Friend request sent!");
+    } catch (err: any) {
+      console.error("Failed to send friend request:", err);
+      // Backend se mile error message ko dikhayein (jaise => Already friends)
+      alert(err.response?.data?.msg || "Could not send request.");
+    } finally {
+      setIsProcessing(false); // Request khatam button enable karein
+    }
+  };
 
   if (loading) {
     return <div className="p-4 text-center">Loading profile...</div>;
@@ -53,7 +76,6 @@ const UserProfilePage = () => {
     return <div className="p-4 text-center text-red-500">{error || 'User not found.'}</div>;
   }
   
-  // Placeholder images agar user ne set na ki ho
   const bannerImg = user.bannerImageUrl || 'https://placehold.co/600x200/a7a7a7/ffffff?text=Banner';
   const profileImg = user.profileImageUrl || 'https://placehold.co/150x150/a7a7a7/ffffff?text=Avatar';
 
@@ -76,15 +98,25 @@ const UserProfilePage = () => {
             alt="Profile"
             className="w-[135px] h-[135px] rounded-full border-4 border-white absolute -bottom-[60px] left-4 bg-gray-300"
           />
-          <div className="absolute top-3 right-3">
-            {/* Yahan par "Follow" / "Following" button aayega */}
-            <button className={`px-4 py-1.5 font-semibold text-sm rounded-full ${
-                user.isFollowing 
-                ? 'bg-white text-black border border-gray-300' 
-                : 'bg-black text-white'
-            }`}>
-              {user.isFollowing ? 'Following' : 'Follow'}
-            </button>
+          <div className="absolute top-3 right-3">            
+            {user.isFollowing ? (
+              <button className="px-4 py-1.5 font-semibold text-sm rounded-full bg-white text-black border border-gray-300">
+                Following
+              </button>
+            ) : 
+            requestStatus === 'sent' ? (
+              <button className="px-4 py-1.5 font-semibold text-sm rounded-full bg-gray-200 text-gray-600 cursor-not-allowed" disabled>
+                Pending
+              </button>
+            ) : (
+              <button 
+                onClick={handleFollow}
+                disabled={isProcessing}
+                className="px-4 py-1.5 font-semibold text-sm rounded-full bg-black text-white hover:bg-gray-800 disabled:bg-gray-400"
+              >
+                {isProcessing ? 'Sending...' : 'Follow'}
+              </button>
+            )}
           </div>
         </div>
 

@@ -1,10 +1,12 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, Search } from 'lucide-react';
 import EditProfileModal from '../components/EditProfileModel'; 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { updateProfile } from '../redux/slices/userSlice';
 import { uploadProfileImage, uploadBannerImage } from '../services/authService'; 
 import { Link } from 'react-router-dom'; 
+import SearchBar from '../components/SearchBar'; 
+
 interface UserProfile {
  _id: string;
  name: string;
@@ -19,8 +21,9 @@ interface UserProfile {
 
 interface ProfileHeaderProps {
  name: string;
+ onSearchClick: () => void;
 }
-const ProfileHeader = ({ name }: ProfileHeaderProps) => {
+const ProfileHeader = ({ name, onSearchClick }: ProfileHeaderProps) => {
  return (
     <header className="sticky top-0 z-10 flex items-center justify-between p-3 bg-white/80 backdrop-blur-sm border-b border-gray-200">
       <button 
@@ -34,7 +37,8 @@ const ProfileHeader = ({ name }: ProfileHeaderProps) => {
         <h2 className="font-bold text-lg leading-tight">{name}</h2>
       </div>
 
-      <button className="p-2 rounded-full hover:bg-gray-100">
+      {/* Search button par click karne se ab modal khulega */}
+      <button onClick={onSearchClick} className="p-2 rounded-full hover:bg-gray-100">
         <Search size={20} />
       </button>
     </header>
@@ -100,6 +104,8 @@ const ProfilePage = () => {
  
  const [isModalOpen, setIsModalOpen] = useState(false);
  const [isSaving, setIsSaving] = useState(false);
+ //  Nayi state banayein search  ke liye
+ const [isSearchOpen, setIsSearchOpen] = useState(false);
 
  const handleSaveProfile = async (formData: {
     name: string;
@@ -116,17 +122,13 @@ const ProfilePage = () => {
       let newBannerImageUrl = user.bannerImageUrl;
 
       if (formData.profileImageFile) {
-        console.log("Uploading new profile image...");
         const uploadResponse = await uploadProfileImage(formData.profileImageFile);
         newProfileImageUrl = uploadResponse.imageUrl; 
-        console.log("New profile image URL:", newProfileImageUrl);
       }
       
       if (formData.bannerImageFile) {
-        console.log("Uploading new banner image...");
         const bannerUploadResponse = await uploadBannerImage(formData.bannerImageFile);
         newBannerImageUrl = bannerUploadResponse.imageUrl;
-        console.log("New banner image URL:", newBannerImageUrl);
       }
 
       const commonDataPayload = {
@@ -142,7 +144,6 @@ const ProfilePage = () => {
         roleSpecificData: {},
       };
       
-      console.log("Dispatching final profile update to Redux...");
       await dispatch(updateProfile(finalPayload)).unwrap();
       
       alert('Profile updated successfully!');
@@ -168,13 +169,18 @@ const ProfilePage = () => {
 
  return (
     <div>
-      <ProfileHeader name={user.name} />
+      <ProfileHeader name={user.name} onSearchClick={() => setIsSearchOpen(true)} />
       <ProfileBody user={user} onEditClick={() => setIsModalOpen(true)} />
       <EditProfileModal
         isOpen={isModalOpen}
         onClose={() => !isSaving && setIsModalOpen(false)}
         currentUser={user}
         onSave={handleSaveProfile}
+      />
+      {/*  Naye SearchBar ko yahan render karein */}
+      <SearchBar 
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
       />
     </div>
  );
