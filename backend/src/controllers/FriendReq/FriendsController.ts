@@ -69,7 +69,7 @@ export const sendfriendRequest = async (req: Request, res: Response): Promise<vo
 };
 
 
-export const acceptRequest = async (req: Request, res: Response): Promise<void> => {
+export const respondRequest = async (req: Request, res: Response): Promise<void> => {
   try {
     const { action, requestId } = req.body as { action: string; requestId: string };
     const receiverId = req.user?.id;
@@ -128,11 +128,11 @@ export const getFriendRequest = async (req: Request, res: Response): Promise<voi
     const pending = await Friends.find({
       receiverId: receiverObjId,
       status: 'pending'
-    })
+    }).populate('senderId', 'name username profileImageUrl');
     res.status(200).json(pending)
     return;
   } catch(e) {
-    console.error("acceptRequest error:", e);
+    console.error("Get friend request error:", e);
     res.status(500).json({ msg: "Something went wrong", error: e });
   }
 }
