@@ -19,15 +19,18 @@ type SidebarProps = {
   isOpen: boolean;
   onClose: () => void;
   onSearchClick: () => void; // for searchbar
+  onNotificationsClick: () => void; // for notification
 };
 
-const Sidebar = ({ isOpen, onClose, onSearchClick }: SidebarProps) => {
+const Sidebar = ({ isOpen, onClose, onSearchClick, onNotificationsClick}: SidebarProps) => {
   const navigate = useNavigate();
   const handleLogout = () => {
     console.log("Logging out...");
     localStorage.removeItem('token');
     navigate('/'); 
   };
+
+
 
   return (
     <>
@@ -56,8 +59,17 @@ const Sidebar = ({ isOpen, onClose, onSearchClick }: SidebarProps) => {
               <span className="text-gray-600"><Search size={18} /></span>
               <span>Search</span>
             </button>
+            <button
+              onClick={() => {
+                onNotificationsClick(); // Notification kholne wala function call karein
+                onClose(); // Mobile par sidebar band kar dein
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-md transition hover:bg-gray-100 text-gray-700"
+            >
+              <span className="text-gray-600"><Bell size={18} /></span>
+              <span>Notifications</span>
+            </button>
 
-            <SidebarLink icon={<Bell size={18} />} label="Notifications" to="/dashboard1/notifications" />
             <SidebarLink icon={<MessageCircle size={18} />} label="AI Legal Chatbot" to="/dashboard1/chatbot" />
             <SidebarLink icon={<Book size={18} />} label="Law Info Hub" to="/dashboard1/law-info" />
             <SidebarLink icon={<Users size={18} />} label="Connect with Lawyers" to="/dashboard1/connect" />
