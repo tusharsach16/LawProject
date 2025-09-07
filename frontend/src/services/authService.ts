@@ -125,3 +125,37 @@ export const removeFriend = async (friendIdToRemove: string) => {
   ); 
   return response.data;
 };
+
+export const searchUsers = async (query: string) => {
+  // Choti query ke liye API call nhi kia taaki server par faltu load na pade
+  if (query.trim().length < 2) {
+    return []; 
+  }
+  
+  const token = localStorage.getItem('token');
+  const response = await axios.get(
+    'http://localhost:5000/apiFriend/search', 
+    {
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+      params: { q: query } // Search query ko params mein bhejein
+    }
+  );
+
+  return response.data; // Yeh users ka array wapas dega
+};
+
+export const sendFriendRequest = async (username: string) => {
+  const token = localStorage.getItem('token');
+  const response = await axios.post(
+    'http://localhost:5000/apiFriend/sendfriendRequest',
+    { username }, // Request body mein username bhej rha hu
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data; 
+};
