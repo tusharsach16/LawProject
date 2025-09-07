@@ -159,3 +159,31 @@ export const sendFriendRequest = async (username: string) => {
   );
   return response.data; 
 };
+
+export const getFriendRequests = async () => {
+  const token = localStorage.getItem('token');
+  const response = await axios.get(
+    'http://localhost:5000/apiFriend/getRequest', 
+    { 
+      headers: { 
+        Authorization: `Bearer ${token}` 
+      } 
+    }
+  );
+  return response.data; // Yeh requests ka array wapas dega
+};
+
+
+export const respondToFriendRequest = async (requestId: string, action: 'accept' | 'reject') => {
+  const token = localStorage.getItem('token');
+  const response = await axios.post(
+    'http://localhost:5000/apiFriend/respondRequest',
+    { requestId, action }, // Request body mein data bhejein
+    { 
+      headers: { 
+        Authorization: `Bearer ${token}` 
+      } 
+    }
+  );
+  return response.data;
+};
