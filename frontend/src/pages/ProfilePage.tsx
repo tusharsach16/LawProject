@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { ArrowLeft, Search } from 'lucide-react';
-import EditProfileModal from '../components/EditProfileModel'; 
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { Link } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { updateProfile } from '../redux/slices/userSlice';
-import { uploadProfileImage, uploadBannerImage } from '../services/authService'; 
-import { Link } from 'react-router-dom'; 
-import SearchBar from '../components/SearchBar'; 
+import { uploadProfileImage, uploadBannerImage } from '../services/authService';
+import EditProfileModal from '../components/EditProfileModel'; 
+import { ArrowLeft, Search, Book, Briefcase, Star, MapPin, Users, Heart, BadgeCheck } from 'lucide-react';
+import SearchBar from '../components/SearchBar';
 
 interface UserProfile {
  _id: string;
@@ -17,7 +17,28 @@ interface UserProfile {
  profileImageUrl?: string;
  friends?: string[];
  role?: 'general' | 'lawstudent' | 'lawyer';
+ roleData?: any;
 }
+
+// --- Helper Component for Success/Error Messages ---
+const InfoModal = ({ message, onClose }: { message: {type: 'success' | 'error', text: string} | null, onClose: () => void }) => {
+    if (!message) return null;
+    const isError = message.type === 'error';
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[200]">
+            <div className="bg-white p-6 rounded-lg shadow-xl text-center w-80">
+                <h3 className={`text-xl font-bold mb-4 ${isError ? 'text-red-600' : 'text-green-600'}`}>
+                    {isError ? 'Error' : 'Success'}
+                </h3>
+                <p className="text-gray-700">{message.text}</p>
+                <button onClick={onClose} className="mt-6 px-6 py-2 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition-colors">
+                    OK
+                </button>
+            </div>
+        </div>
+    );
+};
+
 
 interface ProfileHeaderProps {
  name: string;
@@ -37,7 +58,6 @@ const ProfileHeader = ({ name, onSearchClick }: ProfileHeaderProps) => {
         <h2 className="font-bold text-lg leading-tight">{name}</h2>
       </div>
 
-      {/* Search button par click karne se ab modal khulega */}
       <button onClick={onSearchClick} className="p-2 rounded-full hover:bg-gray-100">
         <Search size={20} />
       </button>
@@ -50,47 +70,73 @@ interface ProfileBodyProps {
  onEditClick: () => void;
 }
 const ProfileBody = ({ user, onEditClick }: ProfileBodyProps) => {
- const bannerImg = user.bannerImageUrl || 'https://placehold.co/600x200/a7a7a7/ffffff?text=Banner';
- const profileImg = user.profileImageUrl || 'https://placehold.co/150x150/a7a7a7/ffffff?text=Avatar';
+ const bannerImg = user.bannerImageUrl || 'https://placehold.co/600x200/e2e8f0/475569?text=Banner';
+ const profileImg = user.profileImageUrl || 'https://placehold.co/150x150/e2e8f0/475569?text=Avatar';
 
  return (
     <div className="bg-white text-zinc-900 font-sans">
+      {/* Top Section */}
       <div className="relative">
-        <img src={bannerImg} alt="Banner" className="w-full h-52 object-cover bg-gray-200" />
-        <img
-          src={profileImg}
-          alt="Profile"
-          className="w-[135px] h-[135px] rounded-full border-4 border-white absolute -bottom-[60px] left-4 bg-gray-300"
-        />
-        <button 
-          onClick={onEditClick} 
-          className="absolute top-3 right-3 bg-white text-zinc-900 border border-zinc-300 rounded-full py-2 px-4 font-bold cursor-pointer hover:bg-zinc-100 transition-colors"
-        >
-          Edit profile
-        </button>
+        <img src={bannerImg} alt="Banner" className="w-full h-40 sm:h-52 object-cover bg-gray-200" />
+        <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
+             <button
+                onClick={onEditClick}
+                className="bg-black/50 text-white border border-white/50 rounded-full py-2 px-4 font-bold text-sm cursor-pointer hover:bg-black/80 transition-colors"
+              >
+                Edit profile
+            </button>
+        </div>
+        <div className="absolute -bottom-16 left-4">
+             <img
+               src={profileImg}
+               alt="Profile"
+               className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-gray-300"
+             />
+        </div>
       </div>
 
-      <div className="p-4 pt-20">
-        <div className="mb-3">
-          <h2 className="text-xl font-bold leading-tight">{user.name}</h2>
+      <div className="p-4 pt-14"> 
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold leading-tight">{user.name}</h2>
           <p className="text-zinc-500">@{user.username}</p>
         </div>
         
-        <p className="my-3 whitespace-pre-wrap">{user.bio}</p>
+        {user.bio && <p className="my-3 whitespace-pre-wrap text-gray-800">{user.bio}</p>}
         
-        <div className="flex items-center gap-5 text-zinc-500 my-3 text-sm">
-          <span>📍 {user.location}</span>
-        </div>
-        
-        <div className="flex items-center gap-5 text-zinc-500 text-sm">
-          <Link to="/dashboard1/connections" className="hover:underline cursor-pointer">
-            <p>
-              <span className="text-zinc-900 font-bold mr-1">
-                {user.friends ? user.friends.length : 0}
-              </span> 
-              Connections
-            </p>
-          </Link>
+        <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm text-gray-600">
+            {user.location && (
+                <div className="flex items-center">
+                    <MapPin size={14} className="mr-2 flex-shrink-0" />
+                    <span>{user.location}</span>
+                </div>
+            )}
+            
+            <Link to="/dashboard1/connections" className="flex items-center hover:underline">
+                <Users size={14} className="mr-2 flex-shrink-0" />
+                <span className="font-bold text-black mr-1">{user.friends?.length || 0}</span> Connections
+            </Link>
+
+            {user.role === 'lawstudent' && user.roleData && (
+                <>
+                    {user.roleData.collegeName && <div className="flex items-center"><Book size={14} className="mr-2 flex-shrink-0"/><span>{user.roleData.collegeName}</span></div>}
+                    {user.roleData.areaOfInterest && <div className="flex items-center"><Star size={14} className="mr-2 flex-shrink-0"/><span>Interest: {user.roleData.areaOfInterest}</span></div>}
+                </>
+            )}
+
+            {user.role === 'lawyer' && user.roleData && (
+                 <>
+                    {user.roleData.experience > 0 && <div className="flex items-center"><Briefcase size={14} className="mr-2 flex-shrink-0"/><span>{user.roleData.experience} years experience</span></div>}
+                    {user.roleData.licenseNumber && <div className="flex items-center"><BadgeCheck size={14} className="mr-2 flex-shrink-0 text-blue-600"/><span>License: {user.roleData.licenseNumber}</span></div>}
+                    {user.roleData.specialization?.length > 0 && <div className="flex items-start sm:col-span-2"><Star size={14} className="mr-2 mt-1 flex-shrink-0"/><span>Specializes in: {user.roleData.specialization.join(', ')}</span></div>}
+                </>
+            )}
+
+            {user.role === 'general' && user.roleData && user.roleData.interests?.length > 0 && (
+                 <div className="flex items-start sm:col-span-2">
+                    <Heart size={14} className="mr-2 mt-1 flex-shrink-0 text-red-500"/>
+                    <span>Interests: {user.roleData.interests.join(', ')}</span>
+                 </div>
+            )}
         </div>
       </div>
     </div>
@@ -104,13 +150,12 @@ const ProfilePage = () => {
  
  const [isModalOpen, setIsModalOpen] = useState(false);
  const [isSaving, setIsSaving] = useState(false);
- //  Nayi state banayein search  ke liye
  const [isSearchOpen, setIsSearchOpen] = useState(false);
+ const [infoMessage, setInfoMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
 
- const handleSaveProfile = async (formData: {
-    name: string;
-    bio: string;
-    location: string;
+ const handleSaveProfile = async (payload: {
+    commonData: any;
+    roleSpecificData: any;
     profileImageFile?: File;
     bannerImageFile?: File;
  }) => {
@@ -118,42 +163,33 @@ const ProfilePage = () => {
 
     setIsSaving(true);
     try {
-      let newProfileImageUrl = user.profileImageUrl;
-      let newBannerImageUrl = user.bannerImageUrl;
+      let finalCommonData = { ...payload.commonData };
 
-      if (formData.profileImageFile) {
-        const uploadResponse = await uploadProfileImage(formData.profileImageFile);
-        newProfileImageUrl = uploadResponse.imageUrl; 
+      if (payload.profileImageFile) {
+        const res = await uploadProfileImage(payload.profileImageFile);
+        finalCommonData.profileImageUrl = res.imageUrl; 
       }
-      
-      if (formData.bannerImageFile) {
-        const bannerUploadResponse = await uploadBannerImage(formData.bannerImageFile);
-        newBannerImageUrl = bannerUploadResponse.imageUrl;
+      if (payload.bannerImageFile) {
+        const res = await uploadBannerImage(payload.bannerImageFile);
+        finalCommonData.bannerImageUrl = res.imageUrl;
       }
-
-      const commonDataPayload = {
-        name: formData.name,
-        bio: formData.bio,
-        location: formData.location,
-        profileImageUrl: newProfileImageUrl,
-        bannerImageUrl: newBannerImageUrl,
-      };
 
       const finalPayload = {
-        commonData: commonDataPayload,
-        roleSpecificData: {},
+        commonData: finalCommonData,
+        roleSpecificData: payload.roleSpecificData,
       };
       
       await dispatch(updateProfile(finalPayload)).unwrap();
       
-      alert('Profile updated successfully!');
+      setIsModalOpen(false);
+      setInfoMessage({type: 'success', text: 'Profile updated successfully!'});
 
     } catch (err) {
       console.error("Failed to update profile:", err);
-      alert("Profile update failed! Please try again.");
+      setIsModalOpen(false);
+      setInfoMessage({type: 'error', text: 'Profile update failed! Please try again.'});
     } finally {
       setIsSaving(false);
-      setIsModalOpen(false);
     }
  };
 
@@ -171,20 +207,22 @@ const ProfilePage = () => {
     <div>
       <ProfileHeader name={user.name} onSearchClick={() => setIsSearchOpen(true)} />
       <ProfileBody user={user} onEditClick={() => setIsModalOpen(true)} />
+      
       <EditProfileModal
         isOpen={isModalOpen}
         onClose={() => !isSaving && setIsModalOpen(false)}
         currentUser={user}
         onSave={handleSaveProfile}
       />
-      {/*  Naye SearchBar ko yahan render karein */}
+      
       <SearchBar 
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
       />
+
+      <InfoModal message={infoMessage} onClose={() => setInfoMessage(null)} />
     </div>
  );
 };
 
 export default ProfilePage;
-
