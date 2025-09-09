@@ -36,7 +36,6 @@ interface UpdateProfileData {
  * @param data - An object containing commonData and/or roleSpecificData.
  */
 export const updateUserProfile = async (data: UpdateProfileData) => {
-  // Iska path relative hona chahiye kyunki 'api' instance mein baseURL pehle se hai
   const response = await api.patch('/edit/profile', data); 
   return response.data;
 };
