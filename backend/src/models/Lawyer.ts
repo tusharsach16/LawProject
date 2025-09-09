@@ -2,14 +2,11 @@ import mongoose, {Schema, Document} from "mongoose";
 
 interface Ilawyer extends Document {
   userId: mongoose.Types.ObjectId;
-  licenseNumber: string;
-  experience: number;
-  specialization: string[];
-  bio?: string;
-  verified: boolean;
+  licenseNumber?: string;
+  experience?: number;
+  specialization?: string[];
   ratings?: number;
   reviews?: string[];
-  location?: string;
 }
 
 const lawyerSchema = new Schema<Ilawyer>(
@@ -23,21 +20,16 @@ const lawyerSchema = new Schema<Ilawyer>(
     licenseNumber: {
       type: String,
       unique: true,
+      sparse: true,
     },
     experience: {
       type: Number,
       min: 0,
+      default: 0,
     },
     specialization: {
       type: [String],
-    },
-    bio: {
-      type: String,
-      default: "",
-    },
-    verified: {
-      type: Boolean,
-      default: false,
+      default: [], 
     },
     ratings: {
       type: Number,
@@ -48,10 +40,6 @@ const lawyerSchema = new Schema<Ilawyer>(
     reviews: {
       type: [String],
       default: [],
-    },
-    location: {
-      type: String,
-      default: "",
     },
   },
   {timestamps: true}

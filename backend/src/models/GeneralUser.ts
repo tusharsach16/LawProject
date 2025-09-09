@@ -4,7 +4,6 @@ interface IGeneralUser extends Document {
   userId: mongoose.Types.ObjectId;
   interests?: string[];
   queries?: string[];
-  location?: string;
   bookmarkedLawyers?: mongoose.Types.ObjectId[];
   bookmarkedArticles?: mongoose.Types.ObjectId[];
 }
@@ -25,17 +24,14 @@ const generalUserSchema = new Schema<IGeneralUser>(
       type: [String],
       default: [],
     },
-    location: {
-      type: String,
-      default: "",
-    },
     bookmarkedLawyers: {
       type: [Schema.Types.ObjectId],
-      ref: "Lawyer",
+      ref: "Lawyer", 
       default: [],
     },
     bookmarkedArticles: {
       type: [Schema.Types.ObjectId],
+      ref: "Article", 
       default: [],
     },
   },

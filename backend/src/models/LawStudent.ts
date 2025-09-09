@@ -2,12 +2,10 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface IStudent extends Document {
   userId: mongoose.Types.ObjectId;
-  collegeName: string;
-  year: number;
+  collegeName?: string;
+  year?: number;
   enrollmentNumber?: string;
-  areaOfInterest: string;
-  isVerified: boolean;
-  documents: string[];
+  areaOfInterest?: string;
 }
 
 const studentSchema = new Schema<IStudent>(
@@ -20,27 +18,25 @@ const studentSchema = new Schema<IStudent>(
     },
     collegeName: {
       type: String,
-      
+      trim: true,
     },
     year: {
       type: Number,
-      
+      min: 1,
+      max: 5, 
     },
     enrollmentNumber: {
       type: String,
+      unique: true,
+      sparse: true, 
+      trim: true,
     },
     areaOfInterest: {
       type: String,
-      
+      default: "", 
+      trim: true,
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-    documents: {
-      type: [String],
-      default: [],
-    },
+ 
   },
   { timestamps: true }
 );
