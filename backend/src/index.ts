@@ -10,6 +10,7 @@ import mockTrail from './routes/MockTrailRoute';
 import friendRoute from './routes/FriendRequest';
 import profile from './routes/profileRoutes';
 import uploadRoutes from './routes/uploadRoutes'; 
+import lawyerRoutes from './routes/lawyerRoutes';
 
 const envPath = path.resolve(__dirname, "../.env");
 console.log("🔍 Looking for .env at:", envPath);
@@ -33,6 +34,7 @@ app.use('/mockTrail', mockTrail);
 app.use('/apiFriend', friendRoute);
 app.use('/api', profile);
 app.use('/api/upload', uploadRoutes);
+app.use('/api', lawyerRoutes);
 
 connectDB();
 
