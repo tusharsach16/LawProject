@@ -7,6 +7,7 @@ interface Ilawyer extends Document {
   specialization?: string[];
   ratings?: number;
   reviews?: string[];
+  price?: number;
 }
 
 const lawyerSchema = new Schema<Ilawyer>(
@@ -41,6 +42,10 @@ const lawyerSchema = new Schema<Ilawyer>(
       type: [String],
       default: [],
     },
+    price: {
+      type: Number,
+      default: 500
+    }
   },
   {timestamps: true}
 )
