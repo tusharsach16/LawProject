@@ -14,6 +14,8 @@ const Header = () => {
   useGSAP(() => {
     const icon = document.getElementById("logo");
     const wrapper = logoHeaderRef.current;
+    if (!icon || !wrapper) return;
+
     const tl = gsap.timeline({ paused: true });
     tl.to(icon, {
       rotate: 12,
@@ -25,12 +27,12 @@ const Header = () => {
     const handleEnter = () => tl.play();
     const handleLeave = () => tl.reverse();
 
-    wrapper?.addEventListener("mouseenter", handleEnter);
-    wrapper?.addEventListener("mouseleave", handleLeave);
+    wrapper.addEventListener("mouseenter", handleEnter);
+    wrapper.addEventListener("mouseleave", handleLeave);
 
     return () => {
-      wrapper?.removeEventListener("mouseenter", handleEnter);
-      wrapper?.removeEventListener("mouseleave", handleLeave);
+      wrapper.removeEventListener("mouseenter", handleEnter);
+      wrapper.removeEventListener("mouseleave", handleLeave);
     };
   }, []);
 
@@ -46,20 +48,18 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* Hamburger Icon - visible on mobile only */}
         <div className="sm:hidden">
-          <button onClick={toggleMenu}>
+          <button onClick={toggleMenu} aria-label="Toggle menu">
             {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
-        {/* Desktop Nav */}
         <nav className="hidden sm:flex items-center gap-8 text-sm font-medium">
           <ul className="flex gap-6">
             <li><Link to="/" className="hover:text-gray-700">Home</Link></li>
             <li><Link to="/about" className="hover:text-gray-700">About</Link></li>
             <li><Link to="/mock-trials" className="hover:text-gray-700">Mock Trials</Link></li>
-            <li><Link to="/case-info" className="hover:text-gray-700">Case Info</Link></li>
+            <li><Link to="/talk-to-lawyer" className="hover:text-gray-700">Connect with Lawyers</Link></li>
             <li><Link to="/contact" className="hover:text-gray-700">Contact</Link></li>
           </ul>
           <div className="flex gap-2">
@@ -78,16 +78,15 @@ const Header = () => {
       </div>
 
       {/* Mobile Dropdown Menu */}
-      {/* Mobile Dropdown Menu */}
       {menuOpen && (
         <div className="sm:hidden bg-white shadow-md px-6 py-8 flex flex-col items-center justify-center space-y-5 text-center">
           <Link to="/" onClick={toggleMenu} className="block text-sm font-medium hover:text-gray-700">Home</Link>
           <Link to="/about" onClick={toggleMenu} className="block text-sm font-medium hover:text-gray-700">About</Link>
           <Link to="/mock-trials" onClick={toggleMenu} className="block text-sm font-medium hover:text-gray-700">Mock Trials</Link>
-          <Link to="/case-info" onClick={toggleMenu} className="block text-sm font-medium hover:text-gray-700">Case Info</Link>
+          {/* --- YEH LINK BHI THEEK KIYA GAYA HAI --- */}
+          <Link to="/talk-to-lawyer" onClick={toggleMenu} className="block text-sm font-medium hover:text-gray-700">Connect with Lawyers</Link>
           <Link to="/contact" onClick={toggleMenu} className="block text-sm font-medium hover:text-gray-700">Contact</Link>
-      
-          {/* Divider */}
+          
           <div className="w-full border-t border-gray-200 pt-4 space-y-3">
             <Link to="/signin" onClick={toggleMenu}>
               <button className="w-40 bg-white border border-black text-black py-2 rounded-md hover:bg-gray-100 transition">
@@ -95,14 +94,13 @@ const Header = () => {
               </button>
             </Link>
             <Link to="/signup" onClick={toggleMenu}>
-              <button className="w-40 bg-black text-white py-2 ml-2 rounded-md hover:bg-gray-800 transition">
+              <button className="w-40 bg-black text-white py-2 rounded-md hover:bg-gray-800 transition">
                 Sign Up
               </button>
             </Link>
           </div>
         </div>
       )}
-
     </header>
   );
 };
