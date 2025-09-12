@@ -186,3 +186,9 @@ export const respondToFriendRequest = async (requestId: string, action: 'accept'
   );
   return response.data;
 };
+
+
+export const getAllLawyers = async() => {
+  const response = await api.get('/getLawyers');
+  return response.data;
+}
