@@ -72,7 +72,7 @@ const Sidebar = ({ isOpen, onClose, onSearchClick, onNotificationsClick}: Sideba
 
             <SidebarLink icon={<MessageCircle size={18} />} label="AI Legal Chatbot" to="/dashboard1/chatbot" />
             <SidebarLink icon={<Book size={18} />} label="Law Info Hub" to="/dashboard1/law-info" />
-            <SidebarLink icon={<Users size={18} />} label="Connect with Lawyers" to="/dashboard1/connect" />
+            <SidebarLink icon={<Users size={18} />} label="Connect with Lawyers" to="/dashboard1/talk-to-lawyer" />
             <SidebarLink icon={<Briefcase size={18} />} label="Case Practice" to="/dashboard1/case-practice" />
             <SidebarLink icon={<HelpCircle size={18} />} label="Quiz Section" to="/dashboard1/quiz" />
             <SidebarLink icon={<Gavel size={18} />} label="Mock Trials" to="/dashboard1/mock-trials" />
