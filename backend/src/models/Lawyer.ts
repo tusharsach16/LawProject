@@ -1,5 +1,18 @@
 import mongoose, {Schema, Document} from "mongoose";
 
+const specializationOptions = [
+  "Civil Law",
+  "Criminal Law",
+  "Corporate Law",
+  "Family Law",
+  "Intellectual Property",
+  "Real Estate Law",
+  "Tax Law",
+  "Immigration Law",
+  "Labor Law",
+  "Environmental Law"
+];
+
 interface Ilawyer extends Document {
   userId: mongoose.Types.ObjectId;
   licenseNumber?: string;
@@ -31,6 +44,7 @@ const lawyerSchema = new Schema<Ilawyer>(
     specialization: {
       type: [String],
       default: [], 
+      enum: specializationOptions
     },
     ratings: {
       type: Number,
@@ -52,4 +66,4 @@ const lawyerSchema = new Schema<Ilawyer>(
 
 const Lawyer = mongoose.model<Ilawyer>("Lawyer", lawyerSchema);
 
-export {Lawyer, Ilawyer};
+export {Lawyer, Ilawyer, specializationOptions }; 
