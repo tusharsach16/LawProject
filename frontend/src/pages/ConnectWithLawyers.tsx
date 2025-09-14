@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, ArrowDownUp } from 'lucide-react';
-import { getAllLawyers } from '../services/authService';
-import LawyerCard from '@/components/LawyerCard';
-import { useNavigate } from 'react-router-dom';
-import { Star } from 'lucide-react';
+import { getAllLawyers, getSpecializations } from '../services/authService';
+import LawyerCard from '../components/LawyerCard';
 
 interface LawyerProfile {
   _id: string;
@@ -25,10 +23,13 @@ const ConnectWithLawyers = () => {
   const [sortBy, setSortBy] = useState('ratings');
   const [filterSpec, setFilterSpec] = useState('');
 
+  const [specializations, setSpecializations] = useState<string[]>([]);
+
+  // Debouncing effect for search
   useEffect(() => {
     const timerId = setTimeout(() => {
       setDebouncedTerm(searchTerm);
-    }, 300); 
+    }, 500);
 
     return () => {
       clearTimeout(timerId);
@@ -55,16 +56,26 @@ const ConnectWithLawyers = () => {
     fetchLawyers();
   }, [debouncedTerm, sortBy, filterSpec]);
 
-  const specializations = ["Criminal", "Civil", "Corporate Law", "Family Law", "Intellectual Property"];
+  useEffect(() => {
+    const fetchSpecializations = async () => {
+      try {
+        const data = await getSpecializations();
+        setSpecializations(data);
+      } catch (err) {
+        console.error("Failed to load specializations:", err);
+      }
+    };
+    fetchSpecializations();
+  }, []); 
 
   return (
     <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
       <header className="bg-yellow-400 text-black font-bold text-xl p-4 rounded-lg shadow-md mb-6">
         Talk to Lawyer
       </header>
-
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-4">
+          {/* Filter*/}
           <div className="relative">
             <select
               value={filterSpec}
@@ -76,7 +87,8 @@ const ConnectWithLawyers = () => {
             </select>
             <Filter size={16} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
-          <div className="relative">
+          {/*Sort Dropdown waise hi rahega*/}
+           <div className="relative">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -101,7 +113,7 @@ const ConnectWithLawyers = () => {
         </div>
       </div>
 
-      {/* Lawyers Grid */}
+      {/* Lawyersy*/}
       {loading && <p className="text-center text-gray-500 py-10">Loading lawyers...</p>}
       {error && <p className="text-center text-red-500 py-10">{error}</p>}
       {!loading && !error && (
