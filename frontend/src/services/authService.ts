@@ -188,12 +188,12 @@ export const respondToFriendRequest = async (requestId: string, action: 'accept'
 };
 
 
-export const getAllLawyers = async (params: { 
-  q?: string; 
-  sortBy?: string; 
-  order?: 'asc' | 'desc'; 
-  specialization?: string; 
-}) => {
+export const getAllLawyers = async (params: { q?: string; sortBy?: string; order?: 'asc' | 'desc'; specialization?: string; }) => {
   const response = await api.get('/getLawyers', { params }); 
+  return response.data;
+};
+
+export const getSpecializations = async () => {
+  const response = await api.get('/lawyers/specializations'); 
   return response.data;
 };
