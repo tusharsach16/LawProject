@@ -119,7 +119,7 @@ const ProfileBody = ({ user, onEditClick }: ProfileBodyProps) => {
             {user.role === 'lawstudent' && user.roleData && (
                 <>
                     {user.roleData.collegeName && <div className="flex items-center"><Book size={14} className="mr-2 flex-shrink-0"/><span>{user.roleData.collegeName}</span></div>}
-                    {user.roleData.areaOfInterest && <div className="flex items-center"><Star size={14} className="mr-2 flex-shrink-0"/><span>Interest: {user.roleData.areaOfInterest}</span></div>}
+                    {user.roleData.areaOfInterest && user.roleData.areaOfInterest.length > 0 && <div className="flex items-start sm:col-span-2"><Star size={14} className="mr-2 mt-1 flex-shrink-0"/><span>Interest: {Array.isArray(user.roleData.areaOfInterest) ? user.roleData.areaOfInterest.join(', ') : user.roleData.areaOfInterest}</span></div>}
                 </>
             )}
 
@@ -179,15 +179,20 @@ const ProfilePage = () => {
         roleSpecificData: payload.roleSpecificData,
       };
       
-      await dispatch(updateProfile(finalPayload)).unwrap();
+      console.log('Final payload being sent:', finalPayload);
+      
+      const result = await dispatch(updateProfile(finalPayload)).unwrap();
+      console.log('Profile update result:', result);
       
       setIsModalOpen(false);
       setInfoMessage({type: 'success', text: 'Profile updated successfully!'});
 
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to update profile:", err);
+      console.error("Error details:", err.message || err);
       setIsModalOpen(false);
-      setInfoMessage({type: 'error', text: 'Profile update failed! Please try again.'});
+      const errorMessage = err.message || err.toString() || 'Profile update failed! Please try again.';
+      setInfoMessage({type: 'error', text: errorMessage});
     } finally {
       setIsSaving(false);
     }
