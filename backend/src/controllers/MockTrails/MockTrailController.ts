@@ -55,7 +55,15 @@ export const getSituationsCat = async (req: Request, res: Response): Promise<voi
   }
 };
 
-
+export const getMockTrialCategories = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const categories = await Category.find({}).select('title slug');
+    res.status(200).json(categories);
+  } catch (e) {
+    console.error("Error fetching mock trial categories:", e);
+    res.status(500).json({ msg: "Something went wrong" });
+  }
+};
 
 export const postMockJoin = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -93,7 +101,7 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    // 2️⃣  Try to find waiting opponent
+    //  Try to find waiting opponent
     const opposite = side === "plaintiff" ? "defendant" : "plaintiff";
     const waitKey   = `waiting:${situationId}:${side}`;
     const oppKey    = `waiting:${situationId}:${opposite}`;
@@ -102,7 +110,7 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
     const opponentId = await redis.lPop(oppKey);
 
     if (opponentId) {
-      /* 🟢 Opponent found → create new trial */
+      /* Opponent found → create new trial */
       const trial = await MockTrial.create({
         plaintiffId: side === "plaintiff" ? userId : opponentId,
         defendantId: side === "defendant" ? userId : opponentId,
@@ -117,7 +125,7 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    /* 🔴 No opponent → push current user into waiting queue */
+    /* No opponent → push current user into waiting queue */
     // TTL 120s ensures auto‑cleanup
     await redis.rPush(waitKey, userId);
     await redis.expire(waitKey, 120);
