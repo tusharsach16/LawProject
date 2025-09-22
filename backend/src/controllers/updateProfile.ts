@@ -6,7 +6,7 @@ import { GeneralUser } from '../models/GeneralUser';
 import { LawStudent } from '../models/LawStudent';
 import { Lawyer } from '../models/Lawyer';
 
-// Helper function to get the complete user profile (common + role-specific data)
+//  function to get the complete user profile (common + role-specific data)
 const getFullUserProfile = async (userId: string) => {
   const user = await User.findById(userId).select('-password').lean();
   if (!user) return null;
@@ -26,7 +26,7 @@ const getFullUserProfile = async (userId: string) => {
   return { ...user, roleData: roleData || {} };
 };
 
-// Helper function to whitelist fields
+//  function to whitelist fields to prevent mass assignment
 const pick = (obj: any, keys: string[]) => {
   const newObj: any = {};
   keys.forEach(key => {
@@ -37,7 +37,6 @@ const pick = (obj: any, keys: string[]) => {
   return newObj;
 };
 
-// Map roles to Mongoose models
 const roleModelMap = {
   general: GeneralUser,
   lawstudent: LawStudent,
@@ -64,6 +63,37 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     lawyer: ['experience', 'specialization', 'licenseNumber'],
   };
 
+  const cleanSpecializationData = (specializations: string[]) => {
+    if (!Array.isArray(specializations)) return [];
+    
+    const validSpecializations = [
+      "Civil Law", "Criminal Law", "Corporate Law", "Family Law",
+      "Intellectual Property", "Real Estate Law", "Tax Law", 
+      "Immigration Law", "Labor Law", "Environmental Law"
+    ];
+    
+    const mapping: { [key: string]: string } = {
+      "Criminal": "Criminal Law",
+      "Civil": "Civil Law", 
+      "Corporate": "Corporate Law",
+      "Family": "Family Law",
+      "Real Estate": "Real Estate Law",
+      "Tax": "Tax Law",
+      "Immigration": "Immigration Law",
+      "Labor": "Labor Law",
+      "Environmental": "Environmental Law"
+    };
+    
+    return specializations.map(spec => {
+      // If its already valid return as is
+      if (validSpecializations.includes(spec)) return spec;
+      // If it has a mapping return the mapped value
+      if (mapping[spec]) return mapping[spec];
+      // Otherwise return null to filter out invalid values
+      return null;
+    }).filter(spec => spec !== null) as string[];
+  };
+
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -84,7 +114,6 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    // Image deletion logic
     if (oldProfileImageUrl && oldProfileImageUrl !== updatedUser.profileImageUrl) {
       const publicId = oldProfileImageUrl.split('/').pop()?.split('.')[0];
       if (publicId) {
@@ -103,9 +132,19 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       const RoleModel = roleModelMap[userRole];
       const safeRoleData = pick(roleSpecificData, allowedRoleSpecificFields[userRole]);
 
-      // If the frontend sends an empty string for licenseNumber, we convert it to null.
-      // This ensures the sparse index works correctly for both null values and empty strings.
-      if (userRole === 'lawyer' && safeRoleData.licenseNumber === '') {
+      // Clean up specialization data for lawyer role
+      if (userRole === 'lawyer' && 'specialization' in safeRoleData && Array.isArray(safeRoleData.specialization)) {
+        safeRoleData.specialization = cleanSpecializationData(safeRoleData.specialization);
+        console.log('Cleaned specialization data:', safeRoleData.specialization);
+      }
+
+      // Clean up areaOfInterest data for lawstudent role
+      if (userRole === 'lawstudent' && 'areaOfInterest' in safeRoleData && Array.isArray(safeRoleData.areaOfInterest)) {
+        safeRoleData.areaOfInterest = cleanSpecializationData(safeRoleData.areaOfInterest);
+        console.log('Cleaned areaOfInterest data:', safeRoleData.areaOfInterest);
+      }
+
+      if (userRole === 'lawyer' && 'licenseNumber' in safeRoleData && safeRoleData.licenseNumber === '') {
           safeRoleData.licenseNumber = null;
       }
 
