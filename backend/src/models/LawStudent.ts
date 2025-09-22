@@ -1,11 +1,12 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { specializationOptions } from "./Lawyer"; 
 
 interface IStudent extends Document {
   userId: mongoose.Types.ObjectId;
   collegeName?: string;
   year?: number;
   enrollmentNumber?: string;
-  areaOfInterest?: string;
+  areaOfInterest?: string[];
 }
 
 const studentSchema = new Schema<IStudent>(
@@ -32,11 +33,10 @@ const studentSchema = new Schema<IStudent>(
       trim: true,
     },
     areaOfInterest: {
-      type: String,
-      default: "", 
-      trim: true,
+      type: [String], 
+      default: [], 
+      enum: specializationOptions
     },
- 
   },
   { timestamps: true }
 );
