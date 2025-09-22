@@ -206,3 +206,31 @@ export const getSpecializations = async () => {
   const response = await api.get('/lawyers/specializations'); 
   return response.data;
 };
+
+
+// for MockTrial
+export const getMockTrialSituationsCat = async (categorySlug?: string) => {
+  try {
+    const params = categorySlug ? { slug: categorySlug } : {};
+    const response = await api.get('/mock-trials/situationsCategory', { params });
+    return response.data.situations;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+export const joinMockTrial = async (situationId: string, side: 'plaintiff' | 'defendant') => {
+  try {
+    const response = await api.post('/mock-trials/join', { situationId, side });
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+export const getMockTrialCategories = async () => {
+  const response = await api.get('/mock-trials/categories');
+  return response.data; 
+};
