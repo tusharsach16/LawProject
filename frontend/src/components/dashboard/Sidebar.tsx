@@ -14,6 +14,7 @@ import {
   Search, 
   Bell    
 } from "lucide-react";
+import { useAppSelector } from '../../redux/hooks'; 
 
 type SidebarProps = {
   isOpen: boolean;
@@ -24,13 +25,14 @@ type SidebarProps = {
 
 const Sidebar = ({ isOpen, onClose, onSearchClick, onNotificationsClick}: SidebarProps) => {
   const navigate = useNavigate();
+  //  Redux store se user ka data role nikala
+  const { user } = useAppSelector((state) => state.user);
+
   const handleLogout = () => {
     console.log("Logging out...");
     localStorage.removeItem('token');
     navigate('/'); 
   };
-
-
 
   return (
     <>
@@ -62,7 +64,7 @@ const Sidebar = ({ isOpen, onClose, onSearchClick, onNotificationsClick}: Sideba
             <button
               onClick={() => {
                 onNotificationsClick(); // Notification kholne wala function call karein
-                onClose(); // Mobile par sidebar band kar dein
+                onClose(); 
               }}
               className="w-full flex items-center gap-3 px-3 py-2 rounded-md transition hover:bg-gray-100 text-gray-700"
             >
@@ -75,7 +77,10 @@ const Sidebar = ({ isOpen, onClose, onSearchClick, onNotificationsClick}: Sideba
             <SidebarLink icon={<Users size={18} />} label="Connect with Lawyers" to="/dashboard1/talk-to-lawyer" />
             <SidebarLink icon={<Briefcase size={18} />} label="Case Practice" to="/dashboard1/case-practice" />
             <SidebarLink icon={<HelpCircle size={18} />} label="Quiz Section" to="/dashboard1/quiz" />
-            <SidebarLink icon={<Gavel size={18} />} label="Mock Trials" to="/dashboard1/mock-trials" />
+            {user && (user.role === 'lawstudent' || user.role === 'lawyer') && (
+              <SidebarLink icon={<Gavel size={18} />} label="Mock Trials" to="/dashboard1/mock-trials" />
+            )}
+            
             <div className="mt-6 border-t pt-4 space-y-1">
               <SidebarLink icon={<User size={18} />} label="Profile" to="/dashboard1/profile" />
               <SidebarLink icon={<Settings size={18} />} label="Settings" to="/dashboard1/settings" />
