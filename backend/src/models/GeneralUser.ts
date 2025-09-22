@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { specializationOptions } from "./Lawyer"; 
 
 interface IGeneralUser extends Document {
   userId: mongoose.Types.ObjectId;
@@ -19,6 +20,7 @@ const generalUserSchema = new Schema<IGeneralUser>(
     interests: {
       type: [String],
       default: [],
+      enum: specializationOptions
     },
     queries: {
       type: [String],

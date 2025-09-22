@@ -36,8 +36,17 @@ interface UpdateProfileData {
  * @param data - An object containing commonData and/or roleSpecificData.
  */
 export const updateUserProfile = async (data: UpdateProfileData) => {
-  const response = await api.patch('/edit/profile', data); 
-  return response.data;
+  try {
+    console.log('API call to update profile with data:', data);
+    const response = await api.patch('/edit/profile', data); 
+    console.log('API response:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('API error details:', error);
+    console.error('Error response:', error.response?.data);
+    console.error('Error status:', error.response?.status);
+    throw error;
+  }
 };
 
 /**
