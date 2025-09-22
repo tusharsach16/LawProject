@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, X } from 'lucide-react';
+import { Camera, X, CheckSquare, Square } from 'lucide-react';
 import ImageCropper from './ImageCropper';
+import { getSpecializations } from '../services/authService';
 
-// User ke poore profile ka type
 interface CurrentUserProfile {
   name: string;
   bio?: string;
@@ -13,7 +13,6 @@ interface CurrentUserProfile {
   roleData: any;
 }
 
-// Modal ke props
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -22,33 +21,42 @@ interface EditProfileModalProps {
 }
 
 const EditProfileModal = ({ isOpen, onClose, currentUser, onSave }: EditProfileModalProps) => {
-  // Common fields
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [location, setLocation] = useState('');
   
-  // Role-specific fields
-  // Law Student
   const [collegeName, setCollegeName] = useState('');
   const [year, setYear] = useState<number | ''>('');
   const [enrollmentNumber, setEnrollmentNumber] = useState('');
-  const [areaOfInterest, setAreaOfInterest] = useState('');
-  
-  // Lawyer
   const [experience, setExperience] = useState<number | ''>('');
-  const [specialization, setSpecialization] = useState('');
-  const [licenseNumber, setLicenseNumber] = useState(''); // <-- Added state for license number
+  const [licenseNumber, setLicenseNumber] = useState('');
 
-  // General User
-  const [interests, setInterests] = useState('');
+  const [areaOfInterest, setAreaOfInterest] = useState<string[]>([]);
+  const [specialization, setSpecialization] = useState<string[]>([]);
+  const [interests, setInterests] = useState<string[]>([]);
+  
+  const [allSpecializations, setAllSpecializations] = useState<string[]>([]);
 
-
-  // Image handling
   const [profileImageFile, setProfileImageFile] = useState<File>();
   const [bannerImageFile, setBannerImageFile] = useState<File>();
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
   const [bannerImagePreview, setBannerImagePreview] = useState<string | null>(null);
   const [croppingImage, setCroppingImage] = useState<{ src: string, type: 'profile' | 'banner' } | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const fetchSpecializations = async () => {
+        try {
+          const data = await getSpecializations();
+          console.log('Received specializations from API:', data);
+          setAllSpecializations(data);
+        } catch (err) {
+          console.error("Failed to load specializations:", err);
+        }
+      };
+      fetchSpecializations();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (currentUser) {
@@ -62,17 +70,24 @@ const EditProfileModal = ({ isOpen, onClose, currentUser, onSave }: EditProfileM
         setCollegeName(currentUser.roleData.collegeName || '');
         setYear(currentUser.roleData.year || '');
         setEnrollmentNumber(currentUser.roleData.enrollmentNumber || '');
-        setAreaOfInterest(currentUser.roleData.areaOfInterest || '');
+        setAreaOfInterest(Array.isArray(currentUser.roleData.areaOfInterest) ? currentUser.roleData.areaOfInterest : []);
       } else if (currentUser.role === 'lawyer' && currentUser.roleData) {
         setExperience(currentUser.roleData.experience || '');
-        setSpecialization((currentUser.roleData.specialization || []).join(', '));
-        setLicenseNumber(currentUser.roleData.licenseNumber || ''); // <-- Pre-fill license number
+        setLicenseNumber(currentUser.roleData.licenseNumber || '');
+        setSpecialization(Array.isArray(currentUser.roleData.specialization) ? currentUser.roleData.specialization : []);
       } else if (currentUser.role === 'general' && currentUser.roleData) {
-        // general user ka data pre fill kia h  
-        setInterests((currentUser.roleData.interests || []).join(', '));
+        setInterests(Array.isArray(currentUser.roleData.interests) ? currentUser.roleData.interests : []);
       }
     }
   }, [currentUser, isOpen]);
+
+  const handleMultiSelectChange = (item: string, list: string[], setList: React.Dispatch<React.SetStateAction<string[]>>) => {
+    if (list.includes(item)) {
+      setList(list.filter(i => i !== item));
+    } else {
+      setList([...list, item]);
+    }
+  };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>, type: 'profile' | 'banner') => {
     if (e.target.files && e.target.files[0]) {
@@ -98,17 +113,25 @@ const EditProfileModal = ({ isOpen, onClose, currentUser, onSave }: EditProfileM
     let roleSpecificData = {};
 
     if (currentUser.role === 'lawstudent') {
-      roleSpecificData = { collegeName, year, enrollmentNumber, areaOfInterest };
+      // Ensure areaOfInterest is always an array
+      const validAreaOfInterest = Array.isArray(areaOfInterest) ? areaOfInterest : [];
+      roleSpecificData = { collegeName, year, enrollmentNumber, areaOfInterest: validAreaOfInterest };
     } else if (currentUser.role === 'lawyer') {
-      roleSpecificData = { 
-        experience, 
-        specialization: specialization.split(',').map(s => s.trim()).filter(Boolean),
-        licenseNumber 
-      };
+      // Ensure specialization is always an array
+      const validSpecialization = Array.isArray(specialization) ? specialization : [];
+      console.log('Lawyer specialization data:', {
+        rawSpecialization: specialization,
+        validSpecialization: validSpecialization,
+        allSpecializations: allSpecializations
+      });
+      roleSpecificData = { experience, specialization: validSpecialization, licenseNumber };
     } else if (currentUser.role === 'general') {
-      // general user ka data save kia 
-      roleSpecificData = { interests: interests.split(',').map(s => s.trim()).filter(Boolean) };
+      // Ensure interests is always an array
+      const validInterests = Array.isArray(interests) ? interests : [];
+      roleSpecificData = { interests: validInterests };
     }
+
+    console.log('Saving profile with data:', { commonData, roleSpecificData });
 
     onSave({
       commonData,
@@ -153,7 +176,17 @@ const EditProfileModal = ({ isOpen, onClose, currentUser, onSave }: EditProfileM
                   <input type="text" placeholder="College Name" value={collegeName} onChange={(e) => setCollegeName(e.target.value)} className="w-full p-3 border rounded-md focus:outline-blue-500" />
                   <input type="number" placeholder="Year of Study" value={year} onChange={(e) => setYear(Number(e.target.value))} className="w-full p-3 border rounded-md focus:outline-blue-500" />
                   <input type="text" placeholder="Enrollment Number" value={enrollmentNumber} onChange={(e) => setEnrollmentNumber(e.target.value)} className="w-full p-3 border rounded-md focus:outline-blue-500" />
-                  <input type="text" placeholder="Area of Interest" value={areaOfInterest} onChange={(e) => setAreaOfInterest(e.target.value)} className="w-full p-3 border rounded-md focus:outline-blue-500" />
+                  <div>
+                    <label className="font-medium text-sm text-gray-700">Areas of Interest</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                        {allSpecializations.map(spec => (
+                            <button key={spec} type="button" onClick={() => handleMultiSelectChange(spec, areaOfInterest, setAreaOfInterest)} className="flex items-center gap-2 text-sm text-gray-800 p-1">
+                                {areaOfInterest.includes(spec) ? <CheckSquare size={16} className="text-blue-600"/> : <Square size={16} className="text-gray-400"/>}
+                                {spec}
+                            </button>
+                        ))}
+                    </div>
+                  </div>
                 </>
               )}
               {currentUser.role === 'lawyer' && (
@@ -161,21 +194,32 @@ const EditProfileModal = ({ isOpen, onClose, currentUser, onSave }: EditProfileM
                   <hr/>
                   <h3 className="font-semibold text-gray-600">Professional Details</h3>
                   <input type="number" placeholder="Years of Experience" value={experience} onChange={(e) => setExperience(Number(e.target.value))} className="w-full p-3 border rounded-md focus:outline-blue-500" />
-                  <input type="text" placeholder="Specializations (e.g., Criminal, Civil)" value={specialization} onChange={(e) => setSpecialization(e.target.value)} className="w-full p-3 border rounded-md focus:outline-blue-500" />
-                  <input 
-                    type="text" 
-                    placeholder="Bar Council License Number" 
-                    value={licenseNumber} 
-                    onChange={(e) => setLicenseNumber(e.target.value)} 
-                    className="w-full p-3 border rounded-md focus:outline-blue-500" 
-                  />
+                  <input type="text" placeholder="Bar Council License Number" value={licenseNumber} onChange={(e) => setLicenseNumber(e.target.value)} className="w-full p-3 border rounded-md focus:outline-blue-500" />
+                  <div>
+                    <label className="font-medium text-sm text-gray-700">Specializations</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                        {allSpecializations.map(spec => (
+                            <button key={spec} type="button" onClick={() => handleMultiSelectChange(spec, specialization, setSpecialization)} className="flex items-center gap-2 text-sm text-gray-800 p-1">
+                                {specialization.includes(spec) ? <CheckSquare size={16} className="text-blue-600"/> : <Square size={16} className="text-gray-400"/>}
+                                {spec}
+                            </button>
+                        ))}
+                    </div>
+                  </div>
                 </>
               )}
                {currentUser.role === 'general' && (
                 <>
                   <hr/>
                   <h3 className="font-semibold text-gray-600">Your Interests</h3>
-                  <input type="text" placeholder="Interests (e.g., Property, Family Law)" value={interests} onChange={(e) => setInterests(e.target.value)} className="w-full p-3 border rounded-md focus:outline-blue-500" />
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                    {allSpecializations.map(spec => (
+                        <button key={spec} type="button" onClick={() => handleMultiSelectChange(spec, interests, setInterests)} className="flex items-center gap-2 text-sm text-gray-800 p-1">
+                            {interests.includes(spec) ? <CheckSquare size={16} className="text-blue-600"/> : <Square size={16} className="text-gray-400"/>}
+                            {spec}
+                        </button>
+                    ))}
+                  </div>
                 </>
               )}
             </div>
@@ -196,3 +240,4 @@ const EditProfileModal = ({ isOpen, onClose, currentUser, onSave }: EditProfileM
 };
 
 export default EditProfileModal;
+
