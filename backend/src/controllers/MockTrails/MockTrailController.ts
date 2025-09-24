@@ -4,6 +4,7 @@ import { MockTrialSituation } from "../../models/Mocktrial/MockSituation";
 import { MockTrial } from "../../models/Mocktrial/Mock";
 import mongoose from "mongoose";
 import { redis } from "../../utils/redisClient";
+import { User } from "../../models/User";
 
 
 export const getMockSituation = async (req: Request, res: Response): Promise<void> => {
@@ -110,7 +111,6 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
     const opponentId = await redis.lPop(oppKey);
 
     if (opponentId) {
-      /* Opponent found → create new trial */
       const trial = await MockTrial.create({
         plaintiffId: side === "plaintiff" ? userId : opponentId,
         defendantId: side === "defendant" ? userId : opponentId,
@@ -125,7 +125,7 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    /* No opponent → push current user into waiting queue */
+    // no opponent → push current user into waiting queue 
     // TTL 120s ensures auto‑cleanup
     await redis.rPush(waitKey, userId);
     await redis.expire(waitKey, 120);
@@ -195,9 +195,17 @@ export const getMockTrialById = async (req: Request, res: Response): Promise<voi
     }
 
     const trial = await MockTrial.findById(trialId)
-      .populate("plaintiffId", "username")
-      .populate("defendantId", "username")
-      .lean();
+      .populate({
+        path: "plaintiffId",
+        model: User,
+        select: "username name profileImageUrl" 
+      })
+      .populate({
+        path: "defendantId",
+        model: User,
+        select: "username name profileImageUrl"
+      })
+      .lean(); 
 
     if (!trial) {
       res.status(404).json({ msg: "Trial not found" });
@@ -207,5 +215,128 @@ export const getMockTrialById = async (req: Request, res: Response): Promise<voi
     res.status(200).json({ trial });
   } catch (error) {
     res.status(500).json({ msg: "Something went wrong", error });
+  }
+};
+
+
+export const endMockTrial = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { trialId } = req.body;
+    const userId = req.user?.id;
+
+    const trial = await MockTrial.findById(trialId);
+    if (!trial) {
+      res.status(404).json({ msg: "Trial not found" });
+      return;
+    }
+    // Sirf participants hi trial end kr sakte h
+    if (trial.plaintiffId.toString() !== userId && trial.defendantId.toString() !== userId) {
+      res.status(403).json({ msg: "Not a participant of this trial" });
+      return;
+    }
+
+    trial.status = "ended";
+    trial.endedAt = new Date();
+    await trial.save();
+
+    res.status(200).json({ msg: "Trial has ended successfully." });
+
+  } catch (e) {
+    console.error("endMockTrial error:", e);
+    res.status(500).json({ msg: "Something went wrong", error: e });
+  }
+};
+
+
+//  jb user trial beech mein chod dega tb
+export const leaveMockTrial = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { trialId } = req.body;
+    const leavingUserId = req.user?.id;
+
+    const trial = await MockTrial.findById(trialId);
+    if (!trial) {
+      res.status(404).json({ msg: "Trial not found" });
+      return;
+    }
+
+    // kon chod raha h aur doosra user kon h
+    let winnerId;
+    if (trial.plaintiffId.toString() === leavingUserId) {
+      winnerId = trial.defendantId;
+    } else if (trial.defendantId.toString() === leavingUserId) {
+      winnerId = trial.plaintiffId;
+    } else {
+      res.status(403).json({ msg: "Not a participant of this trial" });
+      return;
+    }
+
+    trial.status = "left";
+    trial.endedAt = new Date();
+    trial.winnerId = winnerId; // bacha hua user winner hai
+    await trial.save();
+
+    res.status(200).json({ msg: "You have left the trial. The other participant has won." });
+
+  } catch (e) {
+    console.error("leaveMockTrial error:", e);
+    res.status(500).json({ msg: "Something went wrong", error: e });
+  }
+};
+
+// Check if user has been matched with an opponent
+export const checkMatchStatus = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    const { situationId } = req.params;
+    const { side } = req.query;
+
+    if (!situationId || !mongoose.Types.ObjectId.isValid(situationId)) {
+      res.status(400).json({ msg: "Invalid Situation ID format." });
+      return;
+    }
+
+    if (!side) {
+      res.status(400).json({ msg: "Missing required parameters" });
+      return;
+    }
+    if (!userId) {
+      res.status(401).json({ msg: "Unauthenticated." });
+      return;
+    }
+
+    // Check if user is in any active trial for this situation
+    const activeTrial = await MockTrial.findOne({
+      status: "active",
+      situationId: situationId,
+      $or: [
+        { plaintiffId: userId },
+        { defendantId: userId }
+      ]
+    }).populate("plaintiffId", "username").populate("defendantId", "username");
+
+    if (activeTrial) {
+      res.status(200).json({ 
+        matched: true, 
+        trialId: activeTrial._id,
+        trial: activeTrial
+      });
+      return;
+    }
+
+    // Check if user is still in waiting queue
+    const waitKey = `waiting:${situationId}:${side}`;
+    const isWaiting = await redis.lRange(waitKey, 0, -1);
+    const userInQueue = isWaiting.includes(userId);
+
+    if (userInQueue) {
+      res.status(200).json({ matched: false, waiting: true });
+    } else {
+      res.status(200).json({ matched: false, waiting: false });
+    }
+
+  } catch (e) {
+    console.error("checkMatchStatus error:", e);
+    res.status(500).json({ msg: "Something went wrong", error: e });
   }
 };
