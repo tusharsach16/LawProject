@@ -234,3 +234,32 @@ export const getMockTrialCategories = async () => {
   const response = await api.get('/mock-trials/categories');
   return response.data; 
 };
+
+export const getMockTrialDetails = async (trialId: string) => {
+  const response = await api.get(`/mock-trials/${trialId}`);
+  return response.data.trial;
+};
+
+
+export const endTrial = async (trialId: string) => {
+  const response = await api.post('/mock-trials/end', { trialId });
+  return response.data;
+};
+
+
+export const leaveTrial = async (trialId: string) => {
+  const response = await api.post('/mock-trials/leave', { trialId });
+  return response.data;
+};
+
+export const postMockMessage = async (trialId: string, text: string) => {
+  const response = await api.post('/mock-trials/message', { trialId, text });
+  return response.data;
+}
+
+export const checkMatchStatus = async (situationId: string, side: 'plaintiff' | 'defendant') => {
+  const response = await api.get(`/mock-trials/check-match/${situationId}`, { 
+    params: { side } 
+  });
+  return response.data;
+}
