@@ -9,7 +9,8 @@ interface Message {
 interface MockTrial extends Document {
   plaintiffId: mongoose.Types.ObjectId;
   defendantId: mongoose.Types.ObjectId;
-  categoryId: mongoose.Types.ObjectId;  // 🟢 NEW
+  categoryId: mongoose.Types.ObjectId;  
+  situationId: mongoose.Types.ObjectId;
   messages: Message[];
   startedAt: Date;
   endedAt?: Date;
@@ -27,7 +28,8 @@ const mockTrialSchema = new Schema<MockTrial>(
   {
     plaintiffId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     defendantId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true }, // 🟢 NEW
+    categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true }, 
+    situationId: { type: mongoose.Schema.Types.ObjectId, ref: "MockTrialSituation", required: true },
     messages: { type: [messageSchema], default: [] },
     startedAt: { type: Date, default: Date.now },
     endedAt: { type: Date },
