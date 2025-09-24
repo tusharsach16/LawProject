@@ -6,7 +6,6 @@ import connectDB from './config/db';
 import path from 'path';
 import authRoutes from './routes/authRoutes';
 import quizRoutes from './routes/QuizRoutes';
-import mockTrail from './routes/MockTrailRoute';
 import friendRoute from './routes/FriendRequest';
 import profile from './routes/profileRoutes';
 import uploadRoutes from './routes/uploadRoutes'; 
@@ -31,7 +30,6 @@ console.log("✅ Loaded Mongo URL:", process.env.MONGODB_URL?.slice(0, 25) + "..
 
 app.use('/api', authRoutes);
 app.use('/quiz', quizRoutes);
-app.use('/mockTrail', mockTrail);
 app.use('/apiFriend', friendRoute);
 app.use('/api', profile);
 app.use('/api/upload', uploadRoutes);
