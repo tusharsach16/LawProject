@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Scale, Shield } from 'lucide-react';
-import { joinMockTrial } from '../services/authService'; 
+import { joinMockTrial, checkMatchStatus } from '../services/authService'; 
 
 // Situation ka data 
 interface Situation {
@@ -19,6 +19,52 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
     const [status, setStatus] = useState<'selecting' | 'waiting' | 'paired'>('selecting');
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Polling function to check for matches
+    const pollForMatch = async () => {
+        if (!side) return;
+        
+        try {
+            const response = await checkMatchStatus(situation._id, side);
+            
+            if (response.matched) {
+                console.log(`Match found! Navigating to trial ID: ${response.trialId}`);
+                navigate(`/dashboard1/mock-trial/room/${response.trialId}`);
+            } else if (!response.waiting) {
+                // User is no longer in queue, something went wrong
+                setError("Connection lost. Please try again.");
+                setStatus('selecting');
+                if (pollingIntervalRef.current) {
+                    clearInterval(pollingIntervalRef.current);
+                    pollingIntervalRef.current = null;
+                }
+            }
+        } catch (err) {
+            console.error("Error checking match status:", err);
+        }
+    };
+
+    // Start polling when user starts waiting
+    useEffect(() => {
+        if (status === 'waiting' && side) {
+            // Start polling every 2 seconds
+            pollingIntervalRef.current = setInterval(pollForMatch, 2000);
+        } else {
+            // Clear polling when not waiting
+            if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
+            }
+        }
+
+        // Cleanup on unmount
+        return () => {
+            if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+            }
+        };
+    }, [status, side]);
 
     const handleJoin = async () => {
         if (!side) {
@@ -35,10 +81,11 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
             if (response.paired) {
                 // Agar opponent mil gaya to trial room mein bhej dia
                 console.log(`Paired! Navigating to trial ID: ${response.trialId}`);
-                navigate(`/dashboard1/mock-trial/${response.trialId}`);
+                navigate(`/dashboard1/mock-trial/room/${response.trialId}`);
             } else if (response.waiting) {
                 // Agar opponent nahi mil to intezaar kare
                 console.log("Waiting for an opponent...");
+                // Polling will start automatically via useEffect
             }
         } catch (err: any) {
             console.error("Failed to join trial:", err);
@@ -46,6 +93,15 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
             setError(errorMessage);
             setStatus('selecting'); // User ko dobara select karne ka mauka dein
         }
+    };
+
+    const handleCancel = () => {
+        // Clear any polling
+        if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+        }
+        onClose();
     };
 
     return (
@@ -68,7 +124,7 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
                         </div>
                         {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
                         <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                            <button onClick={onClose} className="w-full py-3 font-semibold text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg">Cancel</button>
+                            <button onClick={handleCancel} className="w-full py-3 font-semibold text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg">Cancel</button>
                             <button onClick={handleJoin} disabled={!side} className="w-full py-3 font-semibold text-white bg-black rounded-lg disabled:bg-gray-400 hover:bg-gray-800">Find Match</button>
                         </div>
                     </>
@@ -79,7 +135,7 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
                         <div className="animate-spin h-10 w-10 border-4 border-black border-t-transparent rounded-full mx-auto"></div>
                         <p className="font-semibold mt-4">Waiting for an opponent...</p>
                         <p className="text-sm text-gray-500 mt-2">This may take a few moments. Please don't close this window.</p>
-                         <button onClick={onClose} className="mt-6 text-sm text-gray-500 hover:underline">Cancel Search</button>
+                         <button onClick={handleCancel} className="mt-6 text-sm text-gray-500 hover:underline">Cancel Search</button>
                     </div>
                 )}
             </div>

@@ -16,6 +16,7 @@ import UserProfilePage from './UserProfilePage';
 import { useNotifications } from '../hooks/useNotifications';
 import ConnectWithLawyers from './ConnectWithLawyers';
 import MockTrialLobby from './MockTrialLobby';
+import TrialRoomPage from './TrialRoomPage';
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -61,6 +62,7 @@ const Dashboard: React.FC = () => {
               <Route path='profile/:username' element={<UserProfilePage />} />
               <Route path="talk-to-lawyer" element={<ConnectWithLawyers />} />
               <Route path="mock-trials" element={<MockTrialLobby />} />
+              <Route path="mock-trial/room/:trialId" element={<TrialRoomPage />} />
             </Routes>
           </main>
         </div>

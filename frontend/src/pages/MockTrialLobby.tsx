@@ -1,17 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Gavel } from 'lucide-react';
-// Dono API functions ko import karein
 import { getMockTrialSituationsCat, getMockTrialCategories } from '../services/authService';
 import Matchmaking from '../components/MatchMaking';
 
-// Situation ka type
 interface Situation {
   _id: string;
   title: string;
   description: string;
 }
 
-// Category ka type
 interface Category {
     _id: string;
     title: string;
@@ -23,11 +20,9 @@ const MockTrialLobby = () => {
   const [loading, setLoading] = useState(true);
   const [selectedSituation, setSelectedSituation] = useState<Situation | null>(null);
 
-  // --- NAYI STATES FILTER KE LIYE ---
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>(''); // Slug save karega
 
-  // Pehle saari categories fetch karein
   useEffect(() => {
     const fetchCategories = async () => {
         try {
@@ -40,12 +35,12 @@ const MockTrialLobby = () => {
     fetchCategories();
   }, []);
 
-  // Jab bhi category badle, uss category ke situations fetch karein
+  // Jab bhi category badle uss category ke situations fetch kare
   useEffect(() => {
     const fetchSituations = async () => {
       try {
         setLoading(true);
-        // categorySlug ke aadhar par data fetch karein
+        // categorySlug ke aadhar par data fetch kare
         const data = await getMockTrialSituationsCat(selectedCategory || undefined);
         setSituations(data);
       } catch (err) {
@@ -67,7 +62,6 @@ const MockTrialLobby = () => {
         <p className="text-gray-500 mt-1">Choose a case, select your side, and practice your legal skills.</p>
       </header>
 
-      {/* --- YEH NAYA FILTER TABS SECTION HAI --- */}
       <div className="flex items-center gap-2 mb-6 border-b border-gray-200 overflow-x-auto pb-2">
         <button 
             onClick={() => setSelectedCategory('')}
