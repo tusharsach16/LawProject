@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Scale, Shield } from 'lucide-react';
 import { joinMockTrial, checkMatchStatus } from '../services/authService'; 
 
-// Situation ka data 
 interface Situation {
   _id: string;
   title: string;
@@ -30,9 +29,9 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
             
             if (response.matched) {
                 console.log(`Match found! Navigating to trial ID: ${response.trialId}`);
-                navigate(`/dashboard1/mock-trial/room/${response.trialId}`);
+                navigate(`/dashboard/mock-trial/room/${response.trialId}`);
             } else if (!response.waiting) {
-                // User is no longer in queue, something went wrong
+                // User is no longer in queue something went wrong
                 setError("Connection lost. Please try again.");
                 setStatus('selecting');
                 if (pollingIntervalRef.current) {
@@ -81,9 +80,9 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
             if (response.paired) {
                 // Agar opponent mil gaya to trial room mein bhej dia
                 console.log(`Paired! Navigating to trial ID: ${response.trialId}`);
-                navigate(`/dashboard1/mock-trial/room/${response.trialId}`);
+                navigate(`/dashboard/mock-trial/room/${response.trialId}`);
             } else if (response.waiting) {
-                // Agar opponent nahi mil to intezaar kare
+                // Agar opponent nahi mil to wait karega
                 console.log("Waiting for an opponent...");
                 // Polling will start automatically via useEffect
             }
@@ -91,7 +90,7 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
             console.error("Failed to join trial:", err);
             const errorMessage = err.response?.data?.msg || "Could not join the trial. Please try again.";
             setError(errorMessage);
-            setStatus('selecting'); // User ko dobara select karne ka mauka dein
+            setStatus('selecting'); // User dobara select kr skta h
         }
     };
 
