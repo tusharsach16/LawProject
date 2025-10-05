@@ -2,10 +2,6 @@ import { useEffect } from "react";
 import { useAppSelector } from "../redux/hooks";
 import { BookOpen, CheckCircle, ClipboardCheck, Users } from "lucide-react";
 
-/**
- * Overview page — responsive, Tailwind-based.
- * Replace mockData with real selectors/api calls as needed.
- */
 
 function StatCard({ icon, title, value, change }: { icon: React.ReactNode; title: string; value: string | number; change?: string }) {
   return (
