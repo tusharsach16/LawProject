@@ -49,7 +49,7 @@ const Sidebar = ({ isOpen, onClose, onSearchClick, onNotificationsClick}: Sideba
       >
         <nav className="flex flex-col h-full p-4 text-sm font-medium text-gray-700">
           <div className="space-y-2 flex-1">
-            <SidebarLink icon={<Home size={18} />} label="Overview" to="/dashboard1" />
+            <SidebarLink icon={<Home size={18} />} label="Overview" to="/dashboard" />
             
             <button
               onClick={() => {
@@ -72,18 +72,18 @@ const Sidebar = ({ isOpen, onClose, onSearchClick, onNotificationsClick}: Sideba
               <span>Notifications</span>
             </button>
 
-            <SidebarLink icon={<MessageCircle size={18} />} label="AI Legal Chatbot" to="/dashboard1/chatbot" />
-            <SidebarLink icon={<Book size={18} />} label="Law Info Hub" to="/dashboard1/law-info" />
-            <SidebarLink icon={<Users size={18} />} label="Connect with Lawyers" to="/dashboard1/talk-to-lawyer" />
-            <SidebarLink icon={<Briefcase size={18} />} label="Case Practice" to="/dashboard1/case-practice" />
-            <SidebarLink icon={<HelpCircle size={18} />} label="Quiz Section" to="/dashboard1/quiz" />
+            <SidebarLink icon={<MessageCircle size={18} />} label="AI Legal Chatbot" to="/dashboard/chatbot" />
+            <SidebarLink icon={<Book size={18} />} label="Law Info Hub" to="/dashboard/law-info" />
+            <SidebarLink icon={<Users size={18} />} label="Connect with Lawyers" to="/dashboard/talk-to-lawyer" />
+            <SidebarLink icon={<Briefcase size={18} />} label="Case Practice" to="/dashboard/case-practice" />
+            <SidebarLink icon={<HelpCircle size={18} />} label="Quiz Section" to="/dashboard/quiz" />
             {user && (user.role === 'lawstudent' || user.role === 'lawyer') && (
-              <SidebarLink icon={<Gavel size={18} />} label="Mock Trials" to="/dashboard1/mock-trials" />
+              <SidebarLink icon={<Gavel size={18} />} label="Mock Trials" to="/dashboard/mock-trials" />
             )}
             
             <div className="mt-6 border-t pt-4 space-y-1">
-              <SidebarLink icon={<User size={18} />} label="Profile" to="/dashboard1/profile" />
-              <SidebarLink icon={<Settings size={18} />} label="Settings" to="/dashboard1/settings" />
+              <SidebarLink icon={<User size={18} />} label="Profile" to="/dashboard/profile" />
+              <SidebarLink icon={<Settings size={18} />} label="Settings" to="/dashboard/settings" />
             </div>
           </div>
           <div className="border-t pt-4">
