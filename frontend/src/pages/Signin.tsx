@@ -42,7 +42,7 @@ const Signin = () => {
 
     if (token && user && rememberMe === "true") {
       // User is already logged in, redirect to dashboard
-      navigate("/dashboard1");
+      navigate("/dashboard");
     }
   }, [navigate]);
 
@@ -69,7 +69,7 @@ const Signin = () => {
 
       alert('Sign in Succesfull')
       console.log("Login successful:", res);
-      navigate("/dashboard1");
+      navigate("/dashboard");
     } catch (error: any) {
       console.error("Signin failed:", error.response?.data || error.message);
       alert("Signin failed. Please try again.");
