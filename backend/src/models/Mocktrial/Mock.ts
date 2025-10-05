@@ -15,6 +15,7 @@ interface MockTrial extends Document {
   startedAt: Date;
   endedAt?: Date;
   winnerId?: mongoose.Types.ObjectId;
+  judgementText?: string;
   status: "active" | "ended" | "left";
 }
 
@@ -34,6 +35,7 @@ const mockTrialSchema = new Schema<MockTrial>(
     startedAt: { type: Date, default: Date.now },
     endedAt: { type: Date },
     winnerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    judgementText: { type: String }, 
     status: {
       type: String,
       enum: ["active", "ended", "left"],

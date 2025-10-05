@@ -5,6 +5,7 @@ import { MockTrial } from "../../models/Mocktrial/Mock";
 import mongoose from "mongoose";
 import { redis } from "../../utils/redisClient";
 import { User } from "../../models/User";
+import {geminiModel} from '../../config/gemini';
 
 
 export const getMockSituation = async (req: Request, res: Response): Promise<void> => {
@@ -340,3 +341,86 @@ export const checkMatchStatus = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ msg: "Something went wrong", error: e });
   }
 };
+
+
+
+// result for mocktrial
+const formatChatLog = (trial: any): string => {
+  return trial.messages
+  .map((msg: any) => {
+    const senderRole = msg.senderId.equals(trial.plaintiffId._id) ? 'Plaintiff' : 'Defendant';
+    return `${senderRole}: "${msg.text}"`;
+  })
+  .join('\n');
+};
+
+export const analyzeTrialResult = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const trial = await MockTrial.findById(req.params.trialId)
+    .populate('plaintiffId', 'name')
+    .populate('defendantId', 'name')
+    .populate('situationId', 'title description');
+
+    if(!trial) {
+      res.status(404).json({msg: "Trial not found."});
+      return;
+    }
+
+    if(trial.status === 'ended') {
+      res.status(400).json({msg: "Trial has already been analysed."});
+    }
+
+    const chatTranscript = formatChatLog(trial);
+
+    const prompt = `
+      **Role:** You are an impartial judge analyzing a mock trial.
+
+      **Context:** The case is about "${(trial.situationId as any).title}: ${(trial.situationId as any).description}".
+      - Plaintiff ID: ${trial.plaintiffId._id}
+      - Defendant ID: ${trial.defendantId._id}
+
+      **Task:**
+      1. Read the following chat transcript.
+      2. Analyze the arguments of the Plaintiff and the Defendant.
+      3. Determine a winner based on who was more persuasive.
+      4. Provide a brief justification for your decision.
+
+      **Output Format:** Respond ONLY with a valid JSON object like this: { "winnerId": "...", "justification": "..." }
+
+      **Transcript:**
+      ${chatTranscript}
+    `;
+
+    const result = await geminiModel.generateContent(prompt);
+    const responseText = result.response.text();
+
+    let analysisResult;
+    try {
+      // Use a regex to extract JSON from a markdown block
+      const match = responseText.match(/```json\n([\s\S]*?)\n```/);
+      const jsonString = match ? match[1] : responseText; // Use extracted string or original if no match
+      
+      analysisResult = JSON.parse(jsonString); // Parse the cleaned string
+    } catch(e) {
+      console.error("Gemini did not return valid JSON:", responseText);
+      res.status(500).json({ message: "Failed to parse analysis result." });
+      return;
+    }
+
+    trial.status = 'ended';
+    trial.winnerId = analysisResult.winnerId;
+    trial.judgementText = analysisResult.justification;
+    await trial.save();
+
+    res.json({
+      message: 'Analysis complete!',
+      trial,
+    });
+
+  } catch(e) {
+    console.error('Error analyzing trial:', e);
+    res.status(500).json({ message: 'Server error during analysis.' });
+  }
+
+}
+
