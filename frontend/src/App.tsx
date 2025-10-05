@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PublicLayout from "./layouts/PublicLayout";
-import Dashboard1 from "./pages/Dashboard1";
+import Dashboard from "./pages/Dashboard";
 import Home from './pages/Home';
 import Signin from "./pages/Signin";
 import SignUp from "./pages/SignUp";
@@ -20,10 +20,10 @@ function App() {
 
         {/* PRIVATE/DASHBOARD ROUTES (Sidebar ke saath)*/}
         <Route 
-          path="/dashboard1/*" 
+          path="/dashboard/*" 
           element={
             <ProtectedRoute>
-              <Dashboard1 />
+              <Dashboard />
             </ProtectedRoute>
           } 
         />

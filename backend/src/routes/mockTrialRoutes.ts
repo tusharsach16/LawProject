@@ -1,5 +1,5 @@
 import express from 'express';
-import { getMockTrialCategories, getSituationsCat, leaveMockTrial, endMockTrial, postMockJoin, postMockMessage, getMockTrialById, checkMatchStatus } from '../controllers/MockTrails/MockTrailController';
+import { getMockTrialCategories, getSituationsCat, leaveMockTrial, endMockTrial, postMockJoin, postMockMessage, getMockTrialById, checkMatchStatus, analyzeTrialResult } from '../controllers/MockTrails/MockTrailController';
 import authMiddleware from '../middleware/authMiddleware';
 
 const router = express.Router();
@@ -14,5 +14,7 @@ router.post('/mock-trials/end', authMiddleware, endMockTrial);
 router.post('/mock-trials/leave', authMiddleware, leaveMockTrial);
 
 router.post('/mock-trials/message', authMiddleware, postMockMessage);
+
+router.post('/mock-trials/:trialId/analyse', authMiddleware, analyzeTrialResult);
 
 export default router;
