@@ -11,6 +11,13 @@ import profile from './routes/profileRoutes';
 import uploadRoutes from './routes/uploadRoutes'; 
 import lawyerRoutes from './routes/lawyerRoutes';
 import mockTrialRoutes from './routes/mockTrialRoutes';
+import http from 'http';
+import { initWebSocketServer } from './webSockets';
+import './models/User';
+import './models/FriendReq/FriendRequest';
+import './models/quiz/Category';
+import './models/Mocktrial/MockSituation';
+import './models/Mocktrial/Mock';
 
 const envPath = path.resolve(__dirname, "../.env");
 console.log("🔍 Looking for .env at:", envPath);
@@ -26,6 +33,9 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(express.json());
 
+const server = http.createServer(app);
+initWebSocketServer(server);
+
 console.log("✅ Loaded Mongo URL:", process.env.MONGODB_URL?.slice(0, 25) + "...");
 
 app.use('/api', authRoutes);
@@ -36,8 +46,17 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api', lawyerRoutes);
 app.use('/api', mockTrialRoutes);
 
-connectDB();
+const startServer = async () => {
+  try {
+    await connectDB();
+    
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT} and WebSocket is ready.`);
+    });
+  } catch (error) {
+    console.error("Failed to start server", error);
+    process.exit(1);
+  }
+};
 
-app.listen(PORT, () => {
-  console.log(`✅ Server running on PORT: ${PORT}`);
-});
+startServer();

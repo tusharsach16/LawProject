@@ -263,3 +263,9 @@ export const checkMatchStatus = async (situationId: string, side: 'plaintiff' | 
   });
   return response.data;
 }
+
+// get result of mocktrial
+export const analyzeTrial = async (trialId: string) => {
+  const response = await api.post(`/mock-trials/${trialId}/analyse`);
+  return response.data;
+}
