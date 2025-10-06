@@ -2,7 +2,7 @@ import {useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { getConnections, removeFriend } from '../services/authService';
-import UnfollowModal from '../components/UnfollowModal'; // 1. Naya modal import karein
+import UnfollowModal from '../components/UnfollowModal';
 
 // Ek single connection kaisa dikhega, uske liye type
 interface Connection {
@@ -19,7 +19,6 @@ const ConnectionsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // --- NAYI STATES ---
   const [hoveredConnectionId, setHoveredConnectionId] = useState<string | null>(null);
   const [userToUnfollow, setUserToUnfollow] = useState<Connection | null>(null);
   const [isProcessingUnfollow, setIsProcessingUnfollow] = useState(false);
@@ -52,14 +51,13 @@ const ConnectionsPage = () => {
     setIsProcessingUnfollow(true);
     try {
       await removeFriend(userToUnfollow._id);
-      // UI se uss user ko turant hata dein
       setConnections(prev => prev.filter(c => c._id !== userToUnfollow._id));
     } catch (err) {
       console.error("Failed to unfollow:", err);
       alert("Could not unfollow user. Please try again.");
     } finally {
       setIsProcessingUnfollow(false);
-      setUserToUnfollow(null); // Modal band karein
+      setUserToUnfollow(null); 
     }
   };
 
@@ -84,7 +82,7 @@ const ConnectionsPage = () => {
           ) : (
             connections.map((conn) => (
               <div key={conn._id} className="flex p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <Link to={`/dashboard1/profile/${conn.username}`} className="flex-shrink-0">
+                <Link to={`/dashboard/profile/${conn.username}`} className="flex-shrink-0">
                     <img 
                         src={conn.profileImageUrl || 'https://placehold.co/150x150/a7a7a7/ffffff?text=Avatar'} 
                         alt={conn.name}
@@ -93,7 +91,7 @@ const ConnectionsPage = () => {
                 </Link>
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center">
-                        <Link to={`/dashboard1/profile/${conn.username}`} className="truncate">
+                        <Link to={`/dashboard/profile/${conn.username}`} className="truncate">
                             <p className="font-bold text-gray-900 truncate hover:underline">{conn.name}</p>
                             <p className="text-sm text-gray-500 truncate">@{conn.username}</p>
                         </Link>

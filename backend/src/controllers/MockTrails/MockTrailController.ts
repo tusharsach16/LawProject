@@ -424,3 +424,27 @@ export const analyzeTrialResult = async (req: Request, res: Response): Promise<v
 
 }
 
+export const getPastTrials = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    const trials = await MockTrial.find({
+      // find trial where either user is plaintiff or defendant
+      $or: [{plaintiffId: userId}, {defendantId: userId}],
+      status: 'ended',  
+    })
+    .populate('plaintiffId', 'name profileImageUrl')
+    .populate('defendantId', 'name profileImageUrl')
+    .populate('situationId', 'title')
+    .sort({createdAt: -1}); // show the most recent trials first
+
+    if(!trials) {
+      res.status(404).json({msg: "No past trial found for this user."});
+      return;
+    }
+    res.json({trials});
+  } catch(e) {
+    console.error('Error fetching past trials:', e);
+    res.status(500).json({ message: 'Server error while fetching trial history.' });
+  }
+}
+

@@ -264,6 +264,20 @@ export const checkMatchStatus = async (situationId: string, side: 'plaintiff' | 
   return response.data;
 }
 
+
+export const getPastMockTrials = async () => {
+  try {
+    const {data} = await api.get('/mock-trials/past-trials');
+    return data.trials; 
+  } catch (error: unknown) {
+    console.error("Error fetching past trials:", error);
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || "Failed to fetch past trials");
+    }
+    throw new Error("An unexpected error occurred while fetching past trials");
+  }
+}
+
 // get result of mocktrial
 export const analyzeTrial = async (trialId: string) => {
   const response = await api.post(`/mock-trials/${trialId}/analyse`);
