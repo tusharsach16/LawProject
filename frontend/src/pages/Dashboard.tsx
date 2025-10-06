@@ -18,6 +18,7 @@ import ConnectWithLawyers from './ConnectWithLawyers';
 import MockTrialLobby from './MockTrialLobby';
 import TrialRoomPage from './TrialRoomPage';
 import TrialResultPage from './TrialResultPage';
+import PastTrialsPage from './PastTrialsPage';
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -63,6 +64,7 @@ const Dashboard: React.FC = () => {
               <Route path='profile/:username' element={<UserProfilePage />} />
               <Route path="talk-to-lawyer" element={<ConnectWithLawyers />} />
               <Route path="mock-trials" element={<MockTrialLobby />} />
+              <Route path="past-trials" element={<PastTrialsPage />} />
               <Route path="mock-trial/room/:trialId" element={<TrialRoomPage />} /> 
               <Route path="trial-result/:trialId" element={<TrialResultPage/>}/>
             </Routes>
