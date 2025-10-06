@@ -12,7 +12,8 @@ import {
   Settings,
   LogOut,
   Search, 
-  Bell    
+  Bell,
+  History   
 } from "lucide-react";
 import { useAppSelector } from '../../redux/hooks'; 
 
@@ -78,8 +79,11 @@ const Sidebar = ({ isOpen, onClose, onSearchClick, onNotificationsClick}: Sideba
             <SidebarLink icon={<Briefcase size={18} />} label="Case Practice" to="/dashboard/case-practice" />
             <SidebarLink icon={<HelpCircle size={18} />} label="Quiz Section" to="/dashboard/quiz" />
             {user && (user.role === 'lawstudent' || user.role === 'lawyer') && (
+            <>
               <SidebarLink icon={<Gavel size={18} />} label="Mock Trials" to="/dashboard/mock-trials" />
-            )}
+              <SidebarLink icon={<History size={18} />} label="Past Trials" to="/dashboard/past-trials" />
+            </>
+          )}
             
             <div className="mt-6 border-t pt-4 space-y-1">
               <SidebarLink icon={<User size={18} />} label="Profile" to="/dashboard/profile" />
