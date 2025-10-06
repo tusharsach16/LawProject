@@ -111,7 +111,7 @@ const ProfileBody = ({ user, onEditClick }: ProfileBodyProps) => {
                 </div>
             )}
             
-            <Link to="/dashboard1/connections" className="flex items-center hover:underline">
+            <Link to="/dashboard/connections" className="flex items-center hover:underline">
                 <Users size={14} className="mr-2 flex-shrink-0" />
                 <span className="font-bold text-black mr-1">{user.friends?.length || 0}</span> Connections
             </Link>
