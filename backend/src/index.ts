@@ -18,6 +18,7 @@ import './models/FriendReq/FriendRequest';
 import './models/quiz/Category';
 import './models/Mocktrial/MockSituation';
 import './models/Mocktrial/Mock';
+import chatbotRoutes from './routes/chatbotRoutes';
 
 const envPath = path.resolve(__dirname, "../.env");
 console.log("🔍 Looking for .env at:", envPath);
@@ -45,6 +46,7 @@ app.use('/api', profile);
 app.use('/api/upload', uploadRoutes);
 app.use('/api', lawyerRoutes);
 app.use('/api', mockTrialRoutes);
+app.use('/api', chatbotRoutes);
 
 const startServer = async () => {
   try {
