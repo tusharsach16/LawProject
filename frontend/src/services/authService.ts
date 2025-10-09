@@ -283,3 +283,14 @@ export const analyzeTrial = async (trialId: string) => {
   const response = await api.post(`/mock-trials/${trialId}/analyse`);
   return response.data;
 }
+
+// aichatbot
+export const askAiAssistant = async(message: string) => {
+  const response = await api.post('/chat', {message});
+  return response.data;
+} 
+
+export const getChatHistory = async() => {
+  const response = await api.get('/chat');
+  return response.data;
+}
