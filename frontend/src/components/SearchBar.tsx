@@ -93,7 +93,7 @@ const SearchBar = ({ isOpen, onClose }: SearchBarProps) => {
             <div className="p-4 space-y-3">
               {results.map((user, index) => (
                 <Link
-                  to={`/dashboard1/profile/${user.username}`}
+                  to={`/dashboard/profile/${user.username}`}
                   key={user._id}
                   onClick={onClose}
                   className="flex items-center p-4 bg-white rounded-xl hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 border-2 border-slate-200 hover:border-amber-500/30 hover:shadow-lg transition-all duration-300 group"
