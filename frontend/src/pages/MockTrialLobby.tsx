@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Gavel } from 'lucide-react';
+import { Gavel, Scale, Loader2, Sparkles, Filter, ChevronRight } from 'lucide-react';
 import { getMockTrialSituationsCat, getMockTrialCategories } from '../services/authService';
 import Matchmaking from '../components/MatchMaking';
 
@@ -21,7 +21,7 @@ const MockTrialLobby = () => {
   const [selectedSituation, setSelectedSituation] = useState<Situation | null>(null);
 
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>(''); // Slug save karega
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -35,12 +35,10 @@ const MockTrialLobby = () => {
     fetchCategories();
   }, []);
 
-  // Jab bhi category badle uss category ke situations fetch kare
   useEffect(() => {
     const fetchSituations = async () => {
       try {
         setLoading(true);
-        // categorySlug ke aadhar par data fetch kare
         const data = await getMockTrialSituationsCat(selectedCategory || undefined);
         setSituations(data);
       } catch (err) {
@@ -50,52 +48,115 @@ const MockTrialLobby = () => {
       }
     };
     fetchSituations();
-  }, [selectedCategory]); // Ab yeh selectedCategory par depend karta hai
+  }, [selectedCategory]);
 
   return (
-    <div className="p-4 sm:p-6 bg-gray-50 min-h-full">
-      <header className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
-          <Gavel size={32} />
-          Mock Trials Lobby
-        </h1>
-        <p className="text-gray-500 mt-1">Choose a case, select your side, and practice your legal skills.</p>
+    <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-50 to-slate-100 min-h-full">
+      <header className="mb-8">
+        <div className="flex items-center gap-4 mb-3">
+          <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl shadow-lg">
+            <Gavel size={32} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 flex items-center gap-3">
+              Mock Trials Lobby
+              <Sparkles className="h-7 w-7 text-amber-500" />
+            </h1>
+            <p className="text-slate-600 mt-1 text-sm sm:text-base">Choose a case, select your side, and practice your legal skills.</p>
+          </div>
+        </div>
       </header>
 
-      <div className="flex items-center gap-2 mb-6 border-b border-gray-200 overflow-x-auto pb-2">
-        <button 
-            onClick={() => setSelectedCategory('')}
-            className={`px-4 py-2 text-sm font-semibold rounded-full whitespace-nowrap transition-colors ${selectedCategory === '' ? 'bg-black text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-        >
-            All Cases
-        </button>
-        {categories.map(cat => (
-            <button 
-                key={cat._id}
-                onClick={() => setSelectedCategory(cat.slug)}
-                className={`px-4 py-2 text-sm font-semibold rounded-full whitespace-nowrap transition-colors ${selectedCategory === cat.slug ? 'bg-black text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-            >
-                {cat.title}
-            </button>
-        ))}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <Filter className="h-5 w-5 text-slate-600" />
+          <h2 className="text-lg font-bold text-slate-900">Filter by Category</h2>
+        </div>
+        <div className="flex items-center gap-2 overflow-x-auto pb-3 custom-scrollbar">
+          <button 
+              onClick={() => setSelectedCategory('')}
+              className={`px-5 py-2.5 text-sm font-bold rounded-xl whitespace-nowrap transition-all duration-300 flex items-center gap-2 ${
+                selectedCategory === '' 
+                  ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg scale-105' 
+                  : 'bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-500/30 hover:shadow-md'
+              }`}
+          >
+              <Scale size={16} />
+              All Cases
+          </button>
+          {categories.map((cat, index) => (
+              <button 
+                  key={cat._id}
+                  onClick={() => setSelectedCategory(cat.slug)}
+                  className={`px-5 py-2.5 text-sm font-bold rounded-xl whitespace-nowrap transition-all duration-300 ${
+                    selectedCategory === cat.slug 
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg scale-105' 
+                      : 'bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-500/30 hover:shadow-md'
+                  }`}
+                  style={{
+                    animation: `slideInCategory 0.3s ease-out ${index * 0.05}s both`
+                  }}
+              >
+                  {cat.title}
+              </button>
+          ))}
+        </div>
       </div>
 
       {loading ? (
-        <p className="text-center text-gray-500 py-10">Loading cases...</p>
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="relative mb-6">
+            <Scale className="h-16 w-16 text-amber-500 animate-pulse" />
+            <Loader2 className="h-8 w-8 text-amber-600 animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          <p className="text-slate-600 text-lg font-medium">Loading cases...</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {situations.length > 0 ? situations.map(sit => (
-            <div key={sit._id} className="bg-white border border-gray-200 rounded-lg p-5 flex flex-col hover:shadow-md transition-shadow">
-              <h2 className="text-lg font-bold text-gray-800">{sit.title}</h2>
-              <p className="text-sm text-gray-600 mt-2 flex-grow line-clamp-4">{sit.description}</p>
+          {situations.length > 0 ? situations.map((sit, index) => (
+            <div 
+              key={sit._id} 
+              className="bg-white border-2 border-slate-200 rounded-2xl p-6 flex flex-col hover:shadow-xl hover:border-amber-500/30 hover:-translate-y-1 transition-all duration-300 group"
+              style={{
+                animation: `slideInCase 0.4s ease-out ${index * 0.05}s both`
+              }}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-2 bg-amber-100 rounded-lg group-hover:bg-amber-200 transition-colors">
+                  <Gavel className="h-5 w-5 text-amber-600" />
+                </div>
+                <div className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
+                  Case #{index + 1}
+                </div>
+              </div>
+              
+              <h2 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-amber-600 transition-colors">
+                {sit.title}
+              </h2>
+              
+              <p className="text-sm text-slate-600 leading-relaxed flex-grow line-clamp-4 mb-4">
+                {sit.description}
+              </p>
+              
               <button 
                 onClick={() => setSelectedSituation(sit)}
-                className="mt-4 w-full bg-black text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition"
+                className="w-full bg-gradient-to-r from-slate-900 to-slate-800 text-white font-bold py-3 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 group/btn"
               >
                 Participate
+                <ChevronRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
               </button>
             </div>
-          )) : <p className="col-span-full text-center text-gray-500 py-10">No cases found in this category.</p>}
+          )) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-20">
+              <div className="w-24 h-24 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center mb-6">
+                <Gavel className="h-12 w-12 text-slate-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">No Cases Found</h3>
+              <p className="text-slate-600 text-center max-w-md">
+                No cases found in this category. Try selecting a different category or check back later.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -110,4 +171,3 @@ const MockTrialLobby = () => {
 };
 
 export default MockTrialLobby;
-
