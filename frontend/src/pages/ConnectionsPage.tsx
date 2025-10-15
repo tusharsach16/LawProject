@@ -163,7 +163,7 @@ const ConnectionsPage = () => {
                           className={`px-5 py-2 font-semibold text-sm rounded-xl flex-shrink-0 transition-all duration-300 flex items-center gap-2 border-2 ${
                             hoveredConnectionId === conn._id
                               ? 'bg-red-50 text-red-600 border-red-300 hover:bg-red-100 scale-105'
-                              : 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-emerald-600 hover:shadow-lg hover:scale-105'
+                              : 'bg-black text-white   hover:shadow-lg hover:scale-105'
                           }`}
                         >
                           {hoveredConnectionId === conn._id ? (
