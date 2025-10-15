@@ -1,282 +1,148 @@
-import { useState, useEffect, useRef, type FormEvent } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Send, LogOut, Scale, Shield, Timer } from 'lucide-react';
-import { getMockTrialDetails, endTrial, leaveTrial, analyzeTrial} from '../services/authService';
-import { useAppSelector } from '../redux/hooks';
+import { getMockTrialDetails } from '../services/authService'; 
+import { Scale, Trophy, Gavel, FileText, Loader2, ArrowLeft, Sparkles } from 'lucide-react';
 
-
-const CountdownTimer = ({ startTime, onTimeUp }: { startTime: string; onTimeUp: () => void }) => {
-    const calculateTimeLeft = () => {
-        const durationInMinutes = 15; 
-        const endTime = new Date(new Date(startTime).getTime() + durationInMinutes * 60000);
-        return endTime.getTime() - new Date().getTime();
-    };
-
-    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            const newTimeLeft = calculateTimeLeft();
-            setTimeLeft(newTimeLeft);
-
-            if (newTimeLeft <= 0) {
-                onTimeUp();
-                clearInterval(intervalId); // Stop the timer once finished
-            }
-        }, 1000);
-
-        // This cleans up the timer if user leave the page
-        return () => clearInterval(intervalId);
-
-    }, [startTime, onTimeUp]); 
-
-    // Calculate minutes and seconds from milliseconds
-    const minutes = Math.max(0, Math.floor((timeLeft / 1000 / 60) % 60));
-    const seconds = Math.max(0, Math.floor((timeLeft / 1000) % 60));
-
-    return (
-        <div className={`flex items-center gap-2 font-mono text-lg font-semibold ${minutes < 1 ? 'text-red-500' : 'text-gray-800'}`}>
-            <Timer size={20} />
-            <span>{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}</span>
-        </div>
-    );
-};
-
-const MessageBubble = ({ message, isSender }: { message: any; isSender: boolean }) => (
-    <div className={`flex items-end gap-2 ${isSender ? 'justify-end' : 'justify-start'}`}>
-        <div className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded-xl ${isSender ? 'bg-blue-500 text-white rounded-br-none' : 'bg-white text-black rounded-bl-none'}`}>
-            <p className="text-sm">{message.text}</p>
-            <p className={`text-xs mt-1 ${isSender ? 'text-blue-100' : 'text-gray-500'}`}>
-                {new Date(message.timestamp).toLocaleTimeString()}
-            </p>
-        </div>
-    </div>
-);
-
-const TrialRoomPage = () => {
+const TrialResultPage = () => {
     const { trialId } = useParams<{ trialId: string }>();
     const navigate = useNavigate();
-    const { user: currentUser } = useAppSelector(state => state.user);
-    
-    const [trial, setTrial] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [messages, setMessages] = useState<any[]>([]);
-    const [newMessage, setNewMessage] = useState('');
-    const socketRef = useRef<WebSocket | null>(null); // WebSocket connection ko store karega
-    const chatEndRef = useRef<null | HTMLDivElement>(null);
+    const [trialResult, setTrialResult] = useState<any>(null);
+    const [loadingMessage, setLoadingMessage] = useState("Analyzing your trial, please wait...");
 
-    // Trial details fetch karna or WebSocket connection banana
     useEffect(() => {
-        if (!trialId || !currentUser) return;
+        if (!trialId) return;
 
-        // Pehle trial ki details fetch kari
-        const fetchTrial = async () => {
+        const intervalId = setInterval(async () => {
             try {
                 const data = await getMockTrialDetails(trialId);
-                setTrial(data);
-                setMessages(data.messages || []);
+                
+                if (data.status === 'completed' || data.status === 'ended') {
+                    setTrialResult(data); 
+                    clearInterval(intervalId);
+                }
             } catch (error) {
-                navigate('/dashboard/mock-trials');
-            } finally {
-                setLoading(false);
+                console.error("Error fetching trial details:", error);
+                setLoadingMessage("Could not fetch results. Please check your dashboard.");
+                clearInterval(intervalId);
             }
-        };
-        fetchTrial();
+        }, 3000); 
 
-        const token = localStorage.getItem('token');
-        let reconnectAttempts = 0;
-        const maxReconnectAttempts = 5;
-        
-        const connectWebSocket = () => {
-            //  Backend WebSocket server se connect kara
-            const socket = new WebSocket(`ws://localhost:5000?trialId=${trialId}&token=${token}`);
-            socketRef.current = socket;
+        return () => clearInterval(intervalId);
 
-            // if connection is succcessfull
-            socket.onopen = () => {
-                console.log("WebSocket connection established.");
-                reconnectAttempts = 0; // Reset reconnection attempts on successful connection
-            };
+    }, [trialId]);
 
-            // Jab server se koi naya message aaye
-            socket.onmessage = (event) => {
-                const receivedData = JSON.parse(event.data);
-                console.log('Received WebSocket message:', receivedData);
-                
-                if (receivedData.type === 'message') {
-                    // Naye message ko state mein add karein
-                    setMessages(prev => [...prev, receivedData.data]);
-                }
-            };
-
-            // Jab connection band ho
-            socket.onclose = (event) => {
-                console.log("WebSocket connection closed:", event.code, event.reason);
-                
-                // Attempt to reconnect if not a normal closure
-                if (event.code !== 1000 && reconnectAttempts < maxReconnectAttempts) {
-                    reconnectAttempts++;
-                    console.log(`Attempting to reconnect... (${reconnectAttempts}/${maxReconnectAttempts})`);
-                    setTimeout(() => {
-                        connectWebSocket();
-                    }, 2000 * reconnectAttempts); // Exponential backoff
-                }
-            };
-
-            // Agar koi error aaye
-            socket.onerror = (error) => {
-                console.error("WebSocket error:", error);
-            };
-        };
-        
-        connectWebSocket();
-
-        // Component ke band hone par connection saaf karein (imp)
-        return () => {
-            if (socketRef.current) {
-                socketRef.current.close();
-            }
-        };
-
-    }, [trialId, currentUser, navigate]);
-
-    // Naye messages ke liye neeche scroll karein
-    useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
-
-    const handleSendMessage = async (e: FormEvent) => {
-        e.preventDefault();
-        if (!newMessage.trim() || !socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) return;
-
-        const messageData = {
-            text: newMessage.trim(),
-            timestamp: new Date().toISOString(),
-        };
-
-        // Message ko WebSocket ke zariye server ko bhej diya
-        socketRef.current.send(JSON.stringify(messageData));
-        
-        // Clear input immediately
-        setNewMessage('');
-        
-        // Note: Message will be added to state when received back from server
-        // This ensures all clients see the same message with proper formatting
-    };
-    
-    const handleEndOrLeave = async (action: 'end' | 'leave') => {
-        if (!trialId) return;
-        
-        try {
-            if (action === 'end') {
-                await endTrial(trialId);
-            } else {
-                await leaveTrial(trialId);
-            }
-            navigate('/dashboard/mock-trials');
-        } catch (error) {
-            console.error(`Failed to ${action} trial:`, error);
-        }
-    };
-
-    const handleTimeUp = async () => {
-        if (!trialId) return;
-        try {
-            // Trigger the analysis on the backend
-            analyzeTrial(trialId);
-            // Immediately navigate to the results page
-            navigate(`/dashboard/trial-result/${trialId}`);
-        } catch (error) {
-            console.error("Failed to start analysis:", error);
-            navigate('/dashboard/mock-trials'); // Fallback on error
-        }
-    };  
-
-    if (loading) {
+    if (!trialResult) {
         return (
-            <div className="flex items-center justify-center h-screen">
+            <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading trial room...</p>
+                    <div className="relative mb-8">
+                        <Scale className="h-20 w-20 text-amber-500 animate-pulse mx-auto" />
+                        <Loader2 className="h-10 w-10 text-amber-600 animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                    </div>
+                    <div className="bg-white rounded-2xl shadow-xl border-2 border-slate-200 p-8 max-w-md">
+                        <h3 className="text-xl font-bold text-slate-900 mb-3 flex items-center justify-center gap-2">
+                            <Sparkles className="h-6 w-6 text-amber-500" />
+                            Analyzing Trial
+                        </h3>
+                        <p className="text-slate-600">{loadingMessage}</p>
+                        <div className="mt-6 flex justify-center gap-2">
+                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
     }
 
-    if (!trial) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="text-center">
-                    <p className="text-red-600 mb-4">Trial not found</p>
-                    <button 
-                        onClick={() => navigate('/dashboard/mock-trials')}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    >
-                        Back to Trials
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    const plaintiff = trial.plaintiffId;
-    const defendant = trial.defendantId;
-
-    // Debug: Log trial data to see the structure
-    console.log('Trial data:', trial);
-    console.log('Plaintiff:', plaintiff);
-    console.log('Defendant:', defendant);
+    const isPlaintiffWinner = trialResult.winnerId === trialResult.plaintiffId;
+    const winnerSide = isPlaintiffWinner ? 'Plaintiff' : 'Defendant';
+    const winnerColor = isPlaintiffWinner ? 'from-blue-500 to-blue-600' : 'from-purple-500 to-purple-600';
 
     return (
-        <div className="flex flex-col h-screen bg-gray-100">
-            <header className="flex items-center justify-between p-3 bg-white border-b shadow-sm">
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-blue-600 font-semibold">
-                        <Scale size={20}/> {plaintiff?.username || plaintiff?.name || 'Plaintiff'}
-                    </div>
-                    <span className="font-bold">VS</span>
-                     <div className="flex items-center gap-2 text-red-600 font-semibold">
-                        <Shield size={20}/> {defendant?.username || defendant?.name || 'Defendant'}
-                    </div>
-                </div>
-                <CountdownTimer startTime={trial.startedAt} onTimeUp={handleTimeUp} />
-                <button onClick={() => handleEndOrLeave('leave')} className="flex items-center gap-2 text-sm text-red-500 font-semibold p-2 rounded-lg hover:bg-red-50">
-                    <LogOut size={16} />
-                    Leave
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 sm:p-6 lg:p-8">
+            <div className="max-w-4xl mx-auto">
+                <button 
+                    onClick={() => navigate(-1)}
+                    className="mb-6 px-4 py-2 bg-white border-2 border-slate-200 rounded-xl text-slate-700 hover:border-amber-500/30 hover:shadow-md transition-all duration-300 flex items-center gap-2 font-semibold"
+                >
+                    <ArrowLeft size={20} />
+                    Back to Trials
                 </button>
-            </header>
 
-            <main className="flex-1 p-4 overflow-y-auto">
-                <div className="space-y-4">
-                    {messages.map((msg, index) => {
-                        // Debug: Log message data to see senderId structure
-                        console.log('Message:', msg, 'Current User ID:', currentUser?._id);
-                        const isSender = msg.senderId === currentUser?._id || msg.senderId?.toString() === currentUser?._id?.toString();
-                        return (
-                            <MessageBubble key={index} message={msg} isSender={isSender} />
-                        );
-                    })}
-                    <div ref={chatEndRef} />
+                <div className="text-center mb-8 animate-fade-in">
+                    <div className="inline-flex items-center justify-center mb-4">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-amber-500 blur-3xl opacity-30 animate-pulse"></div>
+                            <div className="relative p-6 bg-gradient-to-br from-amber-400 to-amber-600 rounded-3xl shadow-2xl">
+                                <Gavel size={64} className="text-white" />
+                            </div>
+                        </div>
+                    </div>
+                    <h1 className="text-4xl font-bold text-slate-900 mb-2 flex items-center justify-center gap-3">
+                        Trial Results
+                        <FileText className="h-8 w-8 text-amber-500" />
+                    </h1>
+                    <p className="text-slate-600 text-lg">The verdict has been delivered</p>
                 </div>
-            </main>
 
-            <footer className="p-4 bg-white border-t">
-                <form onSubmit={handleSendMessage} className="relative">
-                    <input 
-                        type="text" 
-                        placeholder="Type your argument..." 
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        className="w-full p-3 pr-14 border rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-black" 
-                    />
-                    <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black text-white rounded-full hover:bg-gray-800">
-                        <Send size={20} />
-                    </button>
-                </form>
-            </footer>
+                <div className="bg-white rounded-3xl shadow-2xl border-2 border-slate-200 overflow-hidden animate-slide-up">
+                    <div className={`p-8 bg-gradient-to-r ${winnerColor} text-white`}>
+                        <div className="flex items-center justify-center gap-4 mb-4">
+                            <Trophy className="h-12 w-12" />
+                            <h2 className="text-3xl font-bold">Winner Declared</h2>
+                        </div>
+                        <div className="text-center">
+                            <div className="inline-block px-8 py-4 bg-white/20 backdrop-blur-sm rounded-2xl border-2 border-white/30">
+                                <p className="text-sm font-semibold uppercase tracking-wider mb-1 opacity-90">Victory Goes To</p>
+                                <p className="text-4xl font-black">{winnerSide}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="p-8">
+                        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-6 border-2 border-slate-200">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-amber-100 rounded-lg">
+                                    <Scale className="h-6 w-6 text-amber-600" />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900">Judge's Justification</h3>
+                            </div>
+                            <div className="bg-white rounded-xl p-6 border-2 border-slate-200 shadow-sm">
+                                <p className="text-slate-700 leading-relaxed text-base whitespace-pre-wrap">
+                                    {trialResult.judgementText || 'No justification provided.'}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                            <button 
+                                onClick={() => navigate('/dashboard/past-trials')}
+                                className="flex-1 px-6 py-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+                            >
+                                View All Trials
+                                <ArrowLeft className="h-5 w-5 rotate-180" />
+                            </button>
+                            <button 
+                                onClick={() => navigate('/dashboard/mock-trials')}
+                                className="flex-1 px-6 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+                            >
+                                Start New Trial
+                                <Sparkles className="h-5 w-5" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-6 text-center">
+                    <p className="text-sm text-slate-500">
+                        Trial ID: <span className="font-mono text-slate-700">{trialId}</span>
+                    </p>
+                </div>
+            </div>
         </div>
     );
 };
 
-export default TrialRoomPage;
-
+export default TrialResultPage;
