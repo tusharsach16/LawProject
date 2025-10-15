@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Scale, Shield } from 'lucide-react';
+import { Scale, Shield, Loader2, X } from 'lucide-react';
 import { joinMockTrial, checkMatchStatus } from '../services/authService'; 
 
 interface Situation {
@@ -20,7 +20,6 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
     const navigate = useNavigate();
     const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Polling function to check for matches
     const pollForMatch = async () => {
         if (!side) return;
         
@@ -31,7 +30,6 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
                 console.log(`Match found! Navigating to trial ID: ${response.trialId}`);
                 navigate(`/dashboard/mock-trial/room/${response.trialId}`);
             } else if (!response.waiting) {
-                // User is no longer in queue something went wrong
                 setError("Connection lost. Please try again.");
                 setStatus('selecting');
                 if (pollingIntervalRef.current) {
@@ -44,20 +42,16 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
         }
     };
 
-    // Start polling when user starts waiting
     useEffect(() => {
         if (status === 'waiting' && side) {
-            // Start polling every 2 seconds
             pollingIntervalRef.current = setInterval(pollForMatch, 2000);
         } else {
-            // Clear polling when not waiting
             if (pollingIntervalRef.current) {
                 clearInterval(pollingIntervalRef.current);
                 pollingIntervalRef.current = null;
             }
         }
 
-        // Cleanup on unmount
         return () => {
             if (pollingIntervalRef.current) {
                 clearInterval(pollingIntervalRef.current);
@@ -74,28 +68,23 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
         setError(null);
         
         try {
-            // Backend ko join request bheji
             const response = await joinMockTrial(situation._id, side);
 
             if (response.paired) {
-                // Agar opponent mil gaya to trial room mein bhej dia
                 console.log(`Paired! Navigating to trial ID: ${response.trialId}`);
                 navigate(`/dashboard/mock-trial/room/${response.trialId}`);
             } else if (response.waiting) {
-                // Agar opponent nahi mil to wait karega
                 console.log("Waiting for an opponent...");
-                // Polling will start automatically via useEffect
             }
         } catch (err: any) {
             console.error("Failed to join trial:", err);
             const errorMessage = err.response?.data?.msg || "Could not join the trial. Please try again.";
             setError(errorMessage);
-            setStatus('selecting'); // User dobara select kr skta h
+            setStatus('selecting');
         }
     };
 
     const handleCancel = () => {
-        // Clear any polling
         if (pollingIntervalRef.current) {
             clearInterval(pollingIntervalRef.current);
             pollingIntervalRef.current = null;
@@ -104,39 +93,87 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl w-full max-w-md text-center p-6">
-                <h2 className="text-xl font-bold text-gray-800">{situation.title}</h2>
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+            <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl border-2 border-slate-200 animate-slide-up">
+                <div className="relative border-b-2 border-slate-200 p-6">
+                    <button 
+                        onClick={handleCancel}
+                        className="absolute right-4 top-4 p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                    >
+                        <X size={20} className="text-slate-600" />
+                    </button>
+                    <h2 className="text-2xl font-bold text-slate-900 pr-8">{situation.title}</h2>
+                </div>
                 
-                {status === 'selecting' && (
-                    <>
-                        <p className="text-gray-500 mt-2 mb-6">Choose your side to find an opponent.</p>
-                        <div className="grid grid-cols-2 gap-4">
-                            <button onClick={() => setSide('plaintiff')} className={`p-4 border-2 rounded-lg flex flex-col items-center gap-2 transition-colors ${side === 'plaintiff' ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}`}>
-                                <Scale className="text-blue-500" />
-                                <span className="font-semibold">Plaintiff</span>
-                            </button>
-                            <button onClick={() => setSide('defendant')} className={`p-4 border-2 rounded-lg flex flex-col items-center gap-2 transition-colors ${side === 'defendant' ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:bg-gray-50'}`}>
-                                <Shield className="text-red-500" />
-                                <span className="font-semibold">Defendant</span>
-                            </button>
-                        </div>
-                        {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
-                        <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                            <button onClick={handleCancel} className="w-full py-3 font-semibold text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg">Cancel</button>
-                            <button onClick={handleJoin} disabled={!side} className="w-full py-3 font-semibold text-white bg-black rounded-lg disabled:bg-gray-400 hover:bg-gray-800">Find Match</button>
-                        </div>
-                    </>
-                )}
+                <div className="p-6">
+                    {status === 'selecting' && (
+                        <>
+                            <p className="text-slate-600 mb-6 text-center">Choose your side to find an opponent</p>
+                            <div className="grid grid-cols-2 gap-4 mb-6">
+                                <button 
+                                    onClick={() => setSide('plaintiff')} 
+                                    className={`p-6 border-2 rounded-xl flex flex-col items-center gap-3 transition-all ${
+                                        side === 'plaintiff' 
+                                            ? 'border-slate-900 bg-slate-50 shadow-md' 
+                                            : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    <Scale size={32} className={side === 'plaintiff' ? 'text-slate-900' : 'text-slate-400'} strokeWidth={1.5} />
+                                    <span className={`font-semibold ${side === 'plaintiff' ? 'text-slate-900' : 'text-slate-600'}`}>
+                                        Plaintiff
+                                    </span>
+                                </button>
+                                <button 
+                                    onClick={() => setSide('defendant')} 
+                                    className={`p-6 border-2 rounded-xl flex flex-col items-center gap-3 transition-all ${
+                                        side === 'defendant' 
+                                            ? 'border-slate-900 bg-slate-50 shadow-md' 
+                                            : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    <Shield size={32} className={side === 'defendant' ? 'text-slate-900' : 'text-slate-400'} strokeWidth={1.5} />
+                                    <span className={`font-semibold ${side === 'defendant' ? 'text-slate-900' : 'text-slate-600'}`}>
+                                        Defendant
+                                    </span>
+                                </button>
+                            </div>
+                            {error && (
+                                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                                    <p className="text-red-600 text-sm">{error}</p>
+                                </div>
+                            )}
+                            <div className="flex gap-3">
+                                <button 
+                                    onClick={handleCancel} 
+                                    className="flex-1 py-3 font-semibold text-slate-700 border-2 border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={handleJoin} 
+                                    disabled={!side} 
+                                    className="flex-1 py-3 font-semibold text-white bg-slate-900 rounded-lg disabled:bg-slate-300 disabled:cursor-not-allowed hover:bg-slate-800 transition-colors"
+                                >
+                                    Find Match
+                                </button>
+                            </div>
+                        </>
+                    )}
 
-                {status === 'waiting' && (
-                    <div className="py-8">
-                        <div className="animate-spin h-10 w-10 border-4 border-black border-t-transparent rounded-full mx-auto"></div>
-                        <p className="font-semibold mt-4">Waiting for an opponent...</p>
-                        <p className="text-sm text-gray-500 mt-2">This may take a few moments. Please don't close this window.</p>
-                         <button onClick={handleCancel} className="mt-6 text-sm text-gray-500 hover:underline">Cancel Search</button>
-                    </div>
-                )}
+                    {status === 'waiting' && (
+                        <div className="py-12 text-center">
+                            <Loader2 className="h-12 w-12 text-slate-900 animate-spin mx-auto mb-6" strokeWidth={2} />
+                            <p className="text-lg font-semibold text-slate-900 mb-2">Finding opponent...</p>
+                            <p className="text-sm text-slate-600 mb-8">This may take a few moments</p>
+                            <button 
+                                onClick={handleCancel} 
+                                className="text-sm text-slate-600 hover:text-slate-900 font-medium transition-colors"
+                            >
+                                Cancel Search
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
