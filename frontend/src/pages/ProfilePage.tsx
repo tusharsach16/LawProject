@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAppSelector } from '../redux/hooks';
-import EditProfileModal from '../components/EditProfileModel';
+import EditProfileModal from '../components/EditProfileModal';
 import SearchBar from '../components/SearchBar';
 import ProfileHeader from './profile/components/ProfileHeader';
 import ProfileBody from './profile/components/ProfileBody';
