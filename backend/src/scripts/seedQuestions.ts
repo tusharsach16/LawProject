@@ -31,6 +31,7 @@ const seedQuestions = async () => {
           options: q.options,
           correctIndex: q.correctIndex,
           categoryId,
+          explanation: q.explanation || undefined,
         };
       })
       .filter(Boolean); // remove nulls
