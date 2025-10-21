@@ -1,6 +1,5 @@
-// src/pages/Quiz.tsx
 import React, { useState, useEffect } from 'react';
-import { Loader } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle, ChevronRight } from 'lucide-react';
 
 interface Question {
   _id: string;
@@ -16,7 +15,7 @@ interface QuizProps {
   onQuizComplete: (score: { correct: number; incorrect: number; percentage: number }) => void;
 }
 
-const Quiz: React.FC<QuizProps> = ({ categorySlug, onQuizComplete }) => {
+const Quiz: React.FC<QuizProps> = ({ categorySlug, limit, onQuizComplete }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ questionId: string; selectedIndex: number }[]>([]);
@@ -34,7 +33,8 @@ const Quiz: React.FC<QuizProps> = ({ categorySlug, onQuizComplete }) => {
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/quiz/getQuiz?category=${categorySlug}&limit=10`, {
+        // Fixed: Use the limit prop instead of hardcoded value
+        const response = await fetch(`http://localhost:5000/api/quiz/getQuiz?category=${categorySlug}&limit=${limit}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ const Quiz: React.FC<QuizProps> = ({ categorySlug, onQuizComplete }) => {
     };
 
     fetchQuestions();
-  }, [categorySlug]);
+  }, [categorySlug, limit]);
 
   const handleAnswerSelect = (selectedIndex: number) => {
     const questionId = questions[currentQuestionIndex]._id;
@@ -86,7 +86,7 @@ const Quiz: React.FC<QuizProps> = ({ categorySlug, onQuizComplete }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/quiz/submit', {
+      const response = await fetch('http://localhost:5000/api/quiz/submit', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -122,68 +122,119 @@ const Quiz: React.FC<QuizProps> = ({ categorySlug, onQuizComplete }) => {
 
   if (quizState === 'loading') {
     return (
-      <div className="flex items-center justify-center h-full">
-        <Loader className="w-12 h-12 animate-spin text-blue-600" />
-        <p className="ml-4 text-gray-600">Loading Questions...</p>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-slate-900 mx-auto mb-4" />
+          <p className="text-slate-600 text-lg font-medium">Loading Questions...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-full text-center">
-        <p className="text-xl text-red-500">{error}</p>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+        <div className="text-center max-w-md">
+          <AlertCircle className="w-16 h-16 text-slate-900 mx-auto mb-4" />
+          <p className="text-xl text-slate-900 font-semibold">{error}</p>
+        </div>
       </div>
     )
   }
 
   if (questions.length === 0) {
       return (
-        <div className="flex items-center justify-center h-full">
-            <p className="text-xl text-gray-600">No questions found for this category.</p>
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+          <div className="text-center max-w-md">
+            <AlertCircle className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+            <p className="text-xl text-slate-600">No questions found for this category.</p>
+          </div>
         </div>
       )
   }
   
   const currentQuestion = questions[currentQuestionIndex];
   const selectedOption = answers.find(a => a.questionId === currentQuestion._id)?.selectedIndex;
+  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="bg-white p-8 rounded-2xl shadow-lg">
+    <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+      <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <p className="text-lg text-gray-500 mb-2">Question {currentQuestionIndex + 1} of {questions.length}</p>
-          <h2 className="text-2xl font-semibold">{currentQuestion.ques}</h2>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-semibold text-slate-600">
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </span>
+            <span className="text-sm font-semibold text-slate-600">
+              {Math.round(progress)}%
+            </span>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-2">
+            <div 
+              className="bg-slate-900 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {currentQuestion.options.map((option, index) => (
+
+        <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 sm:p-8 shadow-lg">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8 leading-relaxed">
+            {currentQuestion.ques}
+          </h2>
+          
+          <div className="space-y-4">
+            {currentQuestion.options.map((option, index) => (
+              <button 
+                  key={index} 
+                  onClick={() => handleAnswerSelect(index)}
+                  className={`w-full p-5 border-2 rounded-xl text-left transition-all duration-200 flex items-start gap-3 group ${
+                      selectedOption === index 
+                      ? 'bg-slate-50 border-slate-900 shadow-md' 
+                      : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                  }`}
+              >
+                <div className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                  selectedOption === index
+                    ? 'border-slate-900 bg-slate-900'
+                    : 'border-slate-300 group-hover:border-slate-400'
+                }`}>
+                  {selectedOption === index && (
+                    <CheckCircle className="w-4 h-4 text-white" strokeWidth={3} />
+                  )}
+                </div>
+                <span className={`font-medium flex-1 ${
+                  selectedOption === index ? 'text-slate-900' : 'text-slate-700'
+                }`}>
+                  {option}
+                </span>
+              </button>
+            ))}
+          </div>
+          
+          <div className="mt-8 flex justify-end">
             <button 
-                key={index} 
-                onClick={() => handleAnswerSelect(index)}
-                className={`p-4 border-2 rounded-lg text-left transition-all ${
-                    selectedOption === index 
-                    ? 'bg-blue-100 border-blue-500 ring-2 ring-blue-300' 
-                    : 'border-gray-300 hover:bg-gray-100'
-                }`}
+              onClick={handleNext}
+              disabled={selectedOption === undefined || quizState === 'submitting'}
+              className="px-8 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2 group"
             >
-              <span className="font-medium">{option}</span>
+              {quizState === 'submitting' ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Submitting...
+                </>
+              ) : currentQuestionIndex < questions.length - 1 ? (
+                <>
+                  Next Question
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              ) : (
+                <>
+                  Finish & See Results
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
-          ))}
-        </div>
-        
-        <div className="mt-8 flex justify-end">
-          <button 
-            onClick={handleNext}
-            disabled={selectedOption === undefined || quizState === 'submitting'}
-            className="px-8 py-3 bg-gray-800 text-white font-semibold rounded-lg hover:bg-black disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
-          >
-            {quizState === 'submitting' 
-              ? 'Submitting...' 
-              : currentQuestionIndex < questions.length - 1 
-              ? 'Next Question' 
-              : 'Finish & See Results'}
-          </button>
+          </div>
         </div>
       </div>
     </div>
