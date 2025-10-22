@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
-import { FaFacebook, FaGoogle } from "react-icons/fa";
 import Signupui from "@/components/Signupui";
 import axios from "axios";
 import { setUser } from "../redux/slices/userSlice";
@@ -94,7 +93,7 @@ const Signin = () => {
               to="/"
               className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl mb-6 shadow-2xl border-2 border-amber-500/20 hover:scale-105 transition-transform duration-300"
             >
-              <Scale className="h-10 w-10 text-amber-400" strokeWidth={2} />
+              <Scale className="h-10 w-10 text-white" strokeWidth={2} />
             </Link>
             <h1 className="text-4xl font-bold text-slate-900 mb-2">Welcome Back</h1>
             <p className="text-slate-600 text-lg">Sign in to access your legal dashboard</p>
@@ -195,27 +194,6 @@ const Signin = () => {
 
             {/* Divider */}
             <div className="mt-8">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-300" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-slate-500 font-medium">Or continue with</span>
-                </div>
-              </div>
-
-              {/* Social buttons */}
-              <div className="grid grid-cols-2 gap-4 mt-6">
-                <button className="flex items-center justify-center gap-2 py-3 px-4 border-2 border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all font-medium text-slate-700">
-                  <FaGoogle className="h-5 w-5 text-red-500" />
-                  <span>Google</span>
-                </button>
-                <button className="flex items-center justify-center gap-2 py-3 px-4 border-2 border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all font-medium text-slate-700">
-                  <FaFacebook className="h-5 w-5 text-blue-600" />
-                  <span>Facebook</span>
-                </button>
-              </div>
-
               {/* Sign up link */}
               <div className="mt-8 text-center">
                 <p className="text-slate-600">
