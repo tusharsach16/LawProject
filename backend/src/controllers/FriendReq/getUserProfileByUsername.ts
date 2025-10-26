@@ -3,6 +3,7 @@ import { User } from '../../models/User';
 import { GeneralUser } from '../../models/GeneralUser';
 import { LawStudent } from '../../models/LawStudent';
 import { Lawyer } from '../../models/Lawyer';
+import mongoose from 'mongoose';
 
 export const getUserProfileByUsername = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -33,7 +34,7 @@ export const getUserProfileByUsername = async (req: Request, res: Response): Pro
 
     // Check karein ki logged-in user is profile wale user ko follow kar raha hai ya nahi
     const loggedInUser = await User.findById(loggedInUserId);
-    const isFollowing = loggedInUser?.friends.includes(user._id);
+    const isFollowing = loggedInUser?.friends.includes(user._id as mongoose.Types.ObjectId);
 
     // Sab kuch milakar ek poora profile object banayein
     const fullUserProfile = { 
