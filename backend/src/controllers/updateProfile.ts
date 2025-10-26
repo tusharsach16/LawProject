@@ -164,8 +164,9 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     
     await session.commitTransaction();
     
-    const fullUserProfile = await getFullUserProfile(updatedUser._id.toString());
-    
+    const fullUserProfile = await getFullUserProfile(
+      (updatedUser._id as mongoose.Types.ObjectId).toString()
+    );    
     res.status(200).json({ 
       msg: 'Profile updated successfully!', 
       user: fullUserProfile 
