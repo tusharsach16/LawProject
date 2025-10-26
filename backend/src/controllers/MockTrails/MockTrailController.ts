@@ -7,7 +7,6 @@ import { redis } from "../../utils/redisClient";
 import { User } from "../../models/User";
 import {geminiModel} from '../../config/gemini';
 
-
 export const getMockSituation = async (req: Request, res: Response): Promise<void> => {
   try {
     const id = req.query.id as string;
@@ -448,3 +447,83 @@ export const getPastTrials = async (req: Request, res: Response): Promise<void> 
   }
 }
 
+// get mocktrial statistics
+export const getMockTrialStatistics = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id as string;
+    
+    if (!userId) {
+      res.status(401).json({ message: "User not authenticated" });
+      return;
+    }
+
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+
+    // Get all mock trials for this user
+    const allTrials = await MockTrial.find({
+      $or: [{ plaintiffId: userObjectId }, { defendantId: userObjectId }]
+    })
+    .populate('situationId', 'title')
+    .sort({ createdAt: -1 })
+    .lean();
+
+    if (allTrials.length === 0) {
+      res.status(200).json({
+        totalTrials: 0,
+        completedTrials: 0,
+        asPlaintiff: 0,
+        asDefendant: 0,
+        wins: 0,
+        losses: 0,
+        winRate: 0,
+        recentTrials: []
+      });
+      return;
+    }
+
+    // Calculate statistics
+    const totalTrials = allTrials.length;
+    const completedTrials = allTrials.filter(trial => trial.status === 'ended').length;
+    
+    // Count roles
+    const asPlaintiff = allTrials.filter(trial => 
+      trial.plaintiffId.toString() === userId
+    ).length;
+    const asDefendant = totalTrials - asPlaintiff;
+
+    // Calculate wins/losses (if you have winner tracking in your schema)
+    // Assuming you have a 'winnerId' field in MockTrial schema
+    const wins = allTrials.filter(trial => 
+      trial.winnerId && trial.winnerId.toString() === userId
+    ).length;
+    const losses = completedTrials - wins;
+    const winRate = completedTrials > 0 ? Math.round((wins / completedTrials) * 100) : 0;
+
+    // Get recent 5 trials
+    const recentTrials = allTrials.slice(0, 5).map(trial => ({
+      title: typeof trial.situationId === 'object' && trial.situationId !== null && 'title' in trial.situationId
+        ? (trial.situationId as any).title || 'Mock Trial'
+        : 'Mock Trial',
+      role: trial.plaintiffId?.toString() === userId ? 'plaintiff' : 'defendant',
+      status: trial.status,
+      date: (trial as any).createdAt || null,
+      won: trial.winnerId ? trial.winnerId.toString() === userId : null,
+      _id: trial._id
+    }));
+
+    res.status(200).json({
+      totalTrials,
+      completedTrials,
+      asPlaintiff,
+      asDefendant,
+      wins,
+      losses,
+      winRate,
+      recentTrials
+    });
+
+  } catch (err: any) {
+    console.error("Mock trial statistics fetch error ➜", err.message);
+    res.status(500).json({ message: "Something went wrong", error: err.message });
+  }
+};
