@@ -1,52 +1,60 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import { User } from "../../models/User";
+import { User, Iuser } from "../../models/User";
 import { Friends } from "../../models/FriendReq/FriendRequest";
-import { send } from "process";
 
+// --- SEND FRIEND REQUEST CONTROLLER ---
 export const sendfriendRequest = async (req: Request, res: Response): Promise<void> => {
   try {
-    const senderId = req.user?.id;
+    // Ensure request is authenticated (middleware should attach req.user)
+    const senderId = (req as any).user?.id as string | undefined;
     const { username } = req.body as { username: string };
 
     if (!username) {
       res.status(400).json({ msg: "Receiver username is required" });
       return;
     }
+
     if (!senderId) {
       res.status(401).json({ msg: "Unauthenticated" });
       return;
     }
 
-    const sender   = await User.findById(senderId);
-    const receiver = await User.findOne({ username: username.toLowerCase() });
+    const sender: Iuser | null = await User.findById(senderId);
+    const receiver: Iuser | null = await User.findOne({ username: username.toLowerCase() });
 
     if (!sender) {
-      res.status(404).json({ msg: "Receiver not found" });
+      res.status(404).json({ msg: "Sender not found" });
       return;
     }
+
     if (!receiver) {
       res.status(404).json({ msg: "Receiver not found" });
       return;
     }
-    if (sender?._id.equals(receiver._id)) {
+
+    const senderObjectId = sender._id as mongoose.Types.ObjectId;
+    const receiverObjectId = receiver._id as mongoose.Types.ObjectId;
+
+    // Can't send request to yourself
+    if (senderObjectId.equals(receiverObjectId)) {
       res.status(400).json({ msg: "Cannot send request to yourself" });
       return;
     }
 
-    // Already friends? 
-    if (sender?.friends.includes(receiver._id)) {
+    // Already friends?
+    if (sender.friends.some((friendId) => friendId.equals(receiverObjectId))) {
       res.status(400).json({ msg: "Already friends" });
       return;
     }
 
-    // Pending request already exists? 
+    // Check if a pending request already exists between the same users
     const duplicate = await Friends.findOne({
       $or: [
-        { senderId: sender._id,   receiverId: receiver._id },
-        { senderId: receiver._id, receiverId: sender._id }
+        { senderId: senderObjectId, receiverId: receiverObjectId },
+        { senderId: receiverObjectId, receiverId: senderObjectId },
       ],
-      status: "pending"
+      status: "pending",
     });
 
     if (duplicate) {
@@ -56,17 +64,21 @@ export const sendfriendRequest = async (req: Request, res: Response): Promise<vo
 
     // Create new friend request
     const request = await Friends.create({
-      senderId:   sender._id,
-      receiverId: receiver._id,
-      status:     "pending"
+      senderId: senderObjectId,
+      receiverId: receiverObjectId,
+      status: "pending",
     });
 
-    res.status(201).json({ msg: "Friend request sent", requestId: request._id });
+    res.status(201).json({
+      msg: "Friend request sent successfully",
+      requestId: request._id,
+    });
   } catch (e) {
-    console.error("sendFriendRequest error:", e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+    console.error("sendfriendRequest error:", e);
+    res.status(500).json({ msg: "Something went wrong", error: (e as Error).message });
   }
 };
+
 
 
 export const respondRequest = async (req: Request, res: Response): Promise<void> => {
