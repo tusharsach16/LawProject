@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Gavel, Scale, Loader2, Sparkles, Filter, ChevronRight } from 'lucide-react';
 import { getMockTrialSituationsCat, getMockTrialCategories } from '../services/authService';
 import Matchmaking from '../components/MatchMaking';
+import { useNavigate } from 'react-router-dom';
 
 interface Situation {
   _id: string;
@@ -23,6 +24,7 @@ const MockTrialLobby = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
 
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchCategories = async () => {
         try {
@@ -54,7 +56,7 @@ const MockTrialLobby = () => {
     <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-50 to-slate-100 min-h-full">
       <header className="mb-8">
         <div className="flex items-center gap-4 mb-3">
-          <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl shadow-lg">
+          <div className="p-3 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-lg">
             <Gavel size={32} className="text-white" />
           </div>
           <div>
@@ -139,7 +141,15 @@ const MockTrialLobby = () => {
               </p>
               
               <button 
-                onClick={() => setSelectedSituation(sit)}
+                onClick={() => {
+                  const token = localStorage.getItem("token");
+                  if (!token) {
+                    alert("Please sign in to participate in a mock trial.");
+                    navigate("/signin");
+                    return;
+                  }
+                  setSelectedSituation(sit);
+                }}
                 className="w-full bg-gradient-to-r from-slate-900 to-slate-800 text-white font-bold py-3 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 group/btn"
               >
                 Participate
