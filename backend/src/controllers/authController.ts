@@ -1,20 +1,20 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
-import { User } from '../models/User';
+import { User, Iuser } from '../models/User';
 import { Lawyer } from '../models/Lawyer';
 import { LawStudent } from '../models/LawStudent';
 import { GeneralUser } from '../models/GeneralUser';
 
-// --- HELPER FUNCTION (This is excellent!) ---
+// --- HELPER FUNCTION  ---
 const getFullUserProfile = async (userId: string) => {
-  const user = await User.findById(userId).select('-password').lean();
-  if (!user) {
-    return null;
-  }
+  const user = await User.findById(userId).select('-password').lean<Iuser>();
+  if (!user) return null;
 
   let roleData: any = {};
+
   switch (user.role) {
     case 'general':
       roleData = await GeneralUser.findOne({ userId: user._id }).lean();
@@ -30,12 +30,12 @@ const getFullUserProfile = async (userId: string) => {
   return { ...user, roleData: roleData || {} };
 };
 
-
+// --- SIGNUP CONTROLLER ---
 const signupUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, lastname, username, email, phoneNumber, password, role, ...extraData } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser: Iuser | null = await User.findOne({ email });
     if (existingUser) {
       res.status(400).json({ message: 'Email already in use' });
       return;
@@ -43,83 +43,97 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
-      name, lastname, username, email, phoneNumber, password: hashedPassword, role
+    const user: Iuser = await User.create({
+      name,
+      lastname,
+      username,
+      email,
+      phoneNumber,
+      password: hashedPassword,
+      role,
     });
 
+    const userId = user._id as mongoose.Types.ObjectId;
+
     if (role === 'lawyer') {
-      await Lawyer.create({ userId: user._id, ...extraData });
+      await Lawyer.create({ userId, ...extraData });
     } else if (role === 'lawstudent') {
-      await LawStudent.create({ userId: user._id, ...extraData });
+      await LawStudent.create({ userId, ...extraData });
     } else {
-      await GeneralUser.create({ userId: user._id, ...extraData });
+      await GeneralUser.create({ userId, ...extraData });
     }
 
-    // --- FIX 1: SIGNUP KE BAAD TOKEN CREATE KARNA ---
     const token = jwt.sign(
-      { id: user._id, role: user.role, username: user.username },
+      { id: userId.toString(), role: user.role, username: user.username },
       process.env.JWT_SECRET!,
       { expiresIn: '1d' }
     );
-    
-    // Poora user profile fetch karein taaki frontend ko saari details mil jayein
-    const fullUserProfile = await getFullUserProfile(user._id.toString());
 
-    // --- FIX 2: TOKEN KO RESPONSE MEIN BHEJNA ---
-    res.status(201).json({ 
-      message: 'Signup successful', 
-      token, // Ab frontend ko token mil jayega
-      user: fullUserProfile 
+    const fullUserProfile = await getFullUserProfile(userId.toString());
+
+    res.status(201).json({
+      message: 'Signup successful',
+      token,
+      user: fullUserProfile,
     });
-
   } catch (error) {
-    console.error(error);
+    console.error('Signup Error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
+// --- LOGIN CONTROLLER ---
 const loginUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
+    const user: Iuser | null = await User.findOne({ email });
+    if (!user || !(user.comparePassword && (await user.comparePassword(password)))) {
       res.status(400).json({ message: 'Invalid credentials' });
       return;
     }
 
-    const fullUserProfile = await getFullUserProfile(user._id.toString());
+    const userId = user._id as mongoose.Types.ObjectId;
+
+    const fullUserProfile = await getFullUserProfile(userId.toString());
 
     const token = jwt.sign(
-      { id: user._id, role: user.role, username: user.username },
+      { id: userId.toString(), role: user.role, username: user.username },
       process.env.JWT_SECRET!,
       { expiresIn: '1d' }
     );
 
-    res.status(200).json({ message: 'Login successful', token, user: fullUserProfile });
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      user: fullUserProfile,
+    });
   } catch (error) {
-    console.error(error);
+    console.error('Login Error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-
+// --- GET USER CONTROLLER ---
 const getUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = (req as any).user.id; 
+    const userId = (req as any).user?.id as string;
+
+    if (!userId) {
+      res.status(401).json({ message: 'Unauthorized - Missing token' });
+      return;
+    }
 
     const fullUserProfile = await getFullUserProfile(userId);
 
-    if (!fullUserProfile){
+    if (!fullUserProfile) {
       res.status(404).json({ message: 'User not found' });
       return;
     }
 
-    // --- FIX 3: API RESPONSE KO CONSISTENT BANANA ---
-    // Ab frontend ko hamesha { user: {...} } milega.
     res.status(200).json({ user: fullUserProfile });
   } catch (error) {
-    console.error(error);
+    console.error('GetUser Error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
