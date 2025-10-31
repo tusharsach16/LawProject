@@ -39,8 +39,9 @@ initWebSocketServer(server);
 
 console.log("✅ Loaded Mongo URL:", process.env.MONGODB_URL?.slice(0, 25) + "...");
 
+
 app.use('/api', authRoutes);
-app.use('/quiz', quizRoutes);
+app.use('/api', quizRoutes);
 app.use('/apiFriend', friendRoute);
 app.use('/api', profile);
 app.use('/api/upload', uploadRoutes);
