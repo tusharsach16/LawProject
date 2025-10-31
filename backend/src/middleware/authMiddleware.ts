@@ -17,7 +17,13 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
     console.log("Token decoded", decoded);
-    (req as any).user = decoded; // You can use declaration merging to type this properly
+    // Normalize the decoded token into a small user object we expect in handlers.
+    const payload: any = decoded;
+    (req as any).user = {
+      id: payload.id || payload._id || payload.userId,
+      role: payload.role,
+      email: payload.email,
+    };
     next();
   } catch (err) {
     console.log("Token invalid or expired");
