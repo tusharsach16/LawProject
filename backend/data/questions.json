@@ -1,1102 +1,1429 @@
 [
   {
-    "ques": "Criminal Law Question 1?",
-    "options": [
-      "Article 21",
-      "Article 19",
-      "Article 14",
-      "Article 32"
-    ],
+    "ques": "Which provision of CrPC deals with registration of FIR in a cognizable case?",
+    "options": ["Section 154 CrPC", "Section 190 CrPC", "Section 161 CrPC", "Section 173 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "FIR for cognizable offences is recorded under Section 154 of the Code of Criminal Procedure."
   },
   {
-    "ques": "Criminal Law Question 2?",
-    "options": [
-      "Tort Law",
-      "Contract Law",
-      "Family Law",
-      "Property Law"
-    ],
-    "correctIndex": 0,
-    "category": "criminal"
+    "ques": "Anticipatory bail is provided under which provision?",
+    "options": ["Section 439 CrPC", "Section 438 CrPC", "Section 167 CrPC", "Section 482 CrPC"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Section 438 CrPC empowers the court to grant bail in anticipation of arrest."
   },
   {
-    "ques": "Criminal Law Question 3?",
-    "options": [
-      "Directive Principles",
-      "Judicial Review",
-      "Fundamental Rights",
-      "Preamble"
-    ],
-    "correctIndex": 0,
-    "category": "criminal"
+    "ques": "Police custody beyond how many days requires judicial custody under Section 167 CrPC (serious offences)?",
+    "options": ["24 hours", "7 days", "15 days total police custody", "60/90 days statutory limit"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "Police custody cannot exceed 15 days in the whole; thereafter remand is judicial."
   },
   {
-    "ques": "Criminal Law Question 4?",
-    "options": [
-      "Section 302",
-      "Section 377",
-      "Section 420",
-      "Section 379"
-    ],
+    "ques": "Confession recording by Magistrate is under which section?",
+    "options": ["Section 164 CrPC", "Section 161 CrPC", "Section 313 CrPC", "Section 320 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Section 164 CrPC empowers Magistrates to record confessions and statements."
   },
   {
-    "ques": "Criminal Law Question 5?",
-    "options": [
-      "Article 21",
-      "Article 19",
-      "Article 32",
-      "Article 14"
-    ],
-    "correctIndex": 0,
-    "category": "criminal"
+    "ques": "Inherent powers of High Court to prevent abuse of process are invoked under:",
+    "options": ["Section 397 CrPC", "Section 401 CrPC", "Section 482 CrPC", "Section 320 CrPC"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "Section 482 CrPC preserves inherent powers of the High Court."
   },
   {
-    "ques": "Criminal Law Question 6?",
-    "options": [
-      "Family Law",
-      "Property Law",
-      "Contract Law",
-      "Tort Law"
-    ],
-    "correctIndex": 0,
-    "category": "criminal"
+    "ques": "Final report/charge sheet submission is governed by:",
+    "options": ["Section 161 CrPC", "Section 173 CrPC", "Section 154 CrPC", "Section 190 CrPC"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Police submit the final report under Section 173 CrPC."
   },
   {
-    "ques": "Criminal Law Question 7?",
-    "options": [
-      "Judicial Review",
-      "Preamble",
-      "Directive Principles",
-      "Fundamental Rights"
-    ],
+    "ques": "Compounding of offences is provided under:",
+    "options": ["Section 320 CrPC", "Section 319 CrPC", "Section 313 CrPC", "Section 438 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Section 320 CrPC lists compoundable offences and conditions."
   },
   {
-    "ques": "Criminal Law Question 8?",
-    "options": [
-      "Section 377",
-      "Section 420",
-      "Section 379",
-      "Section 302"
-    ],
-    "correctIndex": 0,
-    "category": "criminal"
+    "ques": "Examination of the accused by court on incriminating circumstances is under:",
+    "options": ["Section 164 CrPC", "Section 313 CrPC", "Section 239 CrPC", "Section 227 CrPC"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Section 313 CrPC allows the court to question the accused directly."
   },
   {
-    "ques": "Criminal Law Question 9?",
-    "options": [
-      "Article 19",
-      "Article 21",
-      "Article 32",
-      "Article 14"
-    ],
+    "ques": "Statement to police during investigation is recorded under:",
+    "options": ["Section 161 CrPC", "Section 164 CrPC", "Section 154 CrPC", "Section 200 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Section 161 CrPC deals with examination of witnesses by police."
   },
   {
-    "ques": "Criminal Law Question 10?",
-    "options": [
-      "Family Law",
-      "Contract Law",
-      "Property Law",
-      "Tort Law"
-    ],
+    "ques": "Cognizance of offences by Magistrates is under:",
+    "options": ["Section 190 CrPC", "Section 193 CrPC", "Section 200 CrPC", "Section 202 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Section 190 CrPC enables Magistrates to take cognizance upon police report or complaint."
   },
   {
-    "ques": "Criminal Law Question 11?",
-    "options": [
-      "Directive Principles",
-      "Fundamental Rights",
-      "Preamble",
-      "Judicial Review"
-    ],
+    "ques": "Sanction for prosecution of public servants is contemplated under:",
+    "options": ["Section 197 CrPC", "Section 319 CrPC", "Section 438 CrPC", "Section 360 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Prior sanction under Section 197 CrPC protects public servants for acts in discharge of duty."
   },
   {
-    "ques": "Criminal Law Question 12?",
-    "options": [
-      "Section 420",
-      "Section 302",
-      "Section 377",
-      "Section 379"
-    ],
+    "ques": "Victim’s right to appeal against acquittal flows from:",
+    "options": ["Section 372 proviso CrPC", "Section 397 CrPC", "Section 401 CrPC", "Section 482 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "The proviso to Section 372 CrPC grants a victim a limited right of appeal."
+  },
+  {
+    "ques": "Hostile witness concept primarily arises under the Evidence Act. Which section permits cross of one’s own witness?",
+    "options": ["Section 145 EA", "Section 154 EA", "Section 155 EA", "Section 165 EA"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Section 154 of the Indian Evidence Act allows the court to permit cross-examination of one’s own witness."
+  },
+  {
+    "ques": "Discovery of fact at the instance of accused is admissible under:",
+    "options": ["Section 24 EA", "Section 25 EA", "Section 27 EA", "Section 65B EA"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "Section 27 EA carves out an exception for discovery of fact from inadmissible confessions."
   },
   {
-    "ques": "Criminal Law Question 13?",
-    "options": [
-      "Article 19",
-      "Article 14",
-      "Article 32",
-      "Article 21"
-    ],
+    "ques": "Electronic records admissibility certificate requirement is under:",
+    "options": ["Section 45A EA", "Section 65B EA", "Section 32 EA", "Section 60 EA"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Section 65B EA requires a certificate for secondary electronic evidence."
+  },
+  {
+    "ques": "Dying declaration is relevant under:",
+    "options": ["Section 32(1) EA", "Section 60 EA", "Section 114 EA", "Section 106 EA"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Statements of a person as to cause of death are relevant under Section 32(1) Evidence Act."
   },
   {
-    "ques": "Criminal Law Question 14?",
-    "options": [
-      "Contract Law",
-      "Property Law",
-      "Family Law",
-      "Tort Law"
-    ],
+    "ques": "Summons-case vs warrant-case depends primarily on:",
+    "options": ["Punishment prescribed", "Court’s convenience", "Victim’s choice", "Police classification"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Warrant-cases relate to offences punishable with death, life, or >2 years; others are summons-cases."
+  },
+  {
+    "ques": "When can High Court quash an FIR under Section 482 CrPC?",
+    "options": ["To re-appreciate evidence", "To punish the IO", "To prevent abuse of process or secure ends of justice", "To change IPC sections arbitrarily"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "HC uses inherent powers to prevent abuse of process and secure justice."
   },
   {
-    "ques": "Criminal Law Question 15?",
-    "options": [
-      "Judicial Review",
-      "Fundamental Rights",
-      "Directive Principles",
-      "Preamble"
-    ],
+    "ques": "Test identification parade (TIP) is primarily a matter of:",
+    "options": ["Substantive evidence", "Corroborative value", "Confession", "Hearsay"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "TIP has corroborative value; substantive evidence is the identification in court."
+  },
+  {
+    "ques": "Alteration of charge by the court is permitted under:",
+    "options": ["Section 216 CrPC", "Section 228 CrPC", "Section 239 CrPC", "Section 227 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Court may alter or add to any charge at any time before judgment under Section 216 CrPC."
   },
   {
-    "ques": "Criminal Law Question 16?",
-    "options": [
-      "Section 379",
-      "Section 377",
-      "Section 420",
-      "Section 302"
-    ],
+    "ques": "Discharge in a sessions case is dealt with under:",
+    "options": ["Section 227 CrPC", "Section 239 CrPC", "Section 245 CrPC", "Section 251 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Section 227 CrPC allows discharge if there is not sufficient ground for proceeding."
   },
   {
-    "ques": "Criminal Law Question 17?",
-    "options": [
-      "Article 19",
-      "Article 21",
-      "Article 32",
-      "Article 14"
-    ],
+    "ques": "Framing of charge in sessions cases occurs under:",
+    "options": ["Section 228 CrPC", "Section 240 CrPC", "Section 246 CrPC", "Section 252 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Section 228 CrPC is for framing charge in sessions trials."
+  },
+  {
+    "ques": "Judicial confession to a Magistrate must be:",
+    "options": ["Recorded by police", "Voluntary and with caution", "In presence of complainant", "Signed by IO"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Confession under 164 CrPC must be voluntary with statutory safeguards."
+  },
+  {
+    "ques": "Non-compoundable offences can be quashed in compromise in rare cases under:",
+    "options": ["Section 320(9) CrPC", "Section 482 CrPC", "Section 397 CrPC", "Section 401 CrPC"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "HC’s inherent powers may quash proceedings to secure ends of justice."
   },
   {
-    "ques": "Criminal Law Question 18?",
-    "options": [
-      "Tort Law",
-      "Contract Law",
-      "Property Law",
-      "Family Law"
-    ],
+    "ques": "Who has power to order further investigation after charge sheet?",
+    "options": ["Magistrate under Section 173(8) CrPC", "Only Sessions Court", "Only High Court", "Only Police Commissioner"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Magistrate can permit further investigation under Section 173(8) CrPC."
   },
   {
-    "ques": "Criminal Law Question 19?",
-    "options": [
-      "Judicial Review",
-      "Preamble",
-      "Fundamental Rights",
-      "Directive Principles"
-    ],
+    "ques": "Confession to police is generally inadmissible because of:",
+    "options": ["Section 25 EA", "Section 27 EA", "Section 32 EA", "Section 60 EA"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Section 25 EA makes confessions to police officers inadmissible."
   },
   {
-    "ques": "Criminal Law Question 20?",
-    "options": [
-      "Section 302",
-      "Section 377",
-      "Section 379",
-      "Section 420"
-    ],
+    "ques": "When can Magistrate issue process on a complaint?",
+    "options": ["On receipt of FIR", "After examination under Section 200 and inquiry under 202 if needed", "After trial", "After police approval"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Complaint cases require examination of complainant (Sec 200) and possible inquiry (Sec 202)."
+  },
+  {
+    "ques": "Bail in non-bailable offences by Sessions Court/HC is under:",
+    "options": ["Section 436 CrPC", "Section 437 CrPC", "Section 439 CrPC", "Section 440 CrPC"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "Section 439 CrPC confers special powers of bail to Sessions Court and High Court."
+  },
+  {
+    "ques": "Approver is tendered pardon under:",
+    "options": ["Section 306 CrPC", "Section 307 CrPC", "Section 308 CrPC", "Section 313 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Pardon to accomplices is covered by Sections 306–308 CrPC; 306 is before Magistrate."
+  },
+  {
+    "ques": "Who bears burden of proof in criminal trials?",
+    "options": ["Accused", "Victim", "Prosecution", "Magistrate"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "Prosecution must prove guilt beyond reasonable doubt; presumption of innocence applies."
   },
   {
-    "ques": "Criminal Law Question 21?",
-    "options": [
-      "Article 32",
-      "Article 19",
-      "Article 14",
-      "Article 21"
-    ],
+    "ques": "Exclusion of time for production before Magistrate is governed by:",
+    "options": ["Section 57 CrPC (24 hours rule)", "Section 41 CrPC", "Section 46 CrPC", "Section 102 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Arrested person must be produced within 24 hours excluding travel time."
+  },
+  {
+    "ques": "Examining defense witnesses is covered under:",
+    "options": ["Section 313 CrPC", "Section 233 CrPC (Sessions)", "Section 239 CrPC", "Section 216 CrPC"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Section 233 CrPC allows the accused to enter defense and produce evidence in sessions trials."
+  },
+  {
+    "ques": "Standard of proof for defense exceptions (IPC Chapter IV) is:",
+    "options": ["Beyond reasonable doubt", "Preponderance of probabilities", "Absolute certainty", "Prima facie"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Accused need only establish exceptions on a balance of probabilities."
+  },
+  {
+    "ques": "Section 164 statement of a child victim is often recorded to:",
+    "options": ["Replace trial", "Provide substantive evidence automatically", "Preserve early account with safeguards", "Avoid cross-examination"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "It preserves the victim’s account early, subject to trial scrutiny."
+  },
+  {
+    "ques": "Testimony of a single witness can sustain conviction if:",
+    "options": ["Always requires corroboration", "Is unreliable", "Is wholly reliable and trustworthy", "Only if police witness"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "Quality over quantity; a wholly reliable single witness can suffice."
+  },
+  {
+    "ques": "Court may summon any person as witness at any stage under:",
+    "options": ["Section 165 EA", "Section 311 CrPC", "Section 319 CrPC", "Section 240 CrPC"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Section 311 CrPC gives wide power to summon/recall witnesses for just decision."
   },
   {
-    "ques": "Criminal Law Question 22?",
-    "options": [
-      "Tort Law",
-      "Property Law",
-      "Family Law",
-      "Contract Law"
-    ],
+    "ques": "Adding a new accused based on evidence during trial is under:",
+    "options": ["Section 319 CrPC", "Section 311 CrPC", "Section 227 CrPC", "Section 482 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Under Section 319, court can proceed against persons appearing to have committed an offence."
+  },
+  {
+    "ques": "Who can order transfer of cases from one High Court to another?",
+    "options": ["High Court itself", "Sessions Court", "Supreme Court under Section 406 CrPC", "Law Ministry"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "SC has power under Section 406 CrPC to transfer cases."
+  },
+  {
+    "ques": "Revision jurisdiction of High Court is under:",
+    "options": ["Section 397 CrPC", "Section 401 CrPC", "Both Section 397 and 401 CrPC", "Section 374 CrPC"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "Section 397 confers revisional powers; Section 401 details HC’s powers in revision."
   },
   {
-    "ques": "Criminal Law Question 23?",
-    "options": [
-      "Fundamental Rights",
-      "Preamble",
-      "Directive Principles",
-      "Judicial Review"
-    ],
+    "ques": "Plea bargaining is contained in CrPC Chapter:",
+    "options": ["Chapter XXIIA (Sections 265A–265L)", "Chapter XXI", "Chapter XIX", "Chapter XXIV"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Plea bargaining is covered in Chapter XXIIA."
   },
   {
-    "ques": "Criminal Law Question 24?",
-    "options": [
-      "Section 420",
-      "Section 377",
-      "Section 302",
-      "Section 379"
-    ],
+    "ques": "Withdrawal from prosecution by Public Prosecutor requires consent of:",
+    "options": ["Police", "Court (Section 321 CrPC)", "Victim", "State Home Dept"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Court's consent is mandatory under Section 321 CrPC."
+  },
+  {
+    "ques": "When is TIP unnecessary?",
+    "options": ["Accused unknown to witness", "Accused arrested long after incident", "Accused known to witness previously", "When accused denies guilt"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "If accused is already well-known to the witness, TIP is unnecessary."
+  },
+  {
+    "ques": "Burden to explain facts especially within knowledge lies under:",
+    "options": ["Section 106 EA", "Section 101 EA", "Section 114 EA", "Section 32 EA"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "Section 106 places special knowledge facts on that party."
+  },
+  {
+    "ques": "Confession caused by inducement, threat or promise is:",
+    "options": ["Admissible", "Inadmissible under Section 24 EA", "Partly admissible", "Admissible if recorded by police"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Section 24 renders such confessions irrelevant."
+  },
+  {
+    "ques": "Order on charge in warrant case instituted on police report is under:",
+    "options": ["Section 239 CrPC (discharge)", "Section 240 CrPC (framing of charge)", "Both 239 and 240 as applicable", "Section 245 CrPC"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "239 allows discharge; 240 allows framing of charge in police report cases."
+  },
+  {
+    "ques": "Default/statutory bail arises when charge sheet not filed within:",
+    "options": ["15 days", "30 days", "60 or 90 days depending on offence", "120 days always"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "Section 167(2) proviso provides 60/90 days limits."
+  },
+  {
+    "ques": "Non-examination of IO is:",
+    "options": ["Always fatal", "Never relevant", "May or may not be fatal depending on prejudice", "Automatically vitiates trial"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "Courts examine prejudice caused to the accused."
+  },
+  {
+    "ques": "Requirement to supply police report and documents to accused is under:",
+    "options": ["Section 173(2) CrPC", "Section 207 CrPC", "Section 161 CrPC", "Section 190 CrPC"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Section 207 mandates supply of copies to the accused."
+  },
+  {
+    "ques": "Examination-in-chief must be:",
+    "options": ["Leading questions throughout", "Oral and relevant; leading normally not permitted", "Written affidavit only", "Done by judge only"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Leading questions are generally not allowed in examination-in-chief."
+  },
+  {
+    "ques": "Acquittal for benefit of doubt is based on:",
+    "options": ["Civil standard", "Balance of convenience", "Reasonable doubt standard", "Strict liability"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "Criminal trials require proof beyond reasonable doubt."
+  },
+  {
+    "ques": "Case diary under Section 172 CrPC can be used by:",
+    "options": ["Parties freely", "Only police", "Court may use; defense with permission", "Public access under RTI"],
+    "correctIndex": 2,
+    "category": "criminal",
+    "explanation": "Court can call and use case diary; defense gets limited access."
+  },
+  {
+    "ques": "Confession recorded in non-compliance with Section 164 safeguards is:",
+    "options": ["Still fully admissible", "Likely inadmissible or of little value", "Always conclusive", "Becomes a dying declaration"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Non-compliance undermines voluntariness and evidentiary value."
   },
   {
-    "ques": "Criminal Law Question 25?",
-    "options": [
-      "Article 32",
-      "Article 14",
-      "Article 21",
-      "Article 19"
-    ],
+    "ques": "'Beyond reasonable doubt' means:",
+    "options": ["Absolute certainty", "High degree of probability excluding reasonable doubt", "Balance of probabilities", "Conjecture"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "It is higher than civil standard, not absolute certainty."
+  },
+  {
+    "ques": "Remedy against acquittal by Magistrate for the State lies under:",
+    "options": ["Section 378 CrPC (appeal)", "Section 397 CrPC", "Section 401 CrPC", "Section 482 CrPC"],
     "correctIndex": 0,
-    "category": "criminal"
+    "category": "criminal",
+    "explanation": "State can appeal against acquittal under Section 378 CrPC."
+  },
+  {
+    "ques": "Confession of co-accused under Section 30 EA is:",
+    "options": ["Substantive evidence", "Corroborative and weak evidence", "Hearsay only", "Inadmissible always"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "Co-accused confession can be used for limited corroboration."
   },
   {
-    "ques": "Civil Law Question 1?",
-    "options": [
-      "Article 14",
-      "Article 19",
-      "Article 21",
-      "Article 32"
-    ],
+    "ques": "Grant of pardon to an accomplice after commitment is under:",
+    "options": ["Section 306 CrPC", "Section 307 CrPC", "Section 308 CrPC", "Section 309 CrPC"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "After commitment, power lies with the court to which the case is committed (S.307)."
+  },
+  {
+    "ques": "A confession must be recorded by Magistrate to be:",
+    "options": ["Voluntary and with warnings about consequences", "Fast-tracked", "Conducted by IO", "Done in police station"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "criminal",
+    "explanation": "Magistrate must ensure voluntariness and caution the maker."
+  },
+  {
+    "ques": "Acquittal under Section 232 CrPC occurs when:",
+    "options": ["No charge framed", "Prosecution evidence closes and no evidence of guilt", "Accused absconds", "Victim turns hostile"],
+    "correctIndex": 1,
+    "category": "criminal",
+    "explanation": "If no evidence to hold the accused guilty appears, acquittal follows."
   },
+
   {
-    "ques": "Civil Law Question 2?",
-    "options": [
-      "Property Law",
-      "Contract Law",
-      "Tort Law",
-      "Family Law"
-    ],
+    "ques": "Jurisdiction of civil courts is laid down in CPC under:",
+    "options": ["Section 9 CPC", "Section 11 CPC", "Order VII Rule 11 CPC", "Order XXXIX CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Section 9 CPC confers jurisdiction unless barred."
+  },
+  {
+    "ques": "Rejection of plaint is under:",
+    "options": ["Order VI Rule 17 CPC", "Order VII Rule 11 CPC", "Order IX Rule 13 CPC", "Order XX CPC"],
+    "correctIndex": 1,
+    "category": "civil",
+    "explanation": "O7 R11 provides grounds like no cause of action, undervaluation, etc."
   },
   {
-    "ques": "Civil Law Question 3?",
-    "options": [
-      "Preamble",
-      "Fundamental Rights",
-      "Directive Principles",
-      "Judicial Review"
-    ],
+    "ques": "Res judicata is codified in:",
+    "options": ["Section 10 CPC", "Section 11 CPC", "Section 12 CPC", "Order I Rule 10 CPC"],
+    "correctIndex": 1,
+    "category": "civil",
+    "explanation": "Section 11 CPC bars re-litigation of finally decided issues."
+  },
+  {
+    "ques": "Temporary injunctions are governed by:",
+    "options": ["Order XXXIX Rules 1-2 CPC", "Order XLIII CPC", "Order XII CPC", "Order XXI CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "O39 allows interim injunctions on prima facie case, balance of convenience, and irreparable injury."
   },
   {
-    "ques": "Civil Law Question 4?",
-    "options": [
-      "Section 379",
-      "Section 302",
-      "Section 377",
-      "Section 420"
-    ],
+    "ques": "Amendment of pleadings is provided under:",
+    "options": ["Order VI Rule 17 CPC", "Order VII Rule 14 CPC", "Order VIII Rule 1 CPC", "Order XI CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "O6 R17 permits amendment when necessary for deciding the real controversy."
   },
   {
-    "ques": "Civil Law Question 5?",
-    "options": [
-      "Article 19",
-      "Article 21",
-      "Article 14",
-      "Article 32"
-    ],
+    "ques": "Stay of suit is under:",
+    "options": ["Section 10 CPC", "Section 11 CPC", "Order IX CPC", "Order XXIII CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Section 10 CPC prevents parallel trials of identical matters."
   },
   {
-    "ques": "Civil Law Question 6?",
-    "options": [
-      "Family Law",
-      "Contract Law",
-      "Tort Law",
-      "Property Law"
-    ],
+    "ques": "Notice to government before suit is required by:",
+    "options": ["Section 80 CPC", "Section 34 CPC", "Order I Rule 8 CPC", "Order V CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Section 80 mandates a two-month notice in suits against Government/public officers."
   },
   {
-    "ques": "Civil Law Question 7?",
-    "options": [
-      "Fundamental Rights",
-      "Judicial Review",
-      "Directive Principles",
-      "Preamble"
-    ],
+    "ques": "Ex parte decree can be set aside under:",
+    "options": ["Order IX Rule 13 CPC", "Order XX Rule 1 CPC", "Order XXIII CPC", "Section 151 CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "O9 R13 provides remedy on sufficient cause for non-appearance."
   },
   {
-    "ques": "Civil Law Question 8?",
-    "options": [
-      "Section 379",
-      "Section 377",
-      "Section 420",
-      "Section 302"
-    ],
+    "ques": "Summary suit is filed under:",
+    "options": ["Order XXXVII CPC", "Order XXXV CPC", "Order XII CPC", "Order XXXVIII CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "O37 enables quick disposal of suits on negotiable instruments, written contracts etc."
   },
   {
-    "ques": "Civil Law Question 9?",
-    "options": [
-      "Article 14",
-      "Article 19",
-      "Article 21",
-      "Article 32"
-    ],
+    "ques": "Power of court to transfer suits is under:",
+    "options": ["Section 24 CPC", "Section 25 CPC", "Order XXIII CPC", "Order X CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Section 24 CPC allows High Court/District Court to transfer or withdraw suits."
   },
   {
-    "ques": "Civil Law Question 10?",
-    "options": [
-      "Contract Law",
-      "Property Law",
-      "Family Law",
-      "Tort Law"
-    ],
+    "ques": "Discovery and interrogatories fall under:",
+    "options": ["Order XI CPC", "Order XII CPC", "Order XIII CPC", "Order XIV CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Order XI governs discovery, inspection, and interrogatories."
   },
   {
-    "ques": "Civil Law Question 11?",
-    "options": [
-      "Judicial Review",
-      "Directive Principles",
-      "Fundamental Rights",
-      "Preamble"
-    ],
+    "ques": "Judgment on admissions is under:",
+    "options": ["Order XII Rule 6 CPC", "Order XV CPC", "Order XX CPC", "Section 34 CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "O12 R6 allows judgment based on clear admissions."
   },
   {
-    "ques": "Civil Law Question 12?",
-    "options": [
-      "Section 302",
-      "Section 420",
-      "Section 379",
-      "Section 377"
-    ],
+    "ques": "Withdrawal of suit with liberty to file fresh is under:",
+    "options": ["Order XXIII Rule 1(3) CPC", "Order XXII CPC", "Order XXI CPC", "Order XX CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Court may grant liberty if suit suffers from formal defect or other sufficient grounds."
   },
   {
-    "ques": "Civil Law Question 13?",
-    "options": [
-      "Article 21",
-      "Article 32",
-      "Article 14",
-      "Article 19"
-    ],
+    "ques": "Execution of decrees is provided in:",
+    "options": ["Order XXI CPC", "Order XX CPC", "Order XXIV CPC", "Order XXV CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Order XXI governs execution procedures."
+  },
+  {
+    "ques": "Mesne profits are typically awarded for:",
+    "options": ["Breach of contract", "Wrongful possession", "Defamation", "Injunctions"],
+    "correctIndex": 1,
+    "category": "civil",
+    "explanation": "They compensate for wrongful occupation of property."
   },
   {
-    "ques": "Civil Law Question 14?",
-    "options": [
-      "Tort Law",
-      "Family Law",
-      "Property Law",
-      "Contract Law"
-    ],
+    "ques": "Condonation of delay in limitation is under:",
+    "options": ["Section 5 Limitation Act", "Section 14 Limitation Act", "Section 9 Limitation Act", "Order XLIII CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Section 5 permits delay condonation for sufficient cause (except suits)."
+  },
+  {
+    "ques": "Exclusion of time spent prosecuting in wrong forum is under:",
+    "options": ["Section 5 LA", "Section 12 LA", "Section 14 LA", "Section 18 LA"],
+    "correctIndex": 2,
+    "category": "civil",
+    "explanation": "Section 14 excludes time for bona fide proceedings in the wrong forum."
   },
   {
-    "ques": "Civil Law Question 15?",
-    "options": [
-      "Judicial Review",
-      "Preamble",
-      "Fundamental Rights",
-      "Directive Principles"
-    ],
+    "ques": "Specific performance is governed by:",
+    "options": ["Specific Relief Act, 1963", "Contract Act, 1872", "TPA, 1882", "Registration Act, 1908"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "SRA provides remedies like specific performance and injunctions."
+  },
+  {
+    "ques": "Doctrine of res sub judice prevents:",
+    "options": ["Parallel criminal case", "Parallel civil trial of same matter between same parties", "Appeals", "Review"],
+    "correctIndex": 1,
+    "category": "civil",
+    "explanation": "Section 10 CPC covers res sub judice."
   },
   {
-    "ques": "Civil Law Question 16?",
-    "options": [
-      "Section 379",
-      "Section 377",
-      "Section 420",
-      "Section 302"
-    ],
+    "ques": "Necessary and proper parties are handled under:",
+    "options": ["Order I Rule 10 CPC", "Order II Rule 2 CPC", "Order IV CPC", "Order V CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Court may strike out/add parties for complete adjudication."
   },
   {
-    "ques": "Civil Law Question 17?",
-    "options": [
-      "Article 19",
-      "Article 14",
-      "Article 32",
-      "Article 21"
-    ],
+    "ques": "Temporary injunction requires:",
+    "options": ["Prima facie case, balance of convenience, irreparable injury", "Proof beyond doubt", "Only affidavit", "Cross-examination first"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "The classic threefold test."
   },
   {
-    "ques": "Civil Law Question 18?",
-    "options": [
-      "Contract Law",
-      "Tort Law",
-      "Property Law",
-      "Family Law"
-    ],
+    "ques": "Order XXXVIII deals with:",
+    "options": ["Arrest and attachment before judgment", "Commissions", "Appeals", "Review"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "O38 provides preventive measures to secure decrees."
   },
   {
-    "ques": "Civil Law Question 19?",
-    "options": [
-      "Directive Principles",
-      "Preamble",
-      "Judicial Review",
-      "Fundamental Rights"
-    ],
+    "ques": "Review of judgment is under CPC:",
+    "options": ["Order XLVII CPC", "Order XLIII CPC", "Order XLI CPC", "Order XLV CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "O47 allows review on discovery of new evidence/error apparent."
+  },
+  {
+    "ques": "Second appeal to High Court lies on:",
+    "options": ["Facts only", "Law only", "Substantial question of law", "Any ground"],
+    "correctIndex": 2,
+    "category": "civil",
+    "explanation": "Section 100 CPC restricts to substantial questions of law."
   },
   {
-    "ques": "Civil Law Question 20?",
-    "options": [
-      "Section 377",
-      "Section 302",
-      "Section 379",
-      "Section 420"
-    ],
+    "ques": "Order of return of plaint for presentation to proper court is under:",
+    "options": ["Order VII Rule 10 CPC", "Order VII Rule 11 CPC", "Order VI Rule 17 CPC", "Order XXI CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "O7 R10 provides return when the court lacks jurisdiction."
   },
   {
-    "ques": "Civil Law Question 21?",
-    "options": [
-      "Article 21",
-      "Article 14",
-      "Article 32",
-      "Article 19"
-    ],
+    "ques": "Doctrine of constructive res judicata is in Explanation to:",
+    "options": ["Section 9 CPC", "Section 10 CPC", "Section 11 CPC", "Section 12 CPC"],
+    "correctIndex": 2,
+    "category": "civil",
+    "explanation": "Expl. IV to Section 11 CPC deems matters that ought to have been raised as decided."
+  },
+  {
+    "ques": "Appeal from original decree is:",
+    "options": ["Section 96 CPC", "Section 100 CPC", "Order XLIII CPC", "Section 115 CPC"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Section 96 provides first appeals from original decrees."
+  },
+  {
+    "ques": "Revision to High Court is under:",
+    "options": ["Section 96 CPC", "Section 100 CPC", "Section 115 CPC", "Order XLIII CPC"],
+    "correctIndex": 2,
+    "category": "civil",
+    "explanation": "Section 115 CPC confers revisional jurisdiction on High Courts."
+  },
+  {
+    "ques": "Ad interim ex parte injunction requires:",
+    "options": ["Notice always mandatory", "Grave urgency and reasons recorded", "Cross-examination first", "Both parties’ consent"],
+    "correctIndex": 1,
+    "category": "civil",
+    "explanation": "Granted in urgent cases with reasons and quick post-order hearing."
   },
   {
-    "ques": "Civil Law Question 22?",
-    "options": [
-      "Family Law",
-      "Contract Law",
-      "Tort Law",
-      "Property Law"
-    ],
+    "ques": "Order XX Rule 1 CPC deals with:",
+    "options": ["Judgment and decree", "Execution", "Transfer", "Review"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "It prescribes pronouncement of judgment and preparation of decree."
   },
   {
-    "ques": "Civil Law Question 23?",
-    "options": [
-      "Directive Principles",
-      "Judicial Review",
-      "Preamble",
-      "Fundamental Rights"
-    ],
+    "ques": "Order XIII-A CPC (commercial courts) provides:",
+    "options": ["Framing of issues", "Summary judgment", "Review", "Execution"],
+    "correctIndex": 1,
+    "category": "civil",
+    "explanation": "O13-A enables summary judgment in commercial disputes."
+  },
+  {
+    "ques": "Doctrine of election in civil remedies means:",
+    "options": ["Choose inconsistent remedies carefully", "Always file all remedies", "Only damages allowed", "No injunction possible"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "A party cannot pursue mutually inconsistent remedies simultaneously."
   },
   {
-    "ques": "Civil Law Question 24?",
-    "options": [
-      "Section 302",
-      "Section 420",
-      "Section 379",
-      "Section 377"
-    ],
+    "ques": "Interim mandatory injunction test is:",
+    "options": ["Same as prohibitory, stricter threshold", "Always easier", "Never granted", "Only after trial"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Courts require a higher degree of assurance for mandatory interim orders."
   },
   {
-    "ques": "Civil Law Question 25?",
-    "options": [
-      "Article 32",
-      "Article 19",
-      "Article 14",
-      "Article 21"
-    ],
+    "ques": "Order XXVI CPC deals with:",
+    "options": ["Commissions", "Execution", "Appeals", "Reference"],
     "correctIndex": 0,
-    "category": "civil"
+    "category": "civil",
+    "explanation": "Commissions for examination, local investigations, etc."
+  },
+  {
+    "ques": "Court fee insufficiency leads to:",
+    "options": ["Dismissal always", "Opportunity to make good deficiency", "No consequence", "Contempt"],
+    "correctIndex": 1,
+    "category": "civil",
+    "explanation": "Courts usually permit rectification before drastic steps."
   },
   {
-    "ques": "Constitutional Law Question 1?",
-    "options": [
-      "Article 21",
-      "Article 32",
-      "Article 19",
-      "Article 14"
-    ],
+    "ques": "Order XII Rule 1 CPC provides:",
+    "options": ["Discovery", "Notice to admit", "Summary suit", "Review"],
+    "correctIndex": 1,
+    "category": "civil",
+    "explanation": "It enables requests to admit facts/documents."
+  },
+  {
+    "ques": "Restitution is covered by:",
+    "options": ["Section 144 CPC", "Section 148 CPC", "Section 151 CPC", "Order XLIII CPC"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "civil",
+    "explanation": "Restores parties to the position but for the decree/order reversed."
+  },
+  {
+    "ques": "Execution can be filed where:",
+    "options": ["Only where decree passed", "Only where judgment-debtor resides", "Any court as per Section 39/Transfer", "SC only"],
+    "correctIndex": 2,
+    "category": "civil",
+    "explanation": "CPC permits transfer of decree for execution based on JD's residence/property."
   },
   {
-    "ques": "Constitutional Law Question 2?",
-    "options": [
-      "Family Law",
-      "Property Law",
-      "Tort Law",
-      "Contract Law"
-    ],
+    "ques": "Order XXIII Rule 3 CPC deals with:",
+    "options": ["Compromise of suit", "Withdrawal", "Review", "Execution"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "civil",
+    "explanation": "Compromise decree must be lawful and recorded."
   },
   {
-    "ques": "Constitutional Law Question 3?",
-    "options": [
-      "Directive Principles",
-      "Preamble",
-      "Judicial Review",
-      "Fundamental Rights"
-    ],
+    "ques": "Order I Rule 8 CPC enables:",
+    "options": ["Representative suits",
+      "Commercial suits",
+      "Small causes",
+      "Appeals"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "civil",
+    "explanation": "Permits one or more to sue/defend on behalf of numerous persons with same interest."
   },
   {
-    "ques": "Constitutional Law Question 4?",
-    "options": [
-      "Section 377",
-      "Section 420",
-      "Section 379",
-      "Section 302"
-    ],
+    "ques": "Section 89 CPC encourages:",
+    "options": ["ADR processes", "Punishment", "Only litigation", "Ex parte proceedings"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "civil",
+    "explanation": "Refers parties to arbitration, conciliation, mediation, or Lok Adalat."
   },
   {
-    "ques": "Constitutional Law Question 5?",
-    "options": [
-      "Article 14",
-      "Article 21",
-      "Article 32",
-      "Article 19"
-    ],
+    "ques": "Order XIV CPC concerns:",
+    "options": ["Issues", "Execution", "Review", "Injunctions"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "civil",
+    "explanation": "Settlement and framing of issues for trial."
   },
   {
-    "ques": "Constitutional Law Question 6?",
-    "options": [
-      "Contract Law",
-      "Family Law",
-      "Tort Law",
-      "Property Law"
-    ],
+    "ques": "Commercial Courts Act primarily aims to:",
+    "options": ["Speedy disposal of commercial disputes", "Criminal trials", "Family disputes", "Consumer cases"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "civil",
+    "explanation": "It streamlines high-value commercial litigation."
   },
   {
-    "ques": "Constitutional Law Question 7?",
-    "options": [
-      "Fundamental Rights",
-      "Preamble",
-      "Judicial Review",
-      "Directive Principles"
-    ],
+    "ques": "Order XV-A CPC (varied by states) often provides:",
+    "options": ["Striking off defense for non-deposit (tenancy suits)", "Review", "Second appeal", "Execution"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "civil",
+    "explanation": "Commonly used in rent matters to compel timely deposit."
   },
   {
-    "ques": "Constitutional Law Question 8?",
-    "options": [
-      "Section 379",
-      "Section 420",
-      "Section 302",
-      "Section 377"
-    ],
+    "ques": "Order XX Rule 12 CPC deals with:",
+    "options": ["Mesne profits", "Compromise", "Transfer", "Review"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "civil",
+    "explanation": "Decrees for possession and mesne profits."
+  },
+  {
+    "ques": "Order XXIX CPC governs suits by/against:",
+    "options": ["Minors", "Government", "Corporations", "Indigent persons"],
+    "correctIndex": 2,
+    "category": "civil",
+    "explanation": "Deals with corporate litigants' representation."
+  },
+  {
+    "ques": "Order XXXII CPC concerns:",
+    "options": ["Indigent persons", "Minors and persons of unsound mind", "Summary suits", "Arbitration"],
+    "correctIndex": 1,
+    "category": "civil",
+    "explanation": "Provides safeguards like next friend/guardian ad litem."
+  },
+  {
+    "ques": "Order XXXIII CPC enables suits by:",
+    "options": ["Government", "Indigent persons (pauper suits)", "Companies", "Foreign states"],
+    "correctIndex": 1,
+    "category": "civil",
+    "explanation": "Permits filing without paying court fee initially."
   },
   {
-    "ques": "Constitutional Law Question 9?",
-    "options": [
-      "Article 21",
-      "Article 32",
-      "Article 14",
-      "Article 19"
-    ],
+    "ques": "Order XX Rule 20 CPC provides for:",
+    "options": ["Special cases", "Declaratory decrees", "Mortgage suits", "Specific performance forms"],
+    "correctIndex": 2,
+    "category": "civil",
+    "explanation": "Contains forms for mortgage decrees."
+  },
+
+  {
+    "ques": "Which Article guarantees equality before law and equal protection of laws?",
+    "options": ["Article 14", "Article 19", "Article 21", "Article 32"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Article 14 is the equality clause."
   },
   {
-    "ques": "Constitutional Law Question 10?",
-    "options": [
-      "Contract Law",
-      "Property Law",
-      "Family Law",
-      "Tort Law"
-    ],
+    "ques": "Remedy for enforcement of Fundamental Rights lies under:",
+    "options": ["Article 32", "Article 226", "Article 136", "Article 131"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Article 32 allows direct approach to Supreme Court."
+  },
+  {
+    "ques": "Writ jurisdiction of High Courts is under:",
+    "options": ["Article 32", "Article 226", "Article 227", "Article 131"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Article 226 empowers High Courts to issue writs."
   },
   {
-    "ques": "Constitutional Law Question 11?",
-    "options": [
-      "Fundamental Rights",
-      "Directive Principles",
-      "Preamble",
-      "Judicial Review"
-    ],
+    "ques": "Which part contains Directive Principles of State Policy?",
+    "options": ["Part III", "Part IV", "Part V", "Part VI"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "DPSPs are in Part IV (Articles 36-51)."
+  },
+  {
+    "ques": "Basic structure doctrine limits power under:",
+    "options": ["Article 368", "Article 13", "Article 300A", "Article 142"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Amendment power under Article 368 cannot damage basic structure."
+  },
+  {
+    "ques": "Right to life and personal liberty is under:",
+    "options": ["Article 14", "Article 19", "Article 21", "Article 25"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Article 21 has been widely expanded by judicial interpretation."
+  },
+  {
+    "ques": "Which Article defines ‘law’ for the purpose of FR invalidation?",
+    "options": ["Article 12", "Article 13", "Article 36", "Article 19"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Article 13 declares laws inconsistent with FRs void."
   },
   {
-    "ques": "Constitutional Law Question 12?",
-    "options": [
-      "Section 379",
-      "Section 302",
-      "Section 420",
-      "Section 377"
-    ],
+    "ques": "Which Article deals with prohibition of discrimination on grounds only of religion, race, caste, sex or place of birth?",
+    "options": ["Article 14", "Article 15", "Article 16", "Article 17"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Article 15 forbids discrimination; Article 16 ensures equality in public employment."
+  },
+  {
+    "ques": "Freedom of speech and expression is a right under:",
+    "options": ["Article 19(1)(a)", "Article 19(1)(d)", "Article 21A", "Article 25"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Part of the six freedoms under Article 19(1)."
   },
   {
-    "ques": "Constitutional Law Question 13?",
-    "options": [
-      "Article 19",
-      "Article 21",
-      "Article 14",
-      "Article 32"
-    ],
+    "ques": "Reasonable restrictions on Article 19(1)(a) are in:",
+    "options": ["Article 19(2)", "Article 19(6)", "Article 21", "Article 32"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Grounds include security of the State, public order, decency, etc."
+  },
+  {
+    "ques": "Right to constitutional remedies is itself a:",
+    "options": ["Directive principle", "Fundamental right", "Statutory right", "Constitutional convention"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Article 32 is a fundamental right."
+  },
+  {
+    "ques": "Abolition of untouchability is under:",
+    "options": ["Article 15", "Article 16", "Article 17", "Article 18"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Article 17 declares untouchability abolished."
+  },
+  {
+    "ques": "Which Article provides free and compulsory education for children 6–14 years?",
+    "options": ["Article 21", "Article 21A", "Article 41", "Article 45"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "21A was inserted by the 86th Amendment."
+  },
+  {
+    "ques": "Right to property now is a:",
+    "options": ["Fundamental right under Article 19", "Fundamental right under Article 31", "Constitutional right under Article 300A", "Directive principle"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Article 300A protects property as a constitutional (not fundamental) right."
+  },
+  {
+    "ques": "Ordinance-making power of the President is under:",
+    "options": ["Article 72", "Article 123", "Article 124", "Article 356"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Article 123 allows ordinances when Parliament is not in session."
+  },
+  {
+    "ques": "Special Leave to Appeal to Supreme Court is under:",
+    "options": ["Article 131", "Article 132", "Article 136", "Article 226"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Article 136 confers wide SLP jurisdiction."
   },
   {
-    "ques": "Constitutional Law Question 14?",
-    "options": [
-      "Tort Law",
-      "Family Law",
-      "Contract Law",
-      "Property Law"
-    ],
+    "ques": "Emergency due to war/external aggression/armed rebellion is under:",
+    "options": ["Article 352", "Article 356", "Article 360", "Article 361"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "National emergency is under Article 352."
+  },
+  {
+    "ques": "Financial emergency is provided in:",
+    "options": ["Article 352", "Article 356", "Article 360", "Article 365"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Article 360 has never been invoked in India."
   },
   {
-    "ques": "Constitutional Law Question 15?",
-    "options": [
-      "Preamble",
-      "Judicial Review",
-      "Fundamental Rights",
-      "Directive Principles"
-    ],
+    "ques": "President’s Rule in states is under:",
+    "options": ["Article 352", "Article 356", "Article 360", "Article 365"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Article 356 deals with failure of constitutional machinery in states."
+  },
+  {
+    "ques": "Basic structure includes:",
+    "options": ["Judicial review, rule of law, separation of powers", "Only Preamble text", "Only DPSPs", "Only FRs"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Identified through case law like Kesavananda Bharati and later cases."
+  },
+  {
+    "ques": "Article 131 confers Supreme Court’s:",
+    "options": ["Appellate criminal jurisdiction", "Advisory jurisdiction", "Original jurisdiction in Centre-State disputes", "Election disputes jurisdiction"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Original jurisdiction over certain federal disputes."
   },
   {
-    "ques": "Constitutional Law Question 16?",
-    "options": [
-      "Section 420",
-      "Section 379",
-      "Section 377",
-      "Section 302"
-    ],
+    "ques": "Preamble is:",
+    "options": ["Not part of Constitution", "Part and source of interpretation", "Enforceable by itself", "A schedule"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "It guides constitutional interpretation though not enforceable alone."
+  },
+  {
+    "ques": "Fundamental Duties are in:",
+    "options": ["Part III", "Part IV", "Part IVA", "Part V"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Part IVA (Article 51A) lists Fundamental Duties."
+  },
+  {
+    "ques": "Article 19(1)(g) guarantees:",
+    "options": ["Freedom of speech", "Right to move freely", "Right to practice any profession or trade", "Freedom of religion"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Subject to reasonable restrictions under Article 19(6)."
+  },
+  {
+    "ques": "Judicial review expressly recognized in:",
+    "options": ["Article 13", "Article 32", "Article 226", "All of the above in effect"],
+    "correctIndex": 3,
+    "category": "constitutional",
+    "explanation": "Articles 13, 32 and 226 together establish review framework."
+  },
+  {
+    "ques": "Right to privacy is recognized as part of:",
+    "options": ["Article 14", "Article 19", "Article 21", "Article 25"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Declared in Puttaswamy; intrinsic to Article 21."
+  },
+  {
+    "ques": "Article 25 provides:",
+    "options": ["Equality", "Freedom of religion", "Property", "Education"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Subject to public order, morality, health and other FRs."
+  },
+  {
+    "ques": "Article 32 is sometimes called:",
+    "options": ["Heart and soul of the Constitution", "Directive Principle", "Transitory provision", "Money bill clause"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "As described by Dr. B. R. Ambedkar."
+  },
+  {
+    "ques": "Article 39(b) and (c) aim at:",
+    "options": ["Individual liberty only", "Uniform Civil Code", "Distributive justice and preventing concentration of wealth", "Emergency powers"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Core socialist DPSPs."
+  },
+  {
+    "ques": "Which Article gives Parliament power to form new states?",
+    "options": ["Article 2", "Article 3", "Article 4", "Article 368"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Article 3 with President’s recommendation and state views."
   },
   {
-    "ques": "Constitutional Law Question 17?",
-    "options": [
-      "Article 32",
-      "Article 19",
-      "Article 14",
-      "Article 21"
-    ],
+    "ques": "Money Bill certification lies with:",
+    "options": ["Speaker of Lok Sabha", "Chairman of Rajya Sabha", "President", "CAG"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Speaker’s decision is final."
   },
   {
-    "ques": "Constitutional Law Question 18?",
-    "options": [
-      "Family Law",
-      "Property Law",
-      "Tort Law",
-      "Contract Law"
-    ],
+    "ques": "Article 50 directs separation of:",
+    "options": ["Legislature and Executive", "Judiciary from Executive", "Union and States", "Religion and State"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "A DPSP for independent judiciary at subordinate level."
+  },
+  {
+    "ques": "Article 19(2) allows restriction on speech for:",
+    "options": ["Public order and decency among others", "Only national security", "Any reason", "No restriction allowed"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Enumerated grounds under 19(2)."
+  },
+  {
+    "ques": "Directive Principles are:",
+    "options": ["Justiciable", "Non-justiciable", "Criminal law", "Schedules"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "They guide governance but are not enforceable in courts."
+  },
+  {
+    "ques": "Anti-defection law is in the Tenth Schedule and Article:",
+    "options": ["101", "102", "103", "102/191 read with Tenth Schedule"],
+    "correctIndex": 3,
+    "category": "constitutional",
+    "explanation": "Membership disqualifications tie to Tenth Schedule."
+  },
+  {
+    "ques": "Article 239AA relates to:",
+    "options": ["Jammu & Kashmir", "National Capital Territory of Delhi", "Scheduled Areas", "Tribal Areas"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Special status provisions for Delhi."
+  },
+  {
+    "ques": "Reservation in promotion is enabled by:",
+    "options": ["Article 15(4)", "Article 16(4A)", "Article 17", "Article 21"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "16(4A) permits reservation in promotions for SC/ST subject to conditions."
+  },
+  {
+    "ques": "Article 131 jurisdiction is:",
+    "options": ["Criminal appellate", "Original in certain federal disputes", "Election appeals", "SLP criminal"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Original jurisdiction over Centre-State disputes."
   },
   {
-    "ques": "Constitutional Law Question 19?",
-    "options": [
-      "Preamble",
-      "Fundamental Rights",
-      "Judicial Review",
-      "Directive Principles"
-    ],
+    "ques": "Judges of Supreme Court are appointed under:",
+    "options": ["Article 124", "Article 217", "Article 233", "Article 312"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Article 124 concerns SC composition and appointments."
   },
   {
-    "ques": "Constitutional Law Question 20?",
-    "options": [
-      "Section 379",
-      "Section 302",
-      "Section 420",
-      "Section 377"
-    ],
+    "ques": "Freedom of trade, commerce and intercourse is under:",
+    "options": ["Article 301", "Article 302", "Article 304", "Article 307"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Part XIII governs trade and commerce within India."
   },
   {
-    "ques": "Constitutional Law Question 21?",
-    "options": [
-      "Article 32",
-      "Article 14",
-      "Article 19",
-      "Article 21"
-    ],
+    "ques": "Article 300A requires:",
+    "options": ["No deprivation of property save by authority of law", "Absolute property right", "No acquisition", "Only compensation always"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Property is a constitutional right requiring lawful deprivation."
   },
   {
-    "ques": "Constitutional Law Question 22?",
-    "options": [
-      "Family Law",
-      "Tort Law",
-      "Property Law",
-      "Contract Law"
-    ],
+    "ques": "Which Article provides language of Supreme Court proceedings?",
+    "options": ["Article 348", "Article 343", "Article 351", "Article 352"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "constitutional",
+    "explanation": "Article 348: English until Parliament provides otherwise."
+  },
+  {
+    "ques": "Article 19(1)(d) guarantees:",
+    "options": ["Speech", "Assemble peacefully", "Move freely throughout India", "Form associations"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Freedom of movement is protected subject to reasonable restrictions."
+  },
+  {
+    "ques": "Writ of Habeas Corpus is for:",
+    "options": ["Protecting property", "Personal liberty against unlawful detention", "Tax disputes", "Company law issues"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "A high-speed remedy against illegal detention."
+  },
+  {
+    "ques": "Which Article empowers SC to do complete justice?",
+    "options": ["Article 129", "Article 142", "Article 141", "Article 144"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Article 142 enables passing any order for complete justice."
+  },
+  {
+    "ques": "Doctrine of pith and substance addresses:",
+    "options": ["Colourable legislation", "Incidental encroachment in federal lists", "Severability", "Repugnancy"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Looks at true nature of legislation in federal distribution."
+  },
+  {
+    "ques": "Article 13(2) prohibits the State from making laws that:",
+    "options": ["Promote trade", "Are repugnant to DPSP", "Take away or abridge Fundamental Rights", "Affect taxation"],
+    "correctIndex": 2,
+    "category": "constitutional",
+    "explanation": "Such laws are void to the extent of contravention."
+  },
+  {
+    "ques": "Article 19(1)(c) protects:",
+    "options": ["Speech", "Form associations/unions", "Occupation", "Movement"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Subject to reasonable restrictions under Article 19(4)."
   },
   {
-    "ques": "Constitutional Law Question 23?",
-    "options": [
-      "Fundamental Rights",
-      "Preamble",
-      "Judicial Review",
-      "Directive Principles"
-    ],
+    "ques": "Secularism as basic structure means:",
+    "options": ["Only majority religion favored", "State neutrality to all religions", "Ban on religion", "Only private faith allowed"],
+    "correctIndex": 1,
+    "category": "constitutional",
+    "explanation": "Equal respect and non-discrimination among faiths."
+  },
+
+  {
+    "ques": "Common intention is embodied in:",
+    "options": ["Section 34 IPC", "Section 120B IPC", "Section 149 IPC", "Section 107 IPC"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "ipc",
+    "explanation": "Section 34 attributes liability when acts are done in furtherance of common intention."
+  },
+  {
+    "ques": "Criminal conspiracy is under:",
+    "options": ["Section 107 IPC", "Section 109 IPC", "Section 120A/120B IPC", "Section 511 IPC"],
+    "correctIndex": 2,
+    "category": "ipc",
+    "explanation": "120A defines, 120B punishes conspiracy."
+  },
+  {
+    "ques": "Murder is punished under:",
+    "options": ["Section 299 IPC", "Section 300 IPC", "Section 302 IPC", "Section 304A IPC"],
+    "correctIndex": 2,
+    "category": "ipc",
+    "explanation": "Section 302 prescribes punishment for murder."
   },
   {
-    "ques": "Constitutional Law Question 24?",
-    "options": [
-      "Section 420",
-      "Section 379",
-      "Section 302",
-      "Section 377"
-    ],
+    "ques": "Culpable homicide not amounting to murder punishment lies in:",
+    "options": ["Section 304 IPC", "Section 304A IPC", "Section 307 IPC", "Section 308 IPC"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "ipc",
+    "explanation": "Section 304 has Part I and II based on intention/knowledge."
   },
   {
-    "ques": "Constitutional Law Question 25?",
-    "options": [
-      "Article 19",
-      "Article 21",
-      "Article 14",
-      "Article 32"
-    ],
+    "ques": "Dowry death is under:",
+    "options": ["Section 304B IPC", "Section 306 IPC", "Section 498A IPC", "Section 302 IPC"],
     "correctIndex": 0,
-    "category": "constitutional"
+    "category": "ipc",
+    "explanation": "Section 304B deals with dowry deaths within 7 years of marriage with dowry cruelty."
   },
   {
-    "ques": "Indian Penal Code Question 1?",
-    "options": [
-      "Article 19",
-      "Article 32",
-      "Article 21",
-      "Article 14"
-    ],
+    "ques": "Attempt to murder is:",
+    "options": ["Section 307 IPC", "Section 308 IPC", "Section 309 IPC", "Section 511 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "Section 307 punishes attempt to murder."
   },
   {
-    "ques": "Indian Penal Code Question 2?",
-    "options": [
-      "Family Law",
-      "Contract Law",
-      "Tort Law",
-      "Property Law"
-    ],
+    "ques": "Cheating is defined in:",
+    "options": ["Section 415 IPC", "Section 420 IPC", "Section 406 IPC", "Section 403 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "415 defines cheating; 420 prescribes aggravated punishment for cheating and dishonestly inducing delivery of property."
   },
   {
-    "ques": "Indian Penal Code Question 3?",
-    "options": [
-      "Preamble",
-      "Judicial Review",
-      "Fundamental Rights",
-      "Directive Principles"
-    ],
+    "ques": "Theft is punished under:",
+    "options": ["Section 378 IPC", "Section 379 IPC", "Section 380 IPC", "Section 381 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "378 defines theft; 379 punishes it."
+  },
+  {
+    "ques": "Grievous hurt is defined in:",
+    "options": ["Section 319 IPC", "Section 320 IPC", "Section 321 IPC", "Section 325 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "Section 320 lists eight kinds of grievous hurt."
+  },
+  {
+    "ques": "Outraging modesty of a woman is under:",
+    "options": ["Section 354 IPC", "Section 375 IPC", "Section 376 IPC", "Section 509 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "Section 354 deals with assault or criminal force to a woman with intent to outrage her modesty."
+  },
+  {
+    "ques": "Rape definition is in:",
+    "options": ["Section 354 IPC", "Section 375 IPC", "Section 376 IPC", "Section 377 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "Section 375 defines rape; 376 provides punishment categories."
+  },
+  {
+    "ques": "Bigamy by a married person is under:",
+    "options": ["Section 493 IPC", "Section 494 IPC", "Section 495 IPC", "Section 497 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "Section 494 punishes marrying again during lifetime of spouse."
+  },
+  {
+    "ques": "Criminal breach of trust is:",
+    "options": ["Section 403 IPC", "Section 405 IPC", "Section 406 IPC", "Section 409 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "405 defines; 406 punishes; 409 is aggravated for public servants, bankers etc."
   },
   {
-    "ques": "Indian Penal Code Question 4?",
-    "options": [
-      "Section 302",
-      "Section 420",
-      "Section 377",
-      "Section 379"
-    ],
+    "ques": "Common object of unlawful assembly is under:",
+    "options": ["Section 141 IPC", "Section 146 IPC", "Section 148 IPC", "Section 149 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "Section 141 defines unlawful assembly and common object."
+  },
+  {
+    "ques": "Liability for acts done by members of unlawful assembly:",
+    "options": ["Section 34 IPC", "Section 149 IPC", "Section 109 IPC", "Section 114 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "Section 149 creates constructive liability for common object."
+  },
+  {
+    "ques": "Insanity defense is under:",
+    "options": ["Section 80 IPC", "Section 81 IPC", "Section 84 IPC", "Section 90 IPC"],
+    "correctIndex": 2,
+    "category": "ipc",
+    "explanation": "Section 84 embodies the McNaughten rule."
+  },
+  {
+    "ques": "Causing death by rash or negligent act is:",
+    "options": ["Section 304 IPC", "Section 304A IPC", "Section 302 IPC", "Section 326 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "Section 304A addresses rash or negligent acts not amounting to culpable homicide."
   },
   {
-    "ques": "Indian Penal Code Question 5?",
-    "options": [
-      "Article 32",
-      "Article 21",
-      "Article 19",
-      "Article 14"
-    ],
+    "ques": "Abetment is defined in:",
+    "options": ["Section 107 IPC", "Section 109 IPC", "Section 306 IPC", "Section 511 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "107 defines abetment; 109 punishes where no express provision exists."
   },
   {
-    "ques": "Indian Penal Code Question 6?",
-    "options": [
-      "Tort Law",
-      "Property Law",
-      "Family Law",
-      "Contract Law"
-    ],
+    "ques": "Kidnapping from lawful guardianship is:",
+    "options": ["Section 361 IPC", "Section 362 IPC", "Section 363 IPC", "Section 364 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "361 defines; 363 punishes kidnapping."
   },
   {
-    "ques": "Indian Penal Code Question 7?",
-    "options": [
-      "Fundamental Rights",
-      "Directive Principles",
-      "Judicial Review",
-      "Preamble"
-    ],
+    "ques": "Attempt is generally punished under:",
+    "options": ["Section 511 IPC", "Section 120B IPC", "Section 34 IPC", "Section 149 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "511 provides general provision where no express attempt punishment exists."
   },
   {
-    "ques": "Indian Penal Code Question 8?",
-    "options": [
-      "Section 379",
-      "Section 377",
-      "Section 302",
-      "Section 420"
-    ],
+    "ques": "Sedition (as worded in IPC) is in:",
+    "options": ["Section 124A IPC", "Section 121 IPC", "Section 153A IPC", "Section 295A IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "Section 124A contains the offence historically described as sedition."
   },
   {
-    "ques": "Indian Penal Code Question 9?",
-    "options": [
-      "Article 19",
-      "Article 14",
-      "Article 32",
-      "Article 21"
-    ],
+    "ques": "Forgery is defined under:",
+    "options": ["Section 463 IPC", "Section 465 IPC", "Section 471 IPC", "Section 468 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "463 defines; 465 punishes; 468 for cheating-related forgery; 471 for using forged doc."
   },
   {
-    "ques": "Indian Penal Code Question 10?",
-    "options": [
-      "Tort Law",
-      "Property Law",
-      "Family Law",
-      "Contract Law"
-    ],
+    "ques": "Criminal intimidation is under:",
+    "options": ["Section 503 IPC", "Section 504 IPC", "Section 506 IPC", "Section 507 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "503 defines; 506 punishes criminal intimidation."
   },
   {
-    "ques": "Indian Penal Code Question 11?",
-    "options": [
-      "Fundamental Rights",
-      "Judicial Review",
-      "Directive Principles",
-      "Preamble"
-    ],
+    "ques": "Consent given under fear of injury is:",
+    "options": ["Valid consent", "Consent but mitigates punishment", "Not consent (Section 90 IPC)", "Civil matter only"],
+    "correctIndex": 2,
+    "category": "ipc",
+    "explanation": "Section 90 explains what is not consent."
+  },
+  {
+    "ques": "Hurt is defined in:",
+    "options": ["Section 319 IPC", "Section 320 IPC", "Section 321 IPC", "Section 322 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "Section 319 defines hurt; 323 punishes."
+  },
+  {
+    "ques": "Abetment of suicide is punished under:",
+    "options": ["Section 305 IPC", "Section 306 IPC", "Section 309 IPC", "Section 304B IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "Section 306 deals with abetment of suicide."
   },
   {
-    "ques": "Indian Penal Code Question 12?",
-    "options": [
-      "Section 379",
-      "Section 420",
-      "Section 302",
-      "Section 377"
-    ],
+    "ques": "House-trespass is:",
+    "options": ["Section 441 IPC", "Section 442 IPC", "Section 448 IPC", "Section 452 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "442 defines house-trespass; 448 punishes; 452 aggravated with preparation for hurt etc."
+  },
+  {
+    "ques": "Extortion is defined in:",
+    "options": ["Section 383 IPC", "Section 384 IPC", "Section 385 IPC", "Section 387 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "383 defines; 384 punishes extortion."
   },
   {
-    "ques": "Indian Penal Code Question 13?",
-    "options": [
-      "Article 21",
-      "Article 14",
-      "Article 32",
-      "Article 19"
-    ],
+    "ques": "Mischief is defined in:",
+    "options": ["Section 425 IPC", "Section 426 IPC", "Section 427 IPC", "Section 431 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "425 defines mischief; 426–440 contain punishments and aggravated forms."
+  },
+  {
+    "ques": "Rape punishment provisions are primarily in:",
+    "options": ["Section 375 IPC", "Section 376 IPC and its clauses", "Section 354 IPC", "Section 509 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "376 series (including 376AB, 376DA, 376DB, etc.) specify punishments."
   },
   {
-    "ques": "Indian Penal Code Question 14?",
-    "options": [
-      "Property Law",
-      "Family Law",
-      "Tort Law",
-      "Contract Law"
-    ],
+    "ques": "Voyeurism is punished under:",
+    "options": ["Section 354C IPC", "Section 354D IPC", "Section 509 IPC", "Section 292 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "354C addresses voyeurism; 354D stalking."
+  },
+  {
+    "ques": "Using as genuine a forged document is:",
+    "options": ["Section 463 IPC", "Section 465 IPC", "Section 471 IPC", "Section 468 IPC"],
+    "correctIndex": 2,
+    "category": "ipc",
+    "explanation": "471 punishes using a forged document as genuine."
   },
   {
-    "ques": "Indian Penal Code Question 15?",
-    "options": [
-      "Preamble",
-      "Fundamental Rights",
-      "Judicial Review",
-      "Directive Principles"
-    ],
+    "ques": "Dishonest misappropriation of property is:",
+    "options": ["Section 403 IPC", "Section 405 IPC", "Section 420 IPC", "Section 379 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "403 punishes dishonest misappropriation or conversion."
   },
   {
-    "ques": "Indian Penal Code Question 16?",
-    "options": [
-      "Section 302",
-      "Section 420",
-      "Section 379",
-      "Section 377"
-    ],
+    "ques": "Harbouring offender is punished under:",
+    "options": ["Section 212 IPC", "Section 201 IPC", "Section 214 IPC", "Section 216 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "212 punishes harbouring an offender."
   },
   {
-    "ques": "Indian Penal Code Question 17?",
-    "options": [
-      "Article 14",
-      "Article 32",
-      "Article 21",
-      "Article 19"
-    ],
+    "ques": "Giving false evidence is:",
+    "options": ["Section 191 IPC", "Section 192 IPC", "Section 193 IPC", "Section 195 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "191 defines; 193 punishes false evidence."
   },
   {
-    "ques": "Indian Penal Code Question 18?",
-    "options": [
-      "Property Law",
-      "Tort Law",
-      "Family Law",
-      "Contract Law"
-    ],
+    "ques": "Rash driving on a public way is:",
+    "options": ["Section 279 IPC", "Section 337 IPC", "Section 338 IPC", "Section 304A IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "279 punishes rash driving; may combine with 337/338/304A depending on harm."
   },
   {
-    "ques": "Indian Penal Code Question 19?",
-    "options": [
-      "Judicial Review",
-      "Fundamental Rights",
-      "Preamble",
-      "Directive Principles"
-    ],
+    "ques": "Obscenity is addressed in IPC under:",
+    "options": ["Section 292 IPC", "Section 294 IPC", "Section 295 IPC", "Section 509 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "292 deals with sale etc. of obscene books; 294 with obscene acts/songs in public."
+  },
+  {
+    "ques": "House-breaking by night is:",
+    "options": ["Section 446 IPC", "Section 449 IPC", "Section 457 IPC", "Section 458 IPC"],
+    "correctIndex": 2,
+    "category": "ipc",
+    "explanation": "457 punishes lurking house-trespass or house-breaking by night."
+  },
+  {
+    "ques": "Criminal force is defined in:",
+    "options": ["Section 349 IPC", "Section 350 IPC", "Section 351 IPC", "Section 352 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "350 defines criminal force; 351 defines assault."
   },
   {
-    "ques": "Indian Penal Code Question 20?",
-    "options": [
-      "Section 379",
-      "Section 377",
-      "Section 302",
-      "Section 420"
-    ],
+    "ques": "Defamation is:",
+    "options": ["Section 499 IPC", "Section 500 IPC", "Section 501 IPC", "Section 502 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "499 defines defamation; 500 punishes it."
   },
   {
-    "ques": "Indian Penal Code Question 21?",
-    "options": [
-      "Article 19",
-      "Article 14",
-      "Article 32",
-      "Article 21"
-    ],
+    "ques": "Cheating and dishonestly inducing delivery of property is:",
+    "options": ["Section 415 IPC", "Section 420 IPC", "Section 405 IPC", "Section 406 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "420 is the aggravated form of cheating."
+  },
+  {
+    "ques": "Kidnapping vs abduction distinction rests on:",
+    "options": ["Age and consent", "Gender only", "Marital status", "Religion"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "Kidnapping is removing a minor/unsound mind; abduction involves force/deceit irrespective of age."
+  },
+  {
+    "ques": "Cruelty by husband/relatives is:",
+    "options": ["Section 498 IPC", "Section 498A IPC", "Section 304B IPC", "Section 509 IPC"],
+    "correctIndex": 1,
+    "category": "ipc",
+    "explanation": "498A punishes cruelty to a married woman."
   },
   {
-    "ques": "Indian Penal Code Question 22?",
-    "options": [
-      "Family Law",
-      "Contract Law",
-      "Tort Law",
-      "Property Law"
-    ],
+    "ques": "Causing disappearance of evidence is:",
+    "options": ["Section 201 IPC", "Section 202 IPC", "Section 203 IPC", "Section 204 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "201 punishes screening offenders and destroying evidence."
   },
   {
-    "ques": "Indian Penal Code Question 23?",
-    "options": [
-      "Preamble",
-      "Directive Principles",
-      "Judicial Review",
-      "Fundamental Rights"
-    ],
+    "ques": "Right of private defense is in Sections:",
+    "options": ["96–106 IPC", "76–79 IPC", "80–82 IPC", "107–120 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "Chapter IV covers general exceptions including private defense."
   },
   {
-    "ques": "Indian Penal Code Question 24?",
-    "options": [
-      "Section 379",
-      "Section 420",
-      "Section 377",
-      "Section 302"
-    ],
+    "ques": "Receiving stolen property is:",
+    "options": ["Section 411 IPC", "Section 412 IPC", "Section 414 IPC", "Section 410 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "411 punishes dishonestly receiving stolen property."
   },
   {
-    "ques": "Indian Penal Code Question 25?",
-    "options": [
-      "Article 32",
-      "Article 14",
-      "Article 21",
-      "Article 19"
-    ],
+    "ques": "Housetrespass after preparation for hurt etc. is:",
+    "options": ["Section 452 IPC", "Section 454 IPC", "Section 456 IPC", "Section 458 IPC"],
     "correctIndex": 0,
-    "category": "ipc"
+    "category": "ipc",
+    "explanation": "452 is aggravated form of house-trespass."
   }
 ]
