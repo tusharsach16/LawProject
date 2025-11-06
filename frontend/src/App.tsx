@@ -6,6 +6,7 @@ import Signin from "./pages/Signin";
 import SignUp from "./pages/SignUp";
 import ConnectWithLawyers from "./pages/ConnectWithLawyers"; 
 import ProtectedRoute from "./components/ProtectedRoute";
+import MockTrialLobby from "./pages/MockTrialLobby";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/mock-trials" element={<MockTrialLobby />} />
           <Route path="/talk-to-lawyer" element={<ConnectWithLawyers />} />
         </Route>
 
