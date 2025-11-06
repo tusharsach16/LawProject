@@ -294,3 +294,56 @@ export const getChatHistory = async() => {
   const response = await api.get('/chat');
   return response.data;
 }
+
+// Quiz related functions
+export const getQuizCount = async () => {
+  try {
+    const response = await api.get('/quiz/count');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching quiz count:', error);
+    throw error;
+  }
+};
+
+export const getDetailedQuizResults = async () => {
+  try {
+    const response = await api.get('/quiz/detailed-results');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching detailed quiz results:', error);
+    throw error;
+  }
+};
+
+
+export const getQuizStatistics = async () => {
+  try {
+    const response = await api.get('/quiz/statistics');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching quiz statistics:', error);
+    throw error;
+  }
+};
+
+export const getMockTrialStatistics = async () => {
+  try {
+    const response = await api.get('/mock-trials/statistics');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching mock trial statistics:', error);
+    throw error;
+  }
+};
+
+export const getRecentActivities = async (limit?: number) => {
+  try {
+    const params = limit ? { limit: limit.toString() } : {};
+    const response = await api.get('/quiz/recent-activities', {params});
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching recent activities:', error);
+    throw error;
+  }
+};
