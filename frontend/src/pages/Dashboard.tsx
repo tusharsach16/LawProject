@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route } from 'react-router-dom'; 
+import { Routes, Route, useLocation } from 'react-router-dom'; 
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { fetchCurrentUser } from '../redux/slices/userSlice';
 import Header from '../components/dashboard/Header';
@@ -19,16 +19,28 @@ import MockTrialLobby from './MockTrialLobby';
 import TrialRoomPage from './TrialRoomPage';
 import TrialResultPage from './TrialResultPage';
 import PastTrialsPage from './PastTrialsPage';
+import QuizHistoryPage from './QuizHistoryPage';
+import AllActivities from './AllActivities';
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const { user, status, error } = useAppSelector(state => state.user);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const { requests, processingId, handleResponse } = useNotifications(user);
 
   const [isFollowRequestsOpen, setIsFollowRequestsOpen] = useState(false);
+
+  // Routes where header should be hidden
+  const hideHeaderRoutes = [
+    '/dashboard/chatbot',
+    '/dashboard/profile',
+  ];
+  
+  const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
 
   // User fetch karo agar load nahi hai
   useEffect(() => {
@@ -45,20 +57,26 @@ const Dashboard: React.FC = () => {
     <>
       <div className="flex h-screen">
         <Sidebar 
-          isOpen={isSidebarOpen} 
-          onClose={() => setIsSidebarOpen(false)} 
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
           onSearchClick={() => setIsSearchOpen(true)}
-          onNotificationsClick={() => setIsFollowRequestsOpen(true)}
+          onNotificationsClick={() => setIsFollowRequestsOpen(true)} 
+          isCollapsed={isSidebarCollapsed} 
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         />
 
         <div className="flex-1 flex flex-col overflow-hidden">
-          <Header onToggleSidebar={() => setIsSidebarOpen(true)} />
+          {shouldShowHeader && (
+            <Header onToggleSidebar={() => setIsSidebarOpen(true)} />
+          )}
 
           <main className="flex-1 overflow-auto bg-gray-50">
             <Routes>
               <Route index element={<Overview />} /> 
+              <Route path="all-activities" element={<AllActivities />} />
               <Route path="chatbot" element={<AiChatbot />} />
               <Route path="quiz" element={<QuizPage />} />
+              <Route path="quiz-history" element={<QuizHistoryPage />} />
               <Route path='profile' element={<ProfilePage/>} />
               <Route path="connections" element={<ConnectionsPage />} />
               <Route path='profile/:username' element={<UserProfilePage />} />
