@@ -13,7 +13,9 @@ const ProfileHeader = ({ name, onSearchClick }: ProfileHeaderProps) => {
       
       <div className="text-center">
         <h2 className="font-bold text-xl text-white leading-tight flex items-center gap-2">
-          <Scale size={20} className="text-amber-400" />
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-2 rounded-xl shadow-lg border border-slate-700">
+            <Scale id="logo" className="h-6 w-6 text-white" strokeWidth={2.5} />
+          </div>
           {name}
         </h2>
       </div>
