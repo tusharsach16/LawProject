@@ -3,20 +3,18 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
   MessageCircle,
-  Book,
   Users,
-  Briefcase,
   HelpCircle,
   Gavel,
   User,
-  Settings,
   LogOut,
   Search, 
   Bell,
   History,
   ChevronLeft,
   ChevronRight,
-  Scale
+  Scale,
+  BarChart3
 } from "lucide-react";
 import { useAppSelector } from '../../redux/hooks'; 
 
@@ -66,9 +64,31 @@ const Sidebar = ({
       >
         {/* Header with Logo */}
         <div className="p-4 border-b border-slate-700/50 flex items-center justify-between">
-          <div className={`flex items-center gap-3 transition-opacity duration-300 ${isCollapsed ? 'lg:opacity-0 lg:w-0' : 'opacity-100'}`}>
-            <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-xl shadow-lg">
-              <Scale className="h-6 w-6 text-slate-900" strokeWidth={2.5} />
+          {/* Desktop: Show based on isCollapsed */}
+          <div className="hidden lg:flex items-center gap-3 flex-1">
+            {!isCollapsed ? (
+              <>
+                <div className="bg-gradient-to-br from-slate-900 to to-slate-800 p-2 rounded-xl shadow-lg">
+                  <Scale className="h-6 w-6 text-white" strokeWidth={2.5} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-amber-400 font-bold text-lg tracking-tight">Nyay Setu</span>
+                  <span className="text-slate-400 text-xs">Legal Dashboard</span>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center w-full">
+                <div className="bg-gradient-to-br from-slate-900 to slat-800 p-2 rounded-xl shadow-lg">
+                  <Scale className="h-6 w-6 text-white" strokeWidth={2.5} />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile: Always show full logo */}
+          <div className="flex lg:hidden items-center gap-3">
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-2 rounded-xl shadow-lg">
+              <Scale className="h-6 w-6 text-white" strokeWidth={2.5} />
             </div>
             <div className="flex flex-col">
               <span className="text-amber-400 font-bold text-lg tracking-tight">Law Connect</span>
@@ -79,7 +99,9 @@ const Sidebar = ({
           {/* Collapse Toggle Button - Desktop Only */}
           <button
             onClick={onToggleCollapse}
-            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 hover:border-amber-500/50 transition-all duration-300 group"
+            className={`hidden lg:flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 hover:border-amber-500/50 transition-all duration-300 group flex-shrink-0 ${
+              isCollapsed ? 'absolute right-2 top-4' : ''
+            }`}
           >
             {isCollapsed ? (
               <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-amber-400" />
@@ -110,12 +132,13 @@ const Sidebar = ({
               }`}
               title={isCollapsed ? "Search" : ""}
             >
-              <span className="text-slate-400 group-hover:text-amber-400 transition-colors">
+              <span className="text-slate-400 group-hover:text-amber-400 transition-colors flex-shrink-0">
                 <Search size={20} />
               </span>
-              <span className={`transition-opacity duration-300 ${isCollapsed ? 'lg:hidden' : ''}`}>
-                Search
-              </span>
+              {!isCollapsed && (
+                <span className="lg:block hidden">Search</span>
+              )}
+              <span className="lg:hidden">Search</span>
             </button>
 
             <button
@@ -128,27 +151,21 @@ const Sidebar = ({
               }`}
               title={isCollapsed ? "Notifications" : ""}
             >
-              <span className="text-slate-400 group-hover:text-amber-400 transition-colors">
+              <span className="text-slate-400 group-hover:text-amber-400 transition-colors flex-shrink-0">
                 <Bell size={20} />
               </span>
-              <span className={`transition-opacity duration-300 ${isCollapsed ? 'lg:hidden' : ''}`}>
-                Notifications
-              </span>
+              {!isCollapsed && (
+                <span className="lg:block hidden">Notifications</span>
+              )}
+              <span className="lg:hidden">Notifications</span>
               {/* Notification badge */}
-              <span className="absolute top-1 right-1 lg:top-2 lg:right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+              <span className={`absolute ${isCollapsed ? 'top-1 right-1/4' : 'top-2 right-2'} w-2 h-2 bg-red-500 rounded-full animate-pulse`}></span>
             </button>
 
             <SidebarLink 
               icon={<MessageCircle size={20} />} 
               label="AI Legal Chatbot" 
               to="/dashboard/chatbot"
-              isCollapsed={isCollapsed}
-            />
-
-            <SidebarLink 
-              icon={<Book size={20} />} 
-              label="Law Info Hub" 
-              to="/dashboard/law-info"
               isCollapsed={isCollapsed}
             />
 
@@ -160,24 +177,29 @@ const Sidebar = ({
             />
 
             <SidebarLink 
-              icon={<Briefcase size={20} />} 
-              label="Case Practice" 
-              to="/dashboard/case-practice"
-              isCollapsed={isCollapsed}
-            />
-
-            <SidebarLink 
               icon={<HelpCircle size={20} />} 
               label="Quiz Section" 
               to="/dashboard/quiz"
               isCollapsed={isCollapsed}
             />
 
+            <SidebarLink 
+              icon={<BarChart3 size={20} />} 
+              label="Quiz History" 
+              to="/dashboard/quiz-history"
+              isCollapsed={isCollapsed}
+            />
+
             {/* Conditional Links for Law Students and Lawyers */}
             {user && (user.role === 'lawstudent' || user.role === 'lawyer') && (
               <>
-                <div className={`my-3 border-t border-slate-700/50 pt-3 ${isCollapsed ? 'lg:mx-2' : ''}`}>
-                  <div className={`text-xs text-slate-500 uppercase tracking-wider mb-2 px-3 ${isCollapsed ? 'lg:hidden' : ''}`}>
+                <div className={`my-3 border-t border-slate-700/50 pt-3 ${isCollapsed ? 'mx-2' : ''}`}>
+                  {!isCollapsed && (
+                    <div className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-3 lg:block hidden">
+                      Professional
+                    </div>
+                  )}
+                  <div className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-3 lg:hidden">
                     Professional
                   </div>
                 </div>
@@ -197,8 +219,13 @@ const Sidebar = ({
             )}
             
             {/* Settings Section */}
-            <div className={`mt-6 border-t border-slate-700/50 pt-3 space-y-1.5 ${isCollapsed ? 'lg:mx-2' : ''}`}>
-              <div className={`text-xs text-slate-500 uppercase tracking-wider mb-2 px-3 ${isCollapsed ? 'lg:hidden' : ''}`}>
+            <div className={`mt-6 border-t border-slate-700/50 pt-3 space-y-1.5 ${isCollapsed ? 'mx-2' : ''}`}>
+              {!isCollapsed && (
+                <div className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-3 lg:block hidden">
+                  Account
+                </div>
+              )}
+              <div className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-3 lg:hidden">
                 Account
               </div>
               <SidebarLink 
@@ -207,12 +234,12 @@ const Sidebar = ({
                 to="/dashboard/profile"
                 isCollapsed={isCollapsed}
               />
-              <SidebarLink 
+              {/* <SidebarLink 
                 icon={<Settings size={20} />} 
                 label="Settings" 
                 to="/dashboard/settings"
                 isCollapsed={isCollapsed}
-              />
+              /> */}
             </div>
           </div>
 
@@ -225,10 +252,11 @@ const Sidebar = ({
               }`}
               title={isCollapsed ? "Logout" : ""}
             >
-              <LogOut size={20} className="group-hover:rotate-6 transition-transform" />
-              <span className={`font-semibold transition-opacity duration-300 ${isCollapsed ? 'lg:hidden' : ''}`}>
-                Logout
-              </span>
+              <LogOut size={20} className="group-hover:rotate-6 transition-transform flex-shrink-0" />
+              {!isCollapsed && (
+                <span className="font-semibold lg:block hidden">Logout</span>
+              )}
+              <span className="font-semibold lg:hidden">Logout</span>
             </button>
           </div>
         </nav>
@@ -266,16 +294,17 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({
       title={isCollapsed ? label : ""}
     >
       {/* Active Indicator */}
-      {isActive && (
+      {isActive && !isCollapsed && (
         <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-amber-400 to-amber-600 rounded-r-full"></span>
       )}
       
       <span className={`${isActive ? 'text-amber-400' : 'text-slate-400 group-hover:text-amber-400'} transition-colors flex-shrink-0`}>
         {icon}
       </span>
-      <span className={`font-medium transition-opacity duration-300 ${isCollapsed ? 'lg:hidden' : ''}`}>
-        {label}
-      </span>
+      {!isCollapsed && (
+        <span className="font-medium lg:block hidden">{label}</span>
+      )}
+      <span className="font-medium lg:hidden">{label}</span>
       
       {/* Hover effect glow */}
       {!isActive && (
