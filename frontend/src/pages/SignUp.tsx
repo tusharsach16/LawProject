@@ -8,6 +8,7 @@ import Signupui from "@/components/Signupui";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/slices/userSlice";
+const API = import.meta.env.VITE_API_URL;
 
 type FormData = {
   name: string;
@@ -53,7 +54,7 @@ const SignUp = () => {
     }
 
     try{
-      const response = await axios.post("http://localhost:5000/api/signup", {
+      const response = await axios.post(`${API}/api/signup`, {
         name: formData.name,
         lastname: formData.lastname,
         email: formData.email,

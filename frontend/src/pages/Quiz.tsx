@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2, AlertCircle, CheckCircle, ChevronRight } from 'lucide-react';
+const API = import.meta.env.VITE_API_URL;
 
 interface Question {
   _id: string;
@@ -34,7 +35,7 @@ const Quiz: React.FC<QuizProps> = ({ categorySlug, limit, onQuizComplete }) => {
 
       try {
         // Fixed: Use the limit prop instead of hardcoded value
-        const response = await fetch(`http://localhost:5000/api/quiz/getQuiz?category=${categorySlug}&limit=${limit}`, {
+        const response = await fetch(`${API}/api/quiz/getQuiz?category=${categorySlug}&limit=${limit}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -86,7 +87,7 @@ const Quiz: React.FC<QuizProps> = ({ categorySlug, limit, onQuizComplete }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/quiz/submit', {
+      const response = await fetch(`${API}/api/quiz/submit`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

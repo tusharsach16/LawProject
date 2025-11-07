@@ -1,12 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import Signupui from "@/components/Signupui";
 import axios from "axios";
 import { setUser } from "../redux/slices/userSlice";
 import { useDispatch } from "react-redux";
+const API = import.meta.env.VITE_API_URL;
 
 type FormData = {
   email: string;
@@ -48,7 +48,7 @@ const Signin = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/login",
+      const res = await axios.post(`"${API}"/api/login`,
         {
           email: formData.email,
           password: formData.password,

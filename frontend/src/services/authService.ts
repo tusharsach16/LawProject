@@ -1,6 +1,9 @@
 import api from "./api";
-import axios from "axios"; // File upload ke liye alag se axios ka use karenge
+import axios from "axios";
 
+const API = import.meta.env.VITE_API_URL;
+
+// ========== Auth ==========
 interface SignupData {
   firstname: string;
   lastname?: string;
@@ -15,51 +18,37 @@ interface SigninData {
   email: string;
   password: string;
 }
-export const signUp = async(data: SignupData) => {
+
+export const signUp = async (data: SignupData) => {
   const response = await api.post('/signup', data);
   return response.data;
-}
+};
 
-export const signin = async(data: SigninData) => {
+export const signin = async (data: SigninData) => {
   const response = await api.post('/login', data);
   return response.data;
-}
+};
 
-
+// ========== Profile Update ==========
 interface UpdateProfileData {
   commonData?: { [key: string]: any };
   roleSpecificData?: { [key: string]: any };
 }
 
-/**
- * Updates the current user's profile with text data.
- * @param data - An object containing commonData and/or roleSpecificData.
- */
 export const updateUserProfile = async (data: UpdateProfileData) => {
-  try {
-    console.log('API call to update profile with data:', data);
-    const response = await api.patch('/edit/profile', data); 
-    console.log('API response:', response.data);
-    return response.data;
-  } catch (error: any) {
-    console.error('API error details:', error);
-    console.error('Error response:', error.response?.data);
-    console.error('Error status:', error.response?.status);
-    throw error;
-  }
+  const response = await api.patch('/edit/profile', data);
+  return response.data;
 };
 
-/**
- * Sirf profile image ko upload karta hai.
- * @param imageFile - User select krega image file.
- */
+// ========== Image Upload ==========
 export const uploadProfileImage = async (imageFile: File) => {
   const formData = new FormData();
   formData.append('profileImage', imageFile);
 
   const token = localStorage.getItem('token');
+
   const response = await axios.post(
-    'http://localhost:5000/api/upload/profile-image', 
+    `${API}/api/upload/profile-image`,
     formData,
     {
       headers: {
@@ -69,18 +58,17 @@ export const uploadProfileImage = async (imageFile: File) => {
     }
   );
 
-  return response.data; // Yeh { msg, imageUrl } wapas dega
+  return response.data;
 };
-
 
 export const uploadBannerImage = async (imageFile: File) => {
   const formData = new FormData();
-  // Field ka naam 'bannerImage' backend route se match hona chahiye
   formData.append('bannerImage', imageFile);
 
   const token = localStorage.getItem('token');
+
   const response = await axios.post(
-    'http://localhost:5000/api/upload/banner-image', // Naya URL
+    `${API}/api/upload/banner-image`,
     formData,
     {
       headers: {
@@ -90,149 +78,110 @@ export const uploadBannerImage = async (imageFile: File) => {
     }
   );
 
-  return response.data; // Yeh { msg, imageUrl } wapas dega
+  return response.data;
 };
 
-
+// ========== Friends & Connections ==========
 export const getConnections = async () => {
   const token = localStorage.getItem('token');
+
   const response = await axios.get(
-    'http://localhost:5000/apiFriend/getFriends', 
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  ); 
+    `${API}/apiFriend/getFriends`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
   return response.data;
 };
 
 export const getUserProfile = async (username: string) => {
   const token = localStorage.getItem('token');
+
   const response = await axios.get(
-    `http://localhost:5000/apiFriend/profile/${username}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    `${API}/apiFriend/profile/${username}`,
+    { headers: { Authorization: `Bearer ${token}` } }
   );
+
   return response.data;
 };
 
 export const removeFriend = async (friendIdToRemove: string) => {
   const token = localStorage.getItem('token');
+
   const response = await axios.post(
-    'http://localhost:5000/apiFriend/removeFriend', 
+    `${API}/apiFriend/removeFriend`,
     { friendIdToRemove },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  ); 
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
   return response.data;
 };
 
 export const searchUsers = async (query: string) => {
-  // Choti query ke liye API call nhi kia taaki server par faltu load na pade
-  if (query.trim().length < 2) {
-    return []; 
-  }
-  
+  if (query.trim().length < 2) return [];
+
   const token = localStorage.getItem('token');
+
   const response = await axios.get(
-    'http://localhost:5000/apiFriend/search', 
+    `${API}/apiFriend/search`,
     {
-      headers: {
-        Authorization: `Bearer ${token}`, 
-      },
-      params: { q: query } // Search query ko params mein bhejein
+      headers: { Authorization: `Bearer ${token}` },
+      params: { q: query }
     }
   );
 
-  return response.data; // Yeh users ka array wapas dega
+  return response.data;
 };
 
 export const sendFriendRequest = async (username: string) => {
   const token = localStorage.getItem('token');
+
   const response = await axios.post(
-    'http://localhost:5000/apiFriend/sendfriendRequest',
-    { username }, // Request body mein username bhej rha hu
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    `${API}/apiFriend/sendfriendRequest`,
+    { username },
+    { headers: { Authorization: `Bearer ${token}` } }
   );
-  return response.data; 
+
+  return response.data;
 };
 
 export const getFriendRequests = async () => {
   const token = localStorage.getItem('token');
-  const response = await axios.get(
-    'http://localhost:5000/apiFriend/getRequest', 
-    { 
-      headers: { 
-        Authorization: `Bearer ${token}` 
-      } 
-    }
-  );
-  return response.data; // Yeh requests ka array wapas dega
-};
 
+  const response = await axios.get(
+    `${API}/apiFriend/getRequest`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
+  return response.data;
+};
 
 export const respondToFriendRequest = async (requestId: string, action: 'accept' | 'reject') => {
   const token = localStorage.getItem('token');
+
   const response = await axios.post(
-    'http://localhost:5000/apiFriend/respondRequest',
-    { requestId, action }, // Request body mein data bhejein
-    { 
-      headers: { 
-        Authorization: `Bearer ${token}` 
-      } 
-    }
+    `${API}/apiFriend/respondRequest`,
+    { requestId, action },
+    { headers: { Authorization: `Bearer ${token}` } }
   );
+
   return response.data;
 };
 
-
-export const getAllLawyers = async (params: { q?: string; sortBy?: string; order?: 'asc' | 'desc'; specialization?: string; }) => {
-  const response = await api.get('/getLawyers', { params }); 
-  return response.data;
-};
-
-export const getSpecializations = async () => {
-  const response = await api.get('/lawyers/specializations'); 
-  return response.data;
-};
-
-
-// for MockTrial
+// ========== Mock Trial ==========
 export const getMockTrialSituationsCat = async (categorySlug?: string) => {
-  try {
-    const params = categorySlug ? { slug: categorySlug } : {};
-    const response = await api.get('/mock-trials/situationsCategory', { params });
-    return response.data.situations;
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
+  const params = categorySlug ? { slug: categorySlug } : {};
+  const response = await api.get('/mock-trials/situationsCategory', { params });
+  return response.data.situations;
 };
 
 export const joinMockTrial = async (situationId: string, side: 'plaintiff' | 'defendant') => {
-  try {
-    const response = await api.post('/mock-trials/join', { situationId, side });
-    return response.data;
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
+  const response = await api.post('/mock-trials/join', { situationId, side });
+  return response.data;
 };
 
 export const getMockTrialCategories = async () => {
   const response = await api.get('/mock-trials/categories');
-  return response.data; 
+  return response.data;
 };
 
 export const getMockTrialDetails = async (trialId: string) => {
@@ -240,12 +189,10 @@ export const getMockTrialDetails = async (trialId: string) => {
   return response.data.trial;
 };
 
-
 export const endTrial = async (trialId: string) => {
   const response = await api.post('/mock-trials/end', { trialId });
   return response.data;
 };
-
 
 export const leaveTrial = async (trialId: string) => {
   const response = await api.post('/mock-trials/leave', { trialId });
@@ -255,95 +202,38 @@ export const leaveTrial = async (trialId: string) => {
 export const postMockMessage = async (trialId: string, text: string) => {
   const response = await api.post('/mock-trials/message', { trialId, text });
   return response.data;
-}
+};
 
 export const checkMatchStatus = async (situationId: string, side: 'plaintiff' | 'defendant') => {
-  const response = await api.get(`/mock-trials/check-match/${situationId}`, { 
-    params: { side } 
-  });
+  const response = await api.get(`/mock-trials/check-match/${situationId}`, { params: { side } });
   return response.data;
-}
-
+};
 
 export const getPastMockTrials = async () => {
-  try {
-    const {data} = await api.get('/mock-trials/past-trials');
-    return data.trials; 
-  } catch (error: unknown) {
-    console.error("Error fetching past trials:", error);
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.message || "Failed to fetch past trials");
-    }
-    throw new Error("An unexpected error occurred while fetching past trials");
-  }
-}
+  const { data } = await api.get('/mock-trials/past-trials');
+  return data.trials;
+};
 
-// get result of mocktrial
 export const analyzeTrial = async (trialId: string) => {
   const response = await api.post(`/mock-trials/${trialId}/analyse`);
   return response.data;
-}
+};
 
-// aichatbot
-export const askAiAssistant = async(message: string) => {
-  const response = await api.post('/chat', {message});
+// ========== Chatbot ==========
+export const askAiAssistant = async (message: string) => {
+  const response = await api.post('/chat', { message });
   return response.data;
-} 
+};
 
-export const getChatHistory = async() => {
+export const getChatHistory = async () => {
   const response = await api.get('/chat');
   return response.data;
-}
-
-// Quiz related functions
-export const getQuizCount = async () => {
-  try {
-    const response = await api.get('/quiz/count');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching quiz count:', error);
-    throw error;
-  }
 };
 
-export const getDetailedQuizResults = async () => {
-  try {
-    const response = await api.get('/quiz/detailed-results');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching detailed quiz results:', error);
-    throw error;
-  }
-};
-
-
-export const getQuizStatistics = async () => {
-  try {
-    const response = await api.get('/quiz/statistics');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching quiz statistics:', error);
-    throw error;
-  }
-};
-
-export const getMockTrialStatistics = async () => {
-  try {
-    const response = await api.get('/mock-trials/statistics');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching mock trial statistics:', error);
-    throw error;
-  }
-};
-
-export const getRecentActivities = async (limit?: number) => {
-  try {
-    const params = limit ? { limit: limit.toString() } : {};
-    const response = await api.get('/quiz/recent-activities', {params});
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching recent activities:', error);
-    throw error;
-  }
-};
+// ========== Quiz ==========
+export const getQuizCount = async () => (await api.get('/quiz/count')).data;
+export const getDetailedQuizResults = async () => (await api.get('/quiz/detailed-results')).data;
+export const getQuizStatistics = async () => (await api.get('/quiz/statistics')).data;
+export const getMockTrialStatistics = async () => (await api.get('/mock-trials/statistics')).data;
+export const getRecentActivities = async (limit?: number) =>
+  (await api.get('/quiz/recent-activities', { params: limit ? { limit } : {} })).data;
