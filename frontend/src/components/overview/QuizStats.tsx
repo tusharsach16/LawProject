@@ -70,11 +70,6 @@ const QuizStats: React.FC<QuizStatsProps> = ({ onViewDetails }) => {
     });
   };
 
-  const getScoreColor = (percentage: number) => {
-    if (percentage >= 80) return 'text-emerald-600';
-    if (percentage >= 60) return 'text-amber-600';
-    return 'text-red-600';
-  };
 
   const getScoreBgColor = (percentage: number) => {
     if (percentage >= 80) return 'bg-gradient-to-r from-emerald-500 to-emerald-600';

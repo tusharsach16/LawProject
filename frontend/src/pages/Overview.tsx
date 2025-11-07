@@ -24,7 +24,7 @@ const Overview: React.FC = () => {
   const [quizCount, setQuizCount] = useState(0)
   const [lastQuizPercent, setLastQuizPercent] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [, setError] = useState<string | null>(null)
   const [recentActivities, setRecentActivities] = useState<any[]>([])
   const [quizStats, setQuizStats] = useState<any>(null)
   const [trialStats, setTrialStats] = useState<any>(null)
