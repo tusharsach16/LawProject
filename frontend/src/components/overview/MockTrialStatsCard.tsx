@@ -1,6 +1,6 @@
 import React from 'react'
-import { Scale, Users, Trophy, Target, TrendingUp } from 'lucide-react'
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
+import { Scale,Trophy} from 'lucide-react'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 
 interface TrialStatsProps {
   stats: {
@@ -29,10 +29,6 @@ const MockTrialStatsCard: React.FC<TrialStatsProps> = ({ stats }) => {
     { name: 'Lost', value: stats.losses, color: '#ef4444' },
   ]
 
-  const roleData = [
-    { name: 'Plaintiff', value: stats.asPlaintiff, color: '#3b82f6' },
-    { name: 'Defendant', value: stats.asDefendant, color: '#8b5cf6' },
-  ]
 
   if (stats.totalTrials === 0) {
     return (

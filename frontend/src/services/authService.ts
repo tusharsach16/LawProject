@@ -237,3 +237,14 @@ export const getQuizStatistics = async () => (await api.get('/quiz/statistics'))
 export const getMockTrialStatistics = async () => (await api.get('/mock-trials/statistics')).data;
 export const getRecentActivities = async (limit?: number) =>
   (await api.get('/quiz/recent-activities', { params: limit ? { limit } : {} })).data;
+
+// 
+export const getAllLawyers = async (params: { q?: string; sortBy?: string; order?: 'asc' | 'desc'; specialization?: string; }) => {
+  const response = await api.get('/getLawyers', { params });
+  return response.data;
+};
+
+export const getSpecializations = async () => {
+  const response = await api.get('/lawyers/specializations');
+  return response.data;
+};

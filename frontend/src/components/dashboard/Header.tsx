@@ -1,4 +1,4 @@
-import { Menu, Settings, LogOut, User, ChevronDown, Scale } from "lucide-react";
+import { Menu,LogOut, User, ChevronDown, Scale } from "lucide-react";
 import { useState } from "react";
 import { useAppSelector } from "../../redux/hooks";
 import { useNavigate } from "react-router-dom";
