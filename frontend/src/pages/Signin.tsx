@@ -156,20 +156,7 @@ const Signin = () => {
 
               {/* Remember me & Forgot password */}
               <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="remember"
-                    checked={formData.rememberMe}
-                    onCheckedChange={(checked) =>
-                      setFormData((prev) => ({ ...prev, rememberMe: checked as boolean }))
-                    }
-                    className="border-slate-300 mt-0.5 cursor-pointer"
-                  />
-                  <label htmlFor="remember" className="font-medium text-slate-700 cursor-pointer">
-                    Remember me
-                  </label>
-                </div>
-                <Link to="/" className="text-amber-600 font-semibold hover:text-amber-700 transition-colors">
+                <Link to="/forgotpassword" className="text-amber-600 font-semibold hover:text-amber-700 transition-colors">
                   Forgot Password?
                 </Link>
               </div>
@@ -204,20 +191,6 @@ const Signin = () => {
                 </p>
               </div>
             </div>
-          </div>
-
-          {/* Terms & Privacy */}
-          <div className="text-center text-sm text-slate-500">
-            <p>
-              By signing in, you agree to our{" "}
-              <Link to="/terms" className="text-amber-600 hover:text-amber-700 font-medium transition-colors">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link to="/privacy" className="text-amber-600 hover:text-amber-700 font-medium transition-colors">
-                Privacy Policy
-              </Link>
-            </p>
           </div>
         </div>
       </div>
