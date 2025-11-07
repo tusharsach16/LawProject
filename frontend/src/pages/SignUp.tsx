@@ -72,7 +72,7 @@ const SignUp = () => {
         //  Redux store ko naye user ke data se update kara hai
         dispatch(setUser(user));
         alert('User signed up successfully.');
-        navigate('/dashboard1');
+        navigate('/dashboard');
       } else {
         throw new Error("Token or user data missing in signup response.");
       }
@@ -304,20 +304,6 @@ const SignUp = () => {
                 </p>
               </div>
             </div>
-          </div>
-  
-          {/* Terms */}
-          <div className="text-center text-sm text-slate-500">
-            <p>
-              By signing up, you agree to our{" "}
-              <Link to="/terms" className="text-amber-600 hover:text-amber-700 font-medium transition-colors">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link to="/privacy" className="text-amber-600 hover:text-amber-700 font-medium transition-colors">
-                Privacy Policy
-              </Link>
-            </p>
           </div>
         </div>
       </div>
