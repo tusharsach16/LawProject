@@ -28,7 +28,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: [
+    "http://localhost:5173",
+    "https://nyaysetu.vercel.app"
+  ],
   credentials: true, // only if you're sending cookies or authorization headers
 }));
 app.use(bodyParser.json());
