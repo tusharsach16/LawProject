@@ -15,7 +15,11 @@ const features = [
 ];
 
 const Signupui = () => {
-  const [counters, setCounters] = useState({ 0: 0, 1: 0, 2: 0 });
+  const [counters, setCounters] = useState<Record<number, number>>({
+  0: 0,
+  1: 0,
+  2: 0,
+});
 
   useEffect(() => {
     // Animate statistics counters
@@ -109,7 +113,7 @@ const Signupui = () => {
             >
               <div className="text-center space-y-2">
                 <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-amber-400 to-amber-600">
-                  {counters[String(index)].toLocaleString()}{stat.suffix}
+                  {counters[index]?.toLocaleString()}{stat.suffix}a
                 </div>
                 <div className="text-slate-400 text-sm font-medium group-hover:text-slate-300 transition-colors">{stat.label}</div>
               </div>
