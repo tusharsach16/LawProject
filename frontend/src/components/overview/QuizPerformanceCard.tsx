@@ -1,6 +1,6 @@
 import React from 'react'
 import { BarChart3, TrendingUp, TrendingDown, Award, Target } from 'lucide-react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts'
+import {XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts'
 
 interface QuizStatsProps {
   stats: {
