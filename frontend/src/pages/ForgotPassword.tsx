@@ -1,5 +1,6 @@
 import { useState, type FormEvent, type ChangeEvent } from "react";
 import { Mail, ArrowRight, CheckCircle, ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
+const API = import.meta.env.VITE_API_URL;
 
 type ForgotPasswordStepProps = {
   onNext: () => void;
@@ -15,7 +16,7 @@ const ForgotPasswordStep = ({ onNext, email, setEmail }: ForgotPasswordStepProps
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/forgot-password", {
+      const response = await fetch(`${API}/api/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -108,7 +109,7 @@ const VerifyOTPStep = ({ onNext, email, otp, setOtp }: VerifyOTPStepProps) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/verify-otp", {
+      const response = await fetch(`${API}/api/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
@@ -131,7 +132,7 @@ const VerifyOTPStep = ({ onNext, email, otp, setOtp }: VerifyOTPStepProps) => {
 
   const handleResendOTP = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/forgot-password", {
+      const response = await fetch(`${API}/api/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -234,7 +235,7 @@ const ResetPasswordStep = ({ email, otp }: ResetPasswordStepProps) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/reset-password", {
+      const response = await fetch(`${API}/api/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp, newPassword }),
