@@ -48,7 +48,7 @@ const Signin = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post(`"${API}"/api/login`,
+      const res = await axios.post(`${API}/api/login`,
         {
           email: formData.email,
           password: formData.password,
