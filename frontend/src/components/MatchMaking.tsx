@@ -25,11 +25,17 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
         
         try {
             const response = await checkMatchStatus(situation._id, side);
+            console.log("Check Match Response:", response);
             
-            if (response.matched) {
+            if (response.trial && response.trial._id) {
+                console.log(`Match found! Navigating to trial ID: ${response.trial._id}`);
+                navigate(`/dashboard/mock-trial/room/${response.trial._id}`);
+            } 
+            else if (response.matched) {
                 console.log(`Match found! Navigating to trial ID: ${response.trialId}`);
                 navigate(`/dashboard/mock-trial/room/${response.trialId}`);
-            } else if (!response.waiting) {
+            } 
+            else if (!response.waiting && !response.trial) {
                 setError("Connection lost. Please try again.");
                 setStatus('selecting');
                 if (pollingIntervalRef.current) {
@@ -70,10 +76,11 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
         try {
             const response = await joinMockTrial(situation._id, side);
 
-            if (response.paired) {
-                console.log(`Paired! Navigating to trial ID: ${response.trialId}`);
-                navigate(`/dashboard/mock-trial/room/${response.trialId}`);
-            } else if (response.waiting) {
+            if (response.paired || (response.trial && response.trial._id)) {
+                 const id = response.trialId || response.trial._id;
+                 console.log(`Paired! Navigating to trial ID: ${id}`);
+                 navigate(`/dashboard/mock-trial/room/${id}`);
+            }else if (response.waiting) {
                 console.log("Waiting for an opponent...");
             }
         } catch (err: any) {
