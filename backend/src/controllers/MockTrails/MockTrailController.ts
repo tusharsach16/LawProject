@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import { redis } from "../../utils/redisClient";
 import { User } from "../../models/User";
 import {geminiModel} from '../../config/gemini';
+import { broadcastToTrialRoom, closeTrialRoomConnections } from "../../webSockets";
 
 export const getMockSituation = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -317,6 +318,9 @@ export const endMockTrial = async (req: Request, res: Response): Promise<void> =
     trial.endedAt = new Date();
     await trial.save();
 
+    // Close all WebSocket connections for this trial
+    closeTrialRoomConnections(trialId, "Trial ended");
+
     res.status(200).json({ msg: "Trial has ended successfully." });
 
   } catch (e) {
@@ -330,44 +334,104 @@ export const leaveMockTrial = async (req: Request, res: Response): Promise<void>
     const { trialId } = req.body;
     const leavingUserId = req.user?.id;
 
+    console.log(' Leave Request Received');
+    console.log('   trialId:', trialId);
+    console.log('   leavingUserId:', leavingUserId);
+    console.log('   req.body:', req.body);
+
+    // Check if trialId exists
     if (!trialId) {
+      console.log(' ERROR: Trial ID is missing');
       res.status(400).json({ msg: "Trial ID is required" });
       return;
     }
 
+    // Check if user is authenticated
+    if (!leavingUserId) {
+      console.log(' ERROR: User not authenticated');
+      res.status(401).json({ msg: "User not authenticated" });
+      return;
+    }
+
+    // Find the trial
     const trial = await MockTrial.findById(trialId);
     if (!trial) {
+      console.log(' ERROR: Trial not found');
       res.status(404).json({ msg: "Trial not found" });
+      return;
+    }
+
+    console.log(' Trial found:', trial._id);
+    console.log('   Current status:', trial.status);
+    console.log('   Plaintiff:', trial.plaintiffId);
+    console.log('   Defendant:', trial.defendantId);
+
+    // Check if trial is already ended
+    if (trial.status === "ended" || trial.status === "left") {
+      console.log(' WARNING: Trial already ended');
+      res.status(400).json({ msg: "Trial has already ended" });
       return;
     }
 
     // Determine who is leaving and who wins
     let winnerId;
-    if (trial.plaintiffId.toString() === leavingUserId) {
+    const isPlaintiff = trial.plaintiffId.toString() === leavingUserId;
+    const isDefendant = trial.defendantId.toString() === leavingUserId;
+
+    if (isPlaintiff) {
       winnerId = trial.defendantId;
-    } else if (trial.defendantId.toString() === leavingUserId) {
+      console.log(' Plaintiff is leaving, defendant wins');
+    } else if (isDefendant) {
       winnerId = trial.plaintiffId;
+      console.log(' Defendant is leaving, plaintiff wins');
     } else {
+      console.log(' ERROR: User is not a participant');
       res.status(403).json({ msg: "Not a participant of this trial" });
       return;
     }
 
-    // Prevent leaving already ended trials
-    if (trial.status === "ended" || trial.status === "left") {
-      res.status(400).json({ msg: "Trial has already ended" });
-      return;
-    }
-
+    // Update trial status
     trial.status = "left";
     trial.endedAt = new Date();
     trial.winnerId = winnerId;
     await trial.save();
 
-    res.status(200).json({ msg: "You have left the trial. The other participant has won." });
+    console.log(' Trial updated successfully');
+    console.log('  New status:', trial.status);
+    console.log('  Winner:', winnerId);
 
-  } catch (e) {
-    console.error("leaveMockTrial error:", e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+    //  BROADCAST TO OTHER USER
+    console.log(' Broadcasting to trial room:', trialId);
+    
+    broadcastToTrialRoom(trialId, {
+      type: 'system',
+      message: 'The other participant has left the trial.',
+      data: { 
+        senderId: 'system', 
+        text: 'The other participant has left the trial.',
+        timestamp: new Date().toISOString()
+      }
+    });
+
+    console.log(' Broadcast completed');
+
+    // Close all WebSocket connections for this trial after a brief delay
+    // This ensures the notification is sent before closing
+    setTimeout(() => {
+      closeTrialRoomConnections(trialId, "Trial left");
+    }, 1000);
+
+    // Respond to leaving user
+    res.status(200).json({ 
+      msg: "You have left the trial. The other participant has won.",
+      success: true 
+    });
+
+  } catch (e: any) {
+    console.error(" CRITICAL ERROR in leaveMockTrial:", e);
+    console.error("   Error message:", e.message);
+    console.error("   Error stack:", e.stack);
+    res.status(500).json({ msg: "Something went wrong", error: e.message });
   }
 };
 
