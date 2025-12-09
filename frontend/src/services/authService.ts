@@ -190,12 +190,12 @@ export const getMockTrialDetails = async (trialId: string) => {
 };
 
 export const endTrial = async (trialId: string) => {
-  const response = await api.post('/mock-trials/end', { trialId });
+  const response = await api.post('/mock-trials/end', { trialId: trialId });
   return response.data;
 };
 
 export const leaveTrial = async (trialId: string) => {
-  const response = await api.post('/mock-trials/leave', { trialId });
+  const response = await api.post('/mock-trials/leave', { trialId: trialId });
   return response.data;
 };
 
