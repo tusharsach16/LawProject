@@ -4,6 +4,7 @@ import { Send, LogOut, Scale, Shield, Timer, Loader2 } from 'lucide-react';
 import { getMockTrialDetails, endTrial, leaveTrial, analyzeTrial } from '../services/authService';
 import { useAppSelector } from '../redux/hooks';
 import MessageBubble, {type Message } from '../components/MessageBubble';
+import { getWebSocketUrl } from '../lib/utils';
 
 const CountdownTimer = ({ startTime, onTimeUp }: { startTime: string; onTimeUp: () => void }) => {
     const calculateTimeLeft = () => {
@@ -83,7 +84,8 @@ const TrialRoomPage = () => {
                 isConnecting.current = true;
 
                 console.log(' Initiating WebSocket connection...');
-                const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:5000';
+                const wsUrl = getWebSocketUrl();
+                console.log('   WebSocket URL:', wsUrl);
                 const socket = new WebSocket(`${wsUrl}?trialId=${trialId}&token=${token}`);
                 
                 // Set ref immediately
