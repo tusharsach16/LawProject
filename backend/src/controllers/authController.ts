@@ -35,9 +35,9 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, lastname, username, email, phoneNumber, password, role, ...extraData } = req.body;
 
-    const existingUser: Iuser | null = await User.findOne({ email });
+    const existingUser: Iuser | null = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      res.status(400).json({ message: 'Email already in use' });
+      res.status(400).json({ message: 'Email or Username already in use' });
       return;
     }
 
@@ -55,12 +55,22 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
 
     const userId = user._id as mongoose.Types.ObjectId;
 
-    if (role === 'lawyer') {
-      await Lawyer.create({ userId, ...extraData });
-    } else if (role === 'lawstudent') {
-      await LawStudent.create({ userId, ...extraData });
-    } else {
-      await GeneralUser.create({ userId, ...extraData });
+    try {
+      if (role === 'lawyer') {
+        await Lawyer.create({ userId, ...extraData });
+        console.log('Lawyer profile created');
+      } else if (role === 'lawstudent') {
+        await LawStudent.create({ userId, ...extraData });
+        console.log('LawStudent profile created');
+      } else {
+        await GeneralUser.create({ userId, ...extraData });
+        console.log('GeneralUser profile created');
+      }
+    } catch (roleError) {
+      console.error('Error creating role-specific profile:', roleError);
+      await User.findByIdAndDelete(userId);
+      res.status(500).json({ message: 'Failed to create user profile' });
+      return;
     }
 
     const token = jwt.sign(
