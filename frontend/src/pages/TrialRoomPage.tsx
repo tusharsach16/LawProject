@@ -83,7 +83,8 @@ const TrialRoomPage = () => {
                 isConnecting.current = true;
 
                 console.log(' Initiating WebSocket connection...');
-                const socket = new WebSocket(`ws://localhost:5000?trialId=${trialId}&token=${token}`);
+                const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:5000';
+                const socket = new WebSocket(`${wsUrl}?trialId=${trialId}&token=${token}`);
                 
                 // Set ref immediately
                 socketRef.current = socket;
