@@ -124,6 +124,16 @@ export const initWebSocketServer = (server: HttpServer) => {
     console.log(` User ${userId} added to trial room ${trialId}`);
     console.log(`   Current participants:`, Array.from(trialRooms.get(trialId)?.keys() || []));
 
+    const pingInterval = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.ping();
+      }
+    }, 25000); // every 25s
+    
+    ws.on("pong", () => {
+      console.log(`Pong from ${userId}`);
+    });
+
     ws.on("message", async (message: WebSocket.RawData) => {
       try {
         const parsedMessage = JSON.parse(message.toString());
@@ -218,18 +228,20 @@ export const initWebSocketServer = (server: HttpServer) => {
     });
 
     ws.on("close", () => {
+      clearInterval(pingInterval);
       const room = trialRooms.get(trialId);
       if (room) {
         room.delete(userId);
         console.log(` User ${userId} disconnected from trial room ${trialId}`);
         console.log(`   Remaining participants: ${room.size}`);
-
+    
         if (room.size === 0) {
           trialRooms.delete(trialId);
           console.log(`Trial room ${trialId} deleted (empty)`);
         }
       }
     });
+    
 
     ws.on("error", (error) => {
       console.log("WebSocket error:", error);
