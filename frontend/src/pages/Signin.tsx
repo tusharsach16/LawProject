@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Scale, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Scale, Mail, Lock, Eye, EyeOff, ArrowRight, CheckCircle, XCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import Signupui from "@/components/Signupui";
 import axios from "axios";
@@ -14,10 +14,17 @@ type FormData = {
   rememberMe: boolean;
 };
 
+type Toast = {
+  type: 'success' | 'error';
+  message: string;
+  show: boolean;
+};
+
 const Signin = () => {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [toast, setToast] = useState<Toast>({ type: 'success', message: '', show: false });
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
@@ -44,6 +51,13 @@ const Signin = () => {
     }
   }, [navigate]);
 
+  const showToast = (type: 'success' | 'error', message: string) => {
+    setToast({ type, message, show: true });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }));
+    }, 3000);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -62,19 +76,59 @@ const Signin = () => {
         localStorage.setItem("rememberMe", "true");
       }
 
-      alert('Sign in Successful');
-      console.log("Login successful:", res);
-      navigate("/dashboard");
+      showToast('success', 'Login successful! Redirecting...');
+      
+      // Navigate after a short delay to show the success message
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
+      
     } catch (error: any) {
       console.error("Signin failed:", error.response?.data || error.message);
-      alert("Signin failed. Please try again.");
-    } finally {
+      
+      // Better error messages
+      const errorMessage = error.response?.status === 401 
+        ? "Incorrect email or password" 
+        : error.response?.data?.message || "Sign in failed. Please try again.";
+      
+      showToast('error', errorMessage);
       setIsLoading(false);
     }
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className="fixed top-8 right-8 z-50 animate-slide-down">
+          <div className={`flex items-start gap-4 px-6 py-4 rounded-xl shadow-2xl border-2 backdrop-blur-sm ${
+            toast.type === 'success' 
+              ? 'bg-white border-amber-500/30' 
+              : 'bg-white border-red-500/30'
+          }`}>
+            <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
+              toast.type === 'success'
+                ? 'bg-gradient-to-br from-amber-500 to-amber-600'
+                : 'bg-gradient-to-br from-red-500 to-red-600'
+            }`}>
+              {toast.type === 'success' ? (
+                <CheckCircle className="h-5 w-5 text-white" strokeWidth={2.5} />
+              ) : (
+                <XCircle className="h-5 w-5 text-white" strokeWidth={2.5} />
+              )}
+            </div>
+            <div className="flex-1 pt-0.5">
+              <p className={`font-bold text-base mb-0.5 ${
+                toast.type === 'success' ? 'text-slate-900' : 'text-slate-900'
+              }`}>
+                {toast.type === 'success' ? 'Success' : 'Error'}
+              </p>
+              <p className="text-slate-600 text-sm font-medium">{toast.message}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Left side - Signupui Component */}
       <div className="hidden lg:block">
         <Signupui />
