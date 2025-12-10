@@ -1,9 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { Lock, Mail, Phone, Scale, Eye, EyeOff } from "lucide-react";
+import { Lock, Mail, Phone, Scale, Eye, EyeOff, CheckCircle, XCircle, AtSign } from "lucide-react";
 import { CiUser } from "react-icons/ci";
-import { Checkbox } from "@/components/ui/checkbox";
 import Signupui from "@/components/Signupui";
 import axios from "axios";
 import { useDispatch } from "react-redux";
@@ -22,10 +21,18 @@ type FormData = {
   rememberMe: boolean
 };
 
+type Toast = {
+  type: 'success' | 'error';
+  message: string;
+  show: boolean;
+};
+
 const SignUp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [toast, setToast] = useState<Toast>({ type: 'success', message: '', show: false });
   const [formData, setFormData] = useState<FormData>({
     name: '',
     lastname:'',
@@ -46,45 +53,125 @@ const SignUp = () => {
     }));
   };
 
+  const showToast = (type: 'success' | 'error', message: string) => {
+    setToast({ type, message, show: true });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }));
+    }, 3000);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
     if (formData.password !== formData.confirmPassword) {
-      alert(`Password does not match!`);
+      showToast('error', 'Passwords do not match!');
       return;
     }
-
+  
+    // Validate role is selected
+    if (!formData.role) {
+      showToast('error', 'Please select your role');
+      return;
+    }
+  
+    setIsLoading(true);
+  
+    const payload = {
+      name: formData.name,
+      lastname: formData.lastname,
+      email: formData.email,
+      username: formData.username,
+      password: formData.password,
+      role: formData.role,
+      phoneNumber: formData.phoneNumber
+    };
+  
+    console.log('Sending signup payload:', {
+      ...payload,
+      password: '***hidden***' 
+    });
+  
     try{
-      const response = await axios.post(`${API}/api/signup`, {
-        name: formData.name,
-        lastname: formData.lastname,
-        email: formData.email,
-        username: formData.username,
-        password: formData.password,
-        role: formData.role,
-        phoneNumber: formData.phoneNumber
-      });
+      const response = await axios.post(`${API}/api/signup`, payload);
       
       console.log('User signed up, response:', response.data);
       
       const { token, user } = response.data;
-
+  
       if (token && user) {
         localStorage.setItem('token', token);
-        //  Redux store ko naye user ke data se update kara hai
         dispatch(setUser(user));
-        alert('User signed up successfully.');
-        navigate('/dashboard');
+        
+        showToast('success', 'Account created successfully! Redirecting...');
+        
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
       } else {
         throw new Error("Token or user data missing in signup response.");
       }
     } catch(error: any) {
-      console.error('Signup failed:', error.response?.data || error.message);
-      alert(error.response?.data.message || 'An error occurred during signup.');
+      console.error('Signup failed - Full error:', error);
+      console.error('Error response:', error.response);
+      console.error('Error status:', error.response?.status);
+      console.error('Error data:', error.response?.data);
+      
+      // Better error handling
+      let errorMessage = 'An error occurred during signup.';
+      
+      if (error.response) {
+        const status = error.response.status;
+        const data = error.response.data;
+        
+        if (status === 500) {
+          errorMessage = 'Server error. Please check console and contact support.';
+        } else if (status === 409 || status === 400) {
+          errorMessage = data?.message || 'Email, username, or phone number already exists.';
+        } else {
+          errorMessage = data?.message || errorMessage;
+        }
+      } else if (error.request) {
+        errorMessage = 'No response from server. Check your connection.';
+      }
+      
+      showToast('error', errorMessage);
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className="fixed top-8 right-8 z-50 animate-slide-down">
+          <div className={`flex items-start gap-4 px-6 py-4 rounded-xl shadow-2xl border-2 backdrop-blur-sm ${
+            toast.type === 'success' 
+              ? 'bg-white border-amber-500/30' 
+              : 'bg-white border-red-500/30'
+          }`}>
+            <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
+              toast.type === 'success'
+                ? 'bg-gradient-to-br from-amber-500 to-amber-600'
+                : 'bg-gradient-to-br from-red-500 to-red-600'
+            }`}>
+              {toast.type === 'success' ? (
+                <CheckCircle className="h-5 w-5 text-white" strokeWidth={2.5} />
+              ) : (
+                <XCircle className="h-5 w-5 text-white" strokeWidth={2.5} />
+              )}
+            </div>
+            <div className="flex-1 pt-0.5">
+              <p className={`font-bold text-base mb-0.5 ${
+                toast.type === 'success' ? 'text-slate-900' : 'text-slate-900'
+              }`}>
+                {toast.type === 'success' ? 'Success' : 'Error'}
+              </p>
+              <p className="text-slate-600 text-sm font-medium">{toast.message}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Left side - Signupui Component */}
       <div className="hidden lg:block">
         <Signupui />
@@ -171,14 +258,18 @@ const SignUp = () => {
               {/* Username */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700">Username</label>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                  className="pl-4 pr-4 py-3 w-full rounded-xl border-2 border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-slate-900 transition-all"
-                />
+                <div className="relative group">
+                  <AtSign className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-amber-500 transition-colors" />
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder="sumitmalik123"
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                    className="pl-12 pr-4 py-3 w-full rounded-xl border-2 border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-slate-900 transition-all"
+                  />
+                </div>
               </div>
   
               {/* Phone Number */}
@@ -189,7 +280,7 @@ const SignUp = () => {
                   <input
                     type="tel"
                     name="phoneNumber"
-                    placeholder="+91 9876543210"
+                    placeholder="9876543210"
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     required
@@ -198,21 +289,44 @@ const SignUp = () => {
                 </div>
               </div>
   
-              {/* Role */}
+              {/* Role - Better UI */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700">I am a</label>
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  required
-                  className="px-4 py-3 w-full rounded-xl border-2 border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-slate-900 transition-all"
-                >
-                  <option value="">Select your Role</option>
-                  <option value="general">Individual seeking legal help</option>
-                  <option value="lawstudent">Law Student</option>
-                  <option value="lawyer">Lawyer</option>
-                </select>
+                <label className="block text-sm font-semibold text-slate-700 mb-3">I am a</label>
+                <div className="grid grid-cols-3 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, role: 'general' }))}
+                    className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${
+                      formData.role === 'general'
+                        ? 'border-amber-500 bg-amber-50 text-amber-700'
+                        : 'border-slate-200 text-slate-700 hover:border-amber-300'
+                    }`}
+                  >
+                    Individual
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, role: 'lawstudent' }))}
+                    className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${
+                      formData.role === 'lawstudent'
+                        ? 'border-amber-500 bg-amber-50 text-amber-700'
+                        : 'border-slate-200 text-slate-700 hover:border-amber-300'
+                    }`}
+                  >
+                    Law Student
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, role: 'lawyer' }))}
+                    className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${
+                      formData.role === 'lawyer'
+                        ? 'border-amber-500 bg-amber-50 text-amber-700'
+                        : 'border-slate-200 text-slate-700 hover:border-amber-300'
+                    }`}
+                  >
+                    Lawyer
+                  </button>
+                </div>
               </div>
   
               {/* Passwords */}
@@ -264,31 +378,15 @@ const SignUp = () => {
                 </div>
               </div>
   
-              {/* Remember Me */}
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="remember"
-                  checked={formData.rememberMe}
-                  onCheckedChange={(checked) =>
-                    setFormData((prev) => ({ ...prev, rememberMe: checked as boolean }))
-                  }
-                  className="border-slate-300 mt-0.5 cursor-pointer"
-                />
-                <label htmlFor="remember" className="font-medium text-slate-700 text-sm">
-                  I agree to the{" "}
-                  <span className="text-amber-600 hover:text-amber-700">Terms</span> and{" "}
-                  <span className="text-amber-600 hover:text-amber-700">Privacy Policy</span>
-                </label>
-              </div>
-  
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-slate-900 to-slate-800 text-white font-bold py-3.5 rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] group relative overflow-hidden"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-slate-900 to-slate-800 text-white font-bold py-3.5 rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 <span className="relative flex items-center justify-center text-lg">
-                  Create Account
+                  {isLoading ? "Creating Account..." : "Create Account"}
                 </span>
               </button>
             </form>
@@ -313,4 +411,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
