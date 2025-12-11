@@ -15,7 +15,7 @@ const formatBotMessage = (text: string) => {
   const disclaimer = parts.length > 1 ? '⚠️' + parts.slice(1).join('⚠️') : '';
 
   // Format numbered lists with bold titles (e.g., "1. **Mediation:**")
-  mainContent = mainContent.replace(/(\d+)\.\s+\*\*(.+?)\*\*\s*/g, (match, num, title) => {
+  mainContent = mainContent.replace(/(\d+)\.\s+\*\*(.+?)\*\*\s*/g, (num, title) => {
     return `<div class="numbered-item"><span class="number">${num}</span><strong>${title}</strong></div>`;
   });
 
