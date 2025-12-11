@@ -97,32 +97,63 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
-    const user: Iuser | null = await User.findOne({ email });
-    if (!user || !(user.comparePassword && (await user.comparePassword(password)))) {
+    // Single query with password field
+    const user: Iuser | null = await User.findOne({ email }).select('+password');
+    
+    if (!user || !(await user.comparePassword(password))) {
       res.status(400).json({ message: 'Invalid credentials' });
       return;
     }
 
     const userId = user._id as mongoose.Types.ObjectId;
 
-    const fullUserProfile = await getFullUserProfile(userId.toString());
-
+    // Generate token immediately
     const token = jwt.sign(
       { id: userId.toString(), role: user.role, username: user.username },
       process.env.JWT_SECRET!,
       { expiresIn: '1d' }
     );
 
+    // Return MINIMAL data - just enough to show the UI
     res.status(200).json({
       message: 'Login successful',
       token,
-      user: fullUserProfile,
+      user: {
+        _id: user._id,
+        name: user.name,
+        lastname: user.lastname,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        profileImageUrl: user.profileImageUrl,
+        bio: user.bio,
+        location: user.location
+      }
     });
   } catch (error) {
     console.error('Login Error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// --- NEW ENDPOINT: Get Full Profile (call this AFTER login) ---
+const getFullProfile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).user?.id as string;
+    const fullUserProfile = await getFullUserProfile(userId);
+    
+    if (!fullUserProfile) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    res.status(200).json({ user: fullUserProfile });
+  } catch (error) {
+    console.error('GetFullProfile Error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 // --- GET USER CONTROLLER ---
 const getUser = async (req: Request, res: Response): Promise<void> => {
