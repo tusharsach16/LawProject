@@ -40,7 +40,9 @@ const Dashboard: React.FC = () => {
     '/dashboard/profile',
   ];
   
-  const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
+  // Check if pathname matches exact routes or starts with profile path (for /dashboard/profile/:username)
+  const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname) && 
+    !location.pathname.startsWith('/dashboard/profile/');
 
   // User fetch karo agar load nahi hai
   useEffect(() => {
