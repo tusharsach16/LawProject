@@ -120,6 +120,28 @@ const AiChatbot: React.FC = () => {
     const currentInput = predefinedQuery || input;
     if (!currentInput.trim()) return;
 
+    console.log('Sending message:', currentInput);
+
+    // Ensure we have an active conversation
+    let currentConvId = activeConversationId;
+    if (!currentConvId) {
+      const newConv: Conversation = {
+        id: Date.now().toString(),
+        title: 'Conversation',
+        updatedAt: Date.now(),
+        messages: []
+      };
+      setConversations(prev => {
+        const next = [newConv, ...prev];
+        localStorage.setItem('ai_conversations', JSON.stringify(next));
+        return next;
+      });
+      setActiveConversationId(newConv.id);
+      setMessages([]);
+      currentConvId = newConv.id;
+      setShowWelcome(false);
+    }
+
     if (currentSpeechRef.current) {
       speechSynthesis.cancel();
       stopSpeaking();
@@ -140,6 +162,25 @@ const AiChatbot: React.FC = () => {
 
     try {
       const response = await askAiAssistant(currentInput);
+      
+      console.log('Response from API:', response);
+
+      // Check if response exists
+      if (!response) {
+        throw new Error('No response received from server');
+      }
+
+      // Check if the response contains an error
+      if (response.error) {
+        throw new Error(response.error || response.details || response.message || 'Unknown error from server');
+      }
+
+      // Check if response has reply property
+      if (!response.reply) {
+        console.error('Invalid response format:', response);
+        throw new Error('Invalid response format from server - missing reply field');
+      }
+
       const botResponseText = response.reply;
 
       const botMessage: Message = {
@@ -149,10 +190,13 @@ const AiChatbot: React.FC = () => {
         timestamp: new Date(),
         type: 'legal-advice'
       };
+      
       setMessages(prev => [...prev, botMessage]);
+      
+      // Update conversation with both messages
       setConversations(prev => {
         const next = prev.map(c => {
-          if (c.id !== activeConversationId) return c;
+          if (c.id !== currentConvId) return c;
           const updated = { ...c, messages: [...c.messages, userMessage, botMessage], updatedAt: Date.now() };
           const title = c.title === 'Conversation' ? deriveTitleFromFirstUserMessage(updated) : c.title;
           return { ...updated, title };
@@ -160,18 +204,58 @@ const AiChatbot: React.FC = () => {
         localStorage.setItem('ai_conversations', JSON.stringify(next));
         return next;
       });
+      
       speakText(botMessage.content);
 
-    } catch (error) {
-      console.error("API call to backend failed:", error);
+    } catch (error: any) {
+      console.error("Error in handleSendMessage:", error);
+      
+      // Extract error message from different error formats
+      let errorMsg = "Sorry, I'm having trouble connecting right now. Please try again later.";
+      
+      if (error?.response?.data) {
+        // Axios error response
+        const data = error.response.data;
+        errorMsg = data.error || data.details || data.message || errorMsg;
+        
+        // Add status code info
+        if (error.response.status === 401) {
+          errorMsg = "🔒 Authentication error. Please log in again.";
+        } else if (error.response.status === 429) {
+          errorMsg = "⏱️ Too many requests. Please wait a moment and try again.";
+        } else if (error.response.status === 500) {
+          errorMsg = "⚠️ Server error: " + errorMsg;
+        }
+      } else if (error?.message) {
+        // Standard error
+        if (error.message.includes('Network Error')) {
+          errorMsg = "🌐 Network error. Please check your internet connection.";
+        } else if (error.message.includes('timeout')) {
+          errorMsg = "⏱️ Request timeout. The server took too long to respond.";
+        } else {
+          errorMsg = error.message;
+        }
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "Sorry, I'm having trouble connecting right now. Please try again later.",
+        content: `❌ ${errorMsg}`,
         sender: 'bot',
         timestamp: new Date(),
         type: 'text'
       };
+      
       setMessages(prev => [...prev, errorMessage]);
+      
+      // Also update conversation with error message
+      setConversations(prev => {
+        const next = prev.map(c => {
+          if (c.id !== currentConvId) return c;
+          return { ...c, messages: [...c.messages, userMessage, errorMessage], updatedAt: Date.now() };
+        });
+        localStorage.setItem('ai_conversations', JSON.stringify(next));
+        return next;
+      });
     } finally {
       setIsLoading(false);
     }
