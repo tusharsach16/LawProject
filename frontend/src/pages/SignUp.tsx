@@ -106,15 +106,12 @@ const SignUp = () => {
         
         setTimeout(() => {
           navigate('/dashboard');
-        }, 1500);
+        }, 800);
       } else {
         throw new Error("Token or user data missing in signup response.");
       }
     } catch(error: any) {
-      console.error('Signup failed - Full error:', error);
-      console.error('Error response:', error.response);
-      console.error('Error status:', error.response?.status);
-      console.error('Error data:', error.response?.data);
+      console.error('Signup failed:', error.response?.data || error.message);
       
       // Better error handling
       let errorMessage = 'An error occurred during signup.';
