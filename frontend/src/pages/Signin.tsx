@@ -61,32 +61,28 @@ const Signin = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    
     try {
-      const res = await axios.post(`${API}/api/login`,
-        {
-          email: formData.email,
-          password: formData.password,
-        }
-      );
-
+      const res = await axios.post(`${API}/api/login`, {
+        email: formData.email,
+        password: formData.password,
+      });
+  
       dispatch(setUser(res.data.user));
       localStorage.setItem("token", res.data.token);
-
+  
       if (formData.rememberMe) {
         localStorage.setItem("rememberMe", "true");
       }
 
       showToast('success', 'Login successful! Redirecting...');
-      
-      // Navigate after a short delay to show the success message
+  
       setTimeout(() => {
         navigate("/dashboard");
-      }, 1500);
-      
+      }, 800);      
     } catch (error: any) {
       console.error("Signin failed:", error.response?.data || error.message);
       
-      // Better error messages
       const errorMessage = error.response?.status === 401 
         ? "Incorrect email or password" 
         : error.response?.data?.message || "Sign in failed. Please try again.";
