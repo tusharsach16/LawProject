@@ -64,6 +64,9 @@ const lawyerSchema = new Schema<Ilawyer>(
   {timestamps: true}
 )
 
+lawyerSchema.index({ specialization: 1 }); 
+lawyerSchema.index({ ratings: -1 });
+
 const Lawyer = mongoose.model<Ilawyer>("Lawyer", lawyerSchema);
 
 export {Lawyer, Ilawyer, specializationOptions }; 

@@ -41,6 +41,9 @@ const studentSchema = new Schema<IStudent>(
   { timestamps: true }
 );
 
+studentSchema.index({ collegeName: 1 });
+studentSchema.index({ year: 1 });
+
 const LawStudent = mongoose.model<IStudent>("LawStudent", studentSchema);
 
 export { LawStudent, IStudent };
