@@ -58,13 +58,10 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
     try {
       if (role === 'lawyer') {
         await Lawyer.create({ userId, ...extraData });
-        console.log('Lawyer profile created');
       } else if (role === 'lawstudent') {
         await LawStudent.create({ userId, ...extraData });
-        console.log('LawStudent profile created');
       } else {
         await GeneralUser.create({ userId, ...extraData });
-        console.log('GeneralUser profile created');
       }
     } catch (roleError) {
       console.error('Error creating role-specific profile:', roleError);
@@ -79,12 +76,22 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
       { expiresIn: '1d' }
     );
 
-    const fullUserProfile = await getFullUserProfile(userId.toString());
-
     res.status(201).json({
       message: 'Signup successful',
       token,
-      user: fullUserProfile,
+      user: {
+        _id: user._id,
+        name: user.name,
+        lastname: user.lastname,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        phoneNumber: user.phoneNumber,
+        profileImageUrl: user.profileImageUrl,
+        bio: user.bio,
+        location: user.location,
+        bannerImageUrl: user.bannerImageUrl
+      }
     });
   } catch (error) {
     console.error('Signup Error:', error);
@@ -114,7 +121,7 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
       { expiresIn: '1d' }
     );
 
-    // Return MINIMAL data - just enough to show the UI
+    // Return MINIMAL data - NO getFullUserProfile() call during login
     res.status(200).json({
       message: 'Login successful',
       token,
@@ -125,9 +132,11 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
         username: user.username,
         email: user.email,
         role: user.role,
+        phoneNumber: user.phoneNumber,
         profileImageUrl: user.profileImageUrl,
         bio: user.bio,
-        location: user.location
+        location: user.location,
+        bannerImageUrl: user.bannerImageUrl
       }
     });
   } catch (error) {
@@ -135,25 +144,6 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-// --- NEW ENDPOINT: Get Full Profile (call this AFTER login) ---
-const getFullProfile = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const userId = (req as any).user?.id as string;
-    const fullUserProfile = await getFullUserProfile(userId);
-    
-    if (!fullUserProfile) {
-      res.status(404).json({ message: 'User not found' });
-      return;
-    }
-
-    res.status(200).json({ user: fullUserProfile });
-  } catch (error) {
-    console.error('GetFullProfile Error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
 
 // --- GET USER CONTROLLER ---
 const getUser = async (req: Request, res: Response): Promise<void> => {
