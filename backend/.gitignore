@@ -1,2 +1,4 @@
 node_modules
 .env
+src/testGemini.js
+src/listModels.js
