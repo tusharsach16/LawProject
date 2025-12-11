@@ -106,7 +106,7 @@ const SignUp = () => {
         
         setTimeout(() => {
           navigate('/dashboard');
-        }, 800);
+        }, 1500);
       } else {
         throw new Error("Token or user data missing in signup response.");
       }
