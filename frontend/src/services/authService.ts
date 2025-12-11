@@ -221,13 +221,27 @@ export const analyzeTrial = async (trialId: string) => {
 
 // ========== Chatbot ==========
 export const askAiAssistant = async (message: string) => {
-  const response = await api.post('/chat', { message });
-  return response.data;
+  try {
+    console.log('Asking AI Assistant:', message);
+    const response = await api.post('/chat', { message });
+    console.log('AI Response received:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('Error in askAiAssistant:', error);
+    throw error;
+  }
 };
 
 export const getChatHistory = async () => {
-  const response = await api.get('/chat');
-  return response.data;
+  try {
+    console.log('Fetching chat history...');
+    const response = await api.get('/chat');
+    console.log('Chat history received:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('Error in getChatHistory:', error);
+    throw error;
+  }
 };
 
 // ========== Quiz ==========
