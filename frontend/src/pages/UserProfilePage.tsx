@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Users, UserPlus, UserCheck, Clock, Scale, Loader2, AlertCircle } from 'lucide-react';
 import { getUserProfile, sendFriendRequest } from '../services/authService'; 
+import { useToast } from '../components/useToast';
 
 interface UserProfileData {
   _id: string;
@@ -25,6 +26,7 @@ const UserProfilePage = () => {
 
   const [requestStatus, setRequestStatus] = useState<'idle' | 'pending' | 'sent'>('idle');
   const [isProcessing, setIsProcessing] = useState(false);
+  const {show} = useToast();
 
   useEffect(() => {
     if (!username) return;
@@ -53,10 +55,10 @@ const UserProfilePage = () => {
     try {
       await sendFriendRequest(user.username);
       setRequestStatus('sent'); 
-      alert("Friend request sent!");
+      show("Friend request sent!", "success");
     } catch (err: any) {
       console.error("Failed to send friend request:", err);
-      alert(err.response?.data?.msg || "Could not send request.");
+      show(err.response?.data?.msg || "Could not send request.", "error");
     } finally {
       setIsProcessing(false);
     }
