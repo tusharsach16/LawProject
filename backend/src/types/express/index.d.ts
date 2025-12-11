@@ -1,13 +1,11 @@
-import "express";   // extend करने के लिये import ज़रूरी है
+import "express-serve-static-core";
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: string;          // JWT से आने वाला user id
-        role?: string;       // अगर token में role भेजता है
-        email?: string;      // optional field
-      };
-    }
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: {
+      id?: string;
+      role?: string;
+      email?: string;
+    };
   }
 }
