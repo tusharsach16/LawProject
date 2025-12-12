@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { signupUser, loginUser, getUser } from '../controllers/authController';
 import authMiddleware from '../middleware/authMiddleware';
-import { forgotPassword, resetPassword, verifyOtp } from '../controllers/forgotPassword';
+import { forgotPassword, resetPassword, verifyOtp, ipRateLimiter } from '../controllers/forgotPassword';
 
 const router = express.Router();
 
@@ -10,7 +10,8 @@ router.post('/login', loginUser);
 
 router.get('/get', authMiddleware, getUser);
 
-router.post('/forgot-password', forgotPassword);
+router.use('/auth', ipRateLimiter);
+router.post('/forgot-password', ipRateLimiter, forgotPassword);
 router.post('/verify-otp', verifyOtp);
 router.post('/reset-password', resetPassword);
 
