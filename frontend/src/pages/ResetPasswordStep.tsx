@@ -1,5 +1,6 @@
 import { useState, type ChangeEvent } from "react";
 import { Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { useToast } from "../components/useToast";
 const API = import.meta.env.VITE_API_URL;
 
 type ResetPasswordStepProps = {
@@ -13,16 +14,17 @@ const ResetPasswordStep = ({ email, otp }: ResetPasswordStepProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const toast = useToast();
 
   const handleSubmit = async () => {
     // Validation
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match!");
+      toast.show('Passwords do not match!', 'error');
       return;
     }
 
     if (newPassword.length < 6) {
-      alert("Password must be at least 6 characters long!");
+      toast.show('Password must be at least 6 characters long!', 'error');
       return;
     }
 
@@ -38,14 +40,16 @@ const ResetPasswordStep = ({ email, otp }: ResetPasswordStepProps) => {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Password reset successful! Please sign in with your new password.");
-        window.location.href = "/signin";
+        toast.show('Password reset successful! Redirecting to sign in...', 'success');
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 2000);
       } else {
-        alert(data.message || "Failed to reset password");
+        toast.show(data.message || 'Failed to reset password', 'error');
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred. Please try again.");
+      toast.show('An error occurred. Please try again.', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +121,7 @@ const ResetPasswordStep = ({ email, otp }: ResetPasswordStepProps) => {
 
           {/* Password Match Indicator */}
           {confirmPassword && (
-            <div className={`text-sm ${newPassword === confirmPassword ? 'text-green-600' : 'text-red-600'}`}>
+            <div className={`text-sm font-medium ${newPassword === confirmPassword ? 'text-green-600' : 'text-red-600'}`}>
               {newPassword === confirmPassword ? '✓ Passwords match' : '✗ Passwords do not match'}
             </div>
           )}
@@ -144,10 +148,10 @@ const ResetPasswordStep = ({ email, otp }: ResetPasswordStepProps) => {
         <div className="mt-6 p-4 bg-slate-50 rounded-lg">
           <p className="text-sm font-semibold text-slate-700 mb-2">Password Requirements:</p>
           <ul className="text-sm text-slate-600 space-y-1">
-            <li className={newPassword.length >= 6 ? 'text-green-600' : ''}>
+            <li className={newPassword.length >= 6 ? 'text-green-600 font-medium' : ''}>
               {newPassword.length >= 6 ? '✓' : '•'} At least 6 characters
             </li>
-            <li className={newPassword && confirmPassword && newPassword === confirmPassword ? 'text-green-600' : ''}>
+            <li className={newPassword && confirmPassword && newPassword === confirmPassword ? 'text-green-600 font-medium' : ''}>
               {newPassword && confirmPassword && newPassword === confirmPassword ? '✓' : '•'} Passwords must match
             </li>
           </ul>
