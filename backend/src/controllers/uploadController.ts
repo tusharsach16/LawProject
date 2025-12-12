@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
-import fs from 'fs';
+import streamifier from 'streamifier';
 
 dotenv.config();
 
@@ -18,22 +18,34 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
-    // Cloudinary par file upload karein
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: 'profile_images', // Cloudinary mein ek folder ban jayega
-      resource_type: 'image',
-    });
+    // Upload directly from buffer (no filesystem needed)
+    const uploadFromBuffer = (buffer: Buffer): Promise<any> => {
+      return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'profile_images',
+            resource_type: 'image',
+            transformation: [
+              { width: 1500, height: 1500, crop: 'limit' },
+              { quality: 'auto:good' }
+            ]
+          },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        );
 
-    fs.unlink(req.file.path, (err) => {
-      if (err) {
-        // Sirf console mein log karein, error bhejne ki zaroorat nahi
-        console.error("Failed to delete temporary file:", req.file?.path, err);
-      } else {
-        console.log("Successfully deleted temporary file:", req.file?.path);
-      }
-    });
+        streamifier.createReadStream(buffer).pipe(uploadStream);
+      });
+    };
 
-    // Frontend ko image ka secure URL wapas bhejega
+    const result = await uploadFromBuffer(req.file.buffer);
+
+    // Return the secure URL
     res.status(200).json({ 
       msg: 'Image uploaded successfully', 
       imageUrl: result.secure_url 
@@ -41,7 +53,9 @@ export const uploadImage = async (req: Request, res: Response): Promise<void> =>
 
   } catch (error) {
     console.error('Error uploading image:', error);
-    res.status(500).json({ msg: 'Server error during image upload' });
+    res.status(500).json({ 
+      msg: 'Server error during image upload',
+      error: process.env.NODE_ENV === 'development' ? String(error) : undefined
+    });
   }
 };
-
