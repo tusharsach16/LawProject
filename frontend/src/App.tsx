@@ -12,6 +12,7 @@ import ForgotPasswordFlow from "./pages/ForgotPassword";
 import TermsAndConditions from './pages/legal/TermsAndConditions';
 import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import RefundPolicy from './pages/legal/RefundPolicy';
+import ContactUs from "./pages/legal/ContactUs";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/contact-us" element={<ContactUs />} />
         {/* PRIVATE/DASHBOARD ROUTES (Sidebar ke saath)*/}
         <Route 
           path="/dashboard/*" 
