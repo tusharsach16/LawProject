@@ -8,7 +8,7 @@ import ConnectWithLawyers from "./pages/ConnectWithLawyers";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MockTrialLobby from "./pages/MockTrialLobby";
 import ForgotPasswordFlow from "./pages/ForgotPassword";
-import LawyerDashboard from "./pages/LawyerDashboard";
+// import LawyerDashboard from "./pages/LawyerDashboard";
 import TermsAndConditions from './pages/legal/TermsAndConditions';
 import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import RefundPolicy from './pages/legal/RefundPolicy';
@@ -40,14 +40,14 @@ function App() {
           } 
         />
 
-        <Route
+        {/* <Route
           path="/lawyer-dashboard/*"
           element={
             <ProtectedRoute>
               <LawyerDashboard />
             </ProtectedRoute>
           }
-        />
+        /> */}
       </Routes>
     </BrowserRouter>
   );
