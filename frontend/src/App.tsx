@@ -8,6 +8,11 @@ import ConnectWithLawyers from "./pages/ConnectWithLawyers";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MockTrialLobby from "./pages/MockTrialLobby";
 import ForgotPasswordFlow from "./pages/ForgotPassword";
+import LawyerDashboard from "./pages/LawyerDashboard";
+import TermsAndConditions from './pages/legal/TermsAndConditions';
+import PrivacyPolicy from './pages/legal/PrivacyPolicy';
+import RefundPolicy from './pages/legal/RefundPolicy';
+
 
 function App() {
   return (
@@ -22,6 +27,9 @@ function App() {
           <Route path="/forgotpassword" element={<ForgotPasswordFlow/>} />
         </Route>
 
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
         {/* PRIVATE/DASHBOARD ROUTES (Sidebar ke saath)*/}
         <Route 
           path="/dashboard/*" 
@@ -30,6 +38,15 @@ function App() {
               <Dashboard />
             </ProtectedRoute>
           } 
+        />
+
+        <Route
+          path="/lawyer-dashboard/*"
+          element={
+            <ProtectedRoute>
+              <LawyerDashboard />
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </BrowserRouter>
