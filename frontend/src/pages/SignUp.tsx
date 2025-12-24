@@ -18,7 +18,8 @@ type FormData = {
   confirmPassword: string;
   role: string;
   phoneNumber: string;
-  rememberMe: boolean
+  rememberMe: boolean;
+  agreeToTerms: boolean;
 };
 
 type Toast = {
@@ -33,6 +34,7 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<Toast>({ type: 'success', message: '', show: false });
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
     lastname:'',
@@ -42,7 +44,8 @@ const SignUp = () => {
     confirmPassword: '',
     role: '',
     phoneNumber: '',
-    rememberMe: false
+    rememberMe: false,
+    agreeToTerms: false
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -71,6 +74,11 @@ const SignUp = () => {
     // Validate role is selected
     if (!formData.role) {
       showToast('error', 'Please select your role');
+      return;
+    }
+
+    if (!formData.agreeToTerms) {
+      showToast('error', 'Please agree to Terms & Conditions and Privacy Policy');
       return;
     }
   
@@ -373,6 +381,35 @@ const SignUp = () => {
                     </button>
                   </div>
                 </div>
+              </div>
+
+              {/* Legal Agreement Checkbox */}
+              <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-xl border-2 border-slate-200">
+                <input
+                  type="checkbox"
+                  id="agreeToTerms"
+                  checked={agreeToTerms}
+                  onChange={(e) => setAgreeToTerms(e.target.checked)}
+                  className="mt-1 w-4 h-4 text-amber-600 border-slate-300 rounded focus:ring-amber-500 focus:ring-2 cursor-pointer"
+                />
+                <label htmlFor="agreeToTerms" className="text-sm text-slate-700 cursor-pointer">
+                  I agree to Nyay Setu's{' '}
+                  <Link 
+                    to="/terms-and-conditions" 
+                    target="_blank"
+                    className="text-amber-600 hover:text-amber-700 font-semibold hover:underline"
+                  >
+                    Terms & Conditions
+                  </Link>
+                  {' '}and{' '}
+                  <Link 
+                    to="/privacy-policy" 
+                    target="_blank"
+                    className="text-amber-600 hover:text-amber-700 font-semibold hover:underline"
+                  >
+                    Privacy Policy
+                  </Link>
+                </label>
               </div>
   
               {/* Submit Button */}
