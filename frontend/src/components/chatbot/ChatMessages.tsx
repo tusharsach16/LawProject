@@ -1,6 +1,13 @@
 import React from 'react';
 import { Scale, User, Loader } from 'lucide-react';
-import type { Message } from './types';
+
+interface Message {
+  id: string;
+  content: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
+  type?: string;
+}
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -14,22 +21,21 @@ const formatBotMessage = (text: string) => {
   let mainContent = parts[0];
   const disclaimer = parts.length > 1 ? '⚠️' + parts.slice(1).join('⚠️') : '';
 
-  // Format numbered lists with bold titles (e.g., "1. **Mediation:**")
-  mainContent = mainContent.replace(/(\d+)\.\s+\*\*(.+?)\*\*\s*/g, (num, title) => {
-    return `<div class="numbered-item"><span class="number">${num}</span><strong>${title}</strong></div>`;
+  mainContent = mainContent.replace(/(\d+)\.\s*\*\*([^*]+?)\*\*:?\s*/g, (match, num, title) => {
+    return `<div class="numbered-item"><span class="number">${num}</span><strong>${title.trim()}</strong></div>`;
   });
 
-  // Format bullet points with bold text (nested items)
-  mainContent = mainContent.replace(/\*\s+\*\*(.+?)\*\*\s*/g, '<div class="bullet-item"><span class="bullet">•</span><strong>$1</strong></div>');
+  // Format bullet points with bold text: * **text**
+  mainContent = mainContent.replace(/^\s*\*\s+\*\*([^*]+?)\*\*/gm, '<div class="bullet-item"><span class="bullet">•</span><strong>$1</strong></div>');
   
-  // Format remaining bold text
-  mainContent = mainContent.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>');
+  // Format remaining bold text: **text**
+  mainContent = mainContent.replace(/\*\*([^*]+?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>');
   
-  // Format italic text
-  mainContent = mainContent.replace(/\*(.+?)\*/g, '<em class="italic text-slate-700">$1</em>');
+  // Format italic text: *text*
+  mainContent = mainContent.replace(/\*([^*]+?)\*/g, '<em class="italic text-slate-700">$1</em>');
   
-  // Format inline code
-  mainContent = mainContent.replace(/`(.+?)`/g, '<code class="bg-slate-100 px-2 py-1 rounded text-sm font-mono text-amber-700">$1</code>');
+  // Format inline code: `text`
+  mainContent = mainContent.replace(/`([^`]+?)`/g, '<code class="bg-slate-100 px-2 py-1 rounded text-sm font-mono text-amber-700">$1</code>');
   
   // Handle paragraphs - double line breaks
   mainContent = mainContent.replace(/\n\n/g, '<div class="paragraph-break"></div>');
