@@ -21,7 +21,7 @@ const formatBotMessage = (text: string) => {
   let mainContent = parts[0];
   const disclaimer = parts.length > 1 ? '⚠️' + parts.slice(1).join('⚠️') : '';
 
-  mainContent = mainContent.replace(/(\d+)\.\s*\*\*([^*]+?)\*\*:?\s*/g, (match, num, title) => {
+  mainContent = mainContent.replace(/(\d+)\.\s*\*\*([^*]+?)\*\*:?\s*/g, (num, title) => {
     return `<div class="numbered-item"><span class="number">${num}</span><strong>${title.trim()}</strong></div>`;
   });
 
