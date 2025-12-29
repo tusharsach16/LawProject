@@ -1,9 +1,9 @@
+import { redisLRem, redisLPop, redisRPush, redisLRange, redisExpire } from "../../utils/redisClient";
 import {Request, Response} from "express";
 import { Category } from "../../models/quiz/Category";
 import { MockTrialSituation } from "../../models/Mocktrial/MockSituation";
 import { MockTrial } from "../../models/Mocktrial/Mock";
 import mongoose from "mongoose";
-import { redis } from "../../utils/redisClient";
 import { User } from "../../models/User";
 import {geminiModel} from '../../config/gemini';
 import { broadcastToTrialRoom, closeTrialRoomConnections } from "../../webSockets";
@@ -95,8 +95,8 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
     // CRITICAL FIX: Remove user from ALL queues first to prevent duplicate entries
     const waitKeyPlaintiff = `waiting:${situationId}:plaintiff`;
     const waitKeyDefendant = `waiting:${situationId}:defendant`;
-    await redis.lRem(waitKeyPlaintiff, 0, userId);
-    await redis.lRem(waitKeyDefendant, 0, userId);
+    await redisLRem(waitKeyPlaintiff, 0, userId);
+    await redisLRem(waitKeyDefendant, 0, userId);
 
     // Check if user is already in an active trial
     const active = await MockTrial.findOne({
@@ -122,14 +122,14 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
     const oppKey = `waiting:${situationId}:${opposite}`;
 
     // Pop one user from opposite list (returns null if empty)
-    const opponentId = await redis.lPop(oppKey);
+    const opponentId = await redisLPop(oppKey);
 
     if (opponentId) {
       // CRITICAL FIX: Prevent self-matching
       if (opponentId === userId) {
         console.error("Self-matching detected, adding back to queue");
-        await redis.rPush(waitKey, userId);
-        await redis.expire(waitKey, 120);
+        await redisRPush(waitKey, userId);
+        await redisExpire(waitKey, 120);
         res.status(202).json({ waiting: true, msg: "Waiting for opponent" });
         return;
       }
@@ -146,18 +146,18 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
       });
 
       // Clean up any remaining entries for both users
-      await redis.lRem(waitKeyPlaintiff, 0, userId);
-      await redis.lRem(waitKeyDefendant, 0, userId);
-      await redis.lRem(waitKeyPlaintiff, 0, opponentId);
-      await redis.lRem(waitKeyDefendant, 0, opponentId);
+      await redisLRem(waitKeyPlaintiff, 0, userId);
+      await redisLRem(waitKeyDefendant, 0, userId);
+      await redisLRem(waitKeyPlaintiff, 0, opponentId);
+      await redisLRem(waitKeyDefendant, 0, opponentId);
 
       res.status(200).json({ paired: true, trialId: trial._id });
       return;
     }
 
     // No opponent available → push current user into waiting queue 
-    await redis.rPush(waitKey, userId);
-    await redis.expire(waitKey, 120);
+    await redisRPush(waitKey, userId);
+    await redisExpire(waitKey, 120);
 
     res.status(202).json({ waiting: true, msg: "Waiting for opponent" });
   } catch (e) {
@@ -186,8 +186,8 @@ export const cancelWaiting = async (req: Request, res: Response): Promise<void> 
     const waitKeyPlaintiff = `waiting:${situationId}:plaintiff`;
     const waitKeyDefendant = `waiting:${situationId}:defendant`;
     
-    await redis.lRem(waitKeyPlaintiff, 0, userId);
-    await redis.lRem(waitKeyDefendant, 0, userId);
+    await redisLRem(waitKeyPlaintiff, 0, userId);
+    await redisLRem(waitKeyDefendant, 0, userId);
 
     res.status(200).json({ msg: "Removed from waiting queue" });
   } catch (e) {
@@ -473,8 +473,8 @@ export const checkMatchStatus = async (req: Request, res: Response): Promise<voi
       // CRITICAL FIX: Clean up queues if user is matched
       const waitKeyPlaintiff = `waiting:${situationId}:plaintiff`;
       const waitKeyDefendant = `waiting:${situationId}:defendant`;
-      await redis.lRem(waitKeyPlaintiff, 0, userId);
-      await redis.lRem(waitKeyDefendant, 0, userId);
+      await redisLRem(waitKeyPlaintiff, 0, userId);
+      await redisLRem(waitKeyDefendant, 0, userId);
       
       res.status(200).json({ 
         matched: true, 
@@ -486,7 +486,7 @@ export const checkMatchStatus = async (req: Request, res: Response): Promise<voi
 
     // Check if user is still in waiting queue
     const waitKey = `waiting:${situationId}:${side}`;
-    const isWaiting = await redis.lRange(waitKey, 0, -1);
+    const isWaiting = await redisLRange(waitKey, 0, -1);
     const userInQueue = isWaiting.includes(userId);
 
     if (userInQueue) {
