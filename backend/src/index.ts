@@ -19,26 +19,26 @@ import './models/quiz/Category';
 import './models/Mocktrial/MockSituation';
 import './models/Mocktrial/Mock';
 import chatbotRoutes from './routes/chatbotRoutes';
-import appointmentRoutes from './routes/appointmentRoutes';
+// import appointmentRoutes from './routes/appointmentRoutes';
 import { initRedis } from './utils/redisClient';
-import { LawyerAvailability } from './models/Appointment';
+// import { LawyerAvailability } from './models/Appointment';
 import cron from 'node-cron';
 
-cron.schedule('0 0 * * *', async () => {
-  try {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayString = yesterday.toISOString().split('T')[0];
+// cron.schedule('0 0 * * *', async () => {
+//   try {
+//     const yesterday = new Date();
+//     yesterday.setDate(yesterday.getDate() - 1);
+//     const yesterdayString = yesterday.toISOString().split('T')[0];
     
-    const result = await LawyerAvailability.deleteMany({
-      date: { $exists: true, $ne: null, $lt: yesterdayString }
-    });
+//     const result = await LawyerAvailability.deleteMany({
+//       date: { $exists: true, $ne: null, $lt: yesterdayString }
+//     });
     
-    console.log(`Midnight cleanup: Removed ${result.deletedCount} expired availability records`);
-  } catch (error) {
-    console.error('Cron job error:', error);
-  }
-});
+//     console.log(`Midnight cleanup: Removed ${result.deletedCount} expired availability records`);
+//   } catch (error) {
+//     console.error('Cron job error:', error);
+//   }
+// });
 
 
 const envPath = path.resolve(__dirname, "../.env");
@@ -83,7 +83,7 @@ app.use('/api', lawyerRoutes);
 app.use('/api', mockTrialRoutes);
 app.use('/api', chatbotRoutes);
 // app.post('/api/appointments/webhook', express.raw({ type: 'application/json' }), handlePaymentWebhook);
-app.use('/api/appointments', appointmentRoutes);
+// app.use('/api/appointments', appointmentRoutes);
 
 const startServer = async () => {
   try {
