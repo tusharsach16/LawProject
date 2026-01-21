@@ -19,6 +19,27 @@ import './models/quiz/Category';
 import './models/Mocktrial/MockSituation';
 import './models/Mocktrial/Mock';
 import chatbotRoutes from './routes/chatbotRoutes';
+import appointmentRoutes from './routes/appointmentRoutes';
+import { initRedis } from './utils/redisClient';
+import { LawyerAvailability } from './models/Appointment';
+import cron from 'node-cron';
+
+cron.schedule('0 0 * * *', async () => {
+  try {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayString = yesterday.toISOString().split('T')[0];
+    
+    const result = await LawyerAvailability.deleteMany({
+      date: { $exists: true, $ne: null, $lt: yesterdayString }
+    });
+    
+    console.log(`Midnight cleanup: Removed ${result.deletedCount} expired availability records`);
+  } catch (error) {
+    console.error('Cron job error:', error);
+  }
+});
+
 
 const envPath = path.resolve(__dirname, "../.env");
 console.log("🔍 Looking for .env at:", envPath);
@@ -61,10 +82,13 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api', lawyerRoutes);
 app.use('/api', mockTrialRoutes);
 app.use('/api', chatbotRoutes);
+// app.post('/api/appointments/webhook', express.raw({ type: 'application/json' }), handlePaymentWebhook);
+app.use('/api/appointments', appointmentRoutes);
 
 const startServer = async () => {
   try {
     await connectDB();
+    await initRedis();
     
     server.listen(PORT, () => {
       console.log(`Server running on port ${PORT} and WebSocket is ready.`);
