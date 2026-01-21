@@ -5,38 +5,38 @@ import { Attempts } from "../models/quiz/userQuizAttempt";
 import { MockTrial } from "../models/Mocktrial/Mock";
 import { ChatHistory } from "../models/ChatHistory";
 import mongoose from "mongoose";
-
+import { redisGet, redisSet } from "../utils/redisClient";
 
 export const getQuizQues = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const slug = req.query.category as string;
-    const limit = parseInt(req.query.limit as string) || 10;
+  const slug = req.query.category as string;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const cacheKey = `quiz:${slug || 'all'}:${limit}`;
 
-    let filter: any = {};
-    if (slug) {
-      const categoryDoc = await Category.findOne({ slug: slug });
-      if (!categoryDoc) {
-        res.status(404).json({ message: "Category not found" });
-        return;
-      }
-      filter = { categoryId: categoryDoc._id };
-    }
-
-
-    const quiz = await Questions.aggregate([
-      { $match: filter },           
-      { $sample: { size: limit } }   
-    ]);
-
-    res.status(200).json({ quiz });
-
-  } catch (e) {
-     res.status(500).json({ message: "Something went wrong", e });
+  const cached = await redisGet(cacheKey);
+  if (cached) {
+    res.json({ quiz: JSON.parse(cached), cached: true });
+    return;
   }
+
+  let filter = {};
+  if (slug) {
+    const categoryDoc = await Category.findOne({ slug });
+    if (!categoryDoc) {
+      res.status(404).json({ message: "Category not found" });
+      return;
+    }
+    filter = { categoryId: categoryDoc._id };
+  }
+
+  const quiz = await Questions.aggregate([
+    { $match: filter },
+    { $sample: { size: limit } }
+  ]);
+
+  await redisSet(cacheKey, JSON.stringify(quiz), 120);
+
+  res.json({ quiz, cached: false });
 };
-
-
-
 
 export const submitAttempt = async (req: Request, res: Response):Promise<void> => {
   try {
