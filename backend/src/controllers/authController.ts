@@ -71,7 +71,7 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
     }
 
     const token = jwt.sign(
-      { id: userId.toString(), role: user.role, username: user.username },
+      {  _id: user._id.toString(), id: userId.toString(), userId: user._id.toString(), role: user.role, username: user.username },
       process.env.JWT_SECRET!,
       { expiresIn: '1d' }
     );
@@ -116,7 +116,7 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
 
     // Generate token immediately
     const token = jwt.sign(
-      { id: userId.toString(), role: user.role, username: user.username },
+      { _id: user._id.toString(), id: userId.toString(), userId: user._id.toString(), role: user.role, username: user.username },
       process.env.JWT_SECRET!,
       { expiresIn: '1d' }
     );
