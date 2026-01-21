@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import { User } from "../../models/User";
 import {geminiModel} from '../../config/gemini';
 import { broadcastToTrialRoom, closeTrialRoomConnections } from "../../webSockets";
+import { redisGet, redisSet } from "../../utils/redisClient";
 
 export const getMockSituation = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -36,36 +37,49 @@ export const getSituations = async (req: Request, res:Response): Promise<void> =
 }
 
 export const getSituationsCat = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const slug = req.query.slug as string;
+  const slug = req.query.slug as string;
+  const cacheKey = `mock:situations:${slug || 'all'}`;
 
-    let filter = {};
-    if (slug) {
-      const categoryDoc = await Category.findOne({ slug: slug });
-      if (!categoryDoc) {
-        res.status(404).json({ message: "Category not found" });
-        return;
-      }
-      filter = { categoryId: categoryDoc._id };
-    }
-
-    const situations = await MockTrialSituation.find(filter).lean();
-    res.status(200).json({ situations });
-
-  } catch (e) {
-     res.status(500).json({ message: "Something went wrong", e });
+  const cached = await redisGet(cacheKey);
+  if (cached) {
+    res.json({ situations: JSON.parse(cached), cached: true });
+    return;
   }
+
+  let filter = {};
+  if (slug) {
+    const categoryDoc = await Category.findOne({ slug });
+    if (!categoryDoc) {
+      res.status(404).json({ message: "Category not found" });
+      return;
+    }
+    filter = { categoryId: categoryDoc._id };
+  }
+
+  const situations = await MockTrialSituation.find(filter).lean();
+
+  await redisSet(cacheKey, JSON.stringify(situations), 300); // 5 min
+
+  res.json({ situations, cached: false });
 };
+
 
 export const getMockTrialCategories = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const categories = await Category.find({}).select('title slug');
-    res.status(200).json(categories);
-  } catch (e) {
-    console.error("Error fetching mock trial categories:", e);
-    res.status(500).json({ msg: "Something went wrong" });
+  const cacheKey = "mock:categories";
+
+  const cached = await redisGet(cacheKey);
+  if (cached) {
+    res.json({ categories: JSON.parse(cached), cached: true });
+    return;
   }
+
+  const categories = await Category.find({}).select('title slug').lean();
+
+  await redisSet(cacheKey, JSON.stringify(categories), 600); // 10 min
+
+  res.json({ categories, cached: false });
 };
+
 
 export const postMockJoin = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -253,38 +267,30 @@ export const postMockMessage = async (req: Request, res: Response): Promise<void
 };
 
 export const getMockTrialById = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { trialId } = req.params;
+  const { trialId } = req.params;
+  const cacheKey = `mock:trial:${trialId}`;
 
-    if (!trialId) {
-      res.status(400).json({ msg: "Trial ID is required" });
-      return;
-    }
-
-    const trial = await MockTrial.findById(trialId)
-      .populate({
-        path: "plaintiffId",
-        model: User,
-        select: "username name profileImageUrl" 
-      })
-      .populate({
-        path: "defendantId",
-        model: User,
-        select: "username name profileImageUrl"
-      })
-      .lean(); 
-
-    if (!trial) {
-      res.status(404).json({ msg: "Trial not found" });
-      return;
-    }
-
-    res.status(200).json({ trial });
-  } catch (error) {
-    console.error("getMockTrialById error:", error);
-    res.status(500).json({ msg: "Something went wrong", error });
+  const cached = await redisGet(cacheKey);
+  if (cached) {
+    res.json({ trial: JSON.parse(cached), cached: true });
+    return;
   }
+
+  const trial = await MockTrial.findById(trialId)
+    .populate("plaintiffId", "username name profileImageUrl")
+    .populate("defendantId", "username name profileImageUrl")
+    .lean();
+
+  if (!trial) {
+    res.status(404).json({ msg: "Trial not found" });
+    return;
+  }
+
+  await redisSet(cacheKey, JSON.stringify(trial), 60);
+
+  res.json({ trial, cached: false });
 };
+
 
 export const endMockTrial = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -582,34 +588,30 @@ export const analyzeTrialResult = async (req: Request, res: Response): Promise<v
 }
 
 export const getPastTrials = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const userId = req.user?.id;
-    
-    if (!userId) {
-      res.status(401).json({ msg: "Unauthenticated" });
-      return;
-    }
+  const userId = req.user?.id;
+  const cacheKey = `user:${userId}:past-trials`;
 
-    const trials = await MockTrial.find({
-      $or: [{plaintiffId: userId}, {defendantId: userId}],
-      status: { $in: ['ended', 'left'] }
-    })
-    .populate('plaintiffId', 'name profileImageUrl')
-    .populate('defendantId', 'name profileImageUrl')
-    .populate('situationId', 'title')
-    .sort({createdAt: -1});
-
-    if(!trials || trials.length === 0) {
-      res.status(404).json({msg: "No past trial found for this user."});
-      return;
-    }
-    
-    res.json({trials});
-  } catch(e) {
-    console.error('Error fetching past trials:', e);
-    res.status(500).json({ message: 'Server error while fetching trial history.' });
+  const cached = await redisGet(cacheKey);
+  if (cached) {
+    res.json({ trials: JSON.parse(cached), cached: true });
+    return;
   }
-}
+
+  const trials = await MockTrial.find({
+    $or: [{ plaintiffId: userId }, { defendantId: userId }],
+    status: { $in: ['ended', 'left'] }
+  })
+  .populate('plaintiffId', 'name profileImageUrl')
+  .populate('defendantId', 'name profileImageUrl')
+  .populate('situationId', 'title')
+  .sort({ createdAt: -1 })
+  .lean();
+
+  await redisSet(cacheKey, JSON.stringify(trials), 60);
+
+  res.json({ trials, cached: false });
+};
+
 
 // Get mocktrial statistics
 export const getMockTrialStatistics = async (req: Request, res: Response): Promise<void> => {
