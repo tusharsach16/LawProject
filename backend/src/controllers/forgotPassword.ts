@@ -2,14 +2,9 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
-import rateLimit from 'express-rate-limit';
 import { User } from '../models/User';
 
-const otpStore = new Map<
-  string,
-  { hashedOtp: string; expiresAt: number; createdAt: number }
->();
-
+const otpStore = new Map<string, { hashedOtp: string; expiresAt: number }>();
 const emailRequestCounters = new Map<string, { count: number; resetAt: number }>();
 const otpAttemptCounters = new Map<string, { attempts: number; blockedUntil?: number }>();
 
@@ -21,17 +16,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export const ipRateLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { message: 'Too many requests from this IP, please try again later.' }
-});
-
-const generateOtp = () => {
-  return crypto.randomInt(100000, 999999).toString();
-};
+const generateOtp = () => crypto.randomInt(100000, 999999).toString();
 
 const hashOtp = async (otp: string) => {
   const salt = await bcrypt.genSalt(10);
@@ -116,33 +101,18 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
 
     const otp = generateOtp();
     const hashedOtp = await hashOtp(otp);
-    const expiresAt = Date.now() + 5 * 60 * 1000;
 
-    otpStore.set(email, { hashedOtp, expiresAt, createdAt: Date.now() });
+    otpStore.set(email, { hashedOtp, expiresAt: Date.now() + 5 * 60 * 1000 });
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
       subject: 'Password Reset OTP',
-      html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4;">
-          <div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h2 style="text-align:center; color: #1e293b;">Password Reset Request</h2>
-            <p style="color: #64748b; font-size: 16px;">You requested to reset your password. Use the OTP below to proceed:</p>
-            <div style="text-align:center; padding: 20px; background:#fef3c7; border-radius: 8px; margin: 20px 0;">
-              <h1 style="font-size:36px; letter-spacing:8px; color:#f59e0b; margin: 0;">${otp}</h1>
-            </div>
-            <p style="color: #64748b; font-size: 14px;">This OTP will expire in 5 minutes.</p>
-            <p style="color: #64748b; font-size: 14px;">
-              If you didn't request this, ignore this email.
-            </p>
-          </div>
-        </div>`
+      html: `<h2>Your OTP is ${otp}</h2><p>Valid for 5 minutes</p>`
     });
 
     res.status(200).json({ message: 'If an account exists with this email, an OTP has been sent.' });
-  } catch (error: any) {
-    console.error('Forgot password error:', error);
+  } catch {
     res.status(500).json({ message: 'Failed to process request' });
   }
 };
@@ -161,15 +131,9 @@ export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
     }
 
     const record = otpStore.get(email);
-    if (!record) {
+    if (!record || Date.now() > record.expiresAt) {
       registerOtpAttempt(email);
-      res.status(400).json({ message: 'Invalid OTP or expired. Please request a new one.' });
-      return;
-    }
-
-    if (Date.now() > record.expiresAt) {
-      otpStore.delete(email);
-      res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
+      res.status(400).json({ message: 'Invalid or expired OTP' });
       return;
     }
 
@@ -186,8 +150,7 @@ export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
 
     clearOtpAttemptCounter(email);
     res.status(200).json({ message: 'OTP verified successfully' });
-  } catch (error: any) {
-    console.error('Verify OTP error:', error);
+  } catch {
     res.status(500).json({ message: 'Failed to verify OTP' });
   }
 };
@@ -200,20 +163,9 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    if (newPassword.length < 6) {
-      res.status(400).json({ message: 'Password must be at least 6 characters long' });
-      return;
-    }
-
     const record = otpStore.get(email);
-    if (!record) {
-      res.status(400).json({ message: 'No OTP found. Please request a new one.' });
-      return;
-    }
-
-    if (Date.now() > record.expiresAt) {
-      otpStore.delete(email);
-      res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
+    if (!record || Date.now() > record.expiresAt) {
+      res.status(400).json({ message: 'Invalid or expired OTP' });
       return;
     }
 
@@ -224,7 +176,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
         res.status(429).json({ message: 'Too many invalid attempts. Try again later.' });
         return;
       }
-      res.status(400).json({ message: 'Invalid OTP. Please verify and try again.' });
+      res.status(400).json({ message: 'Invalid OTP' });
       return;
     }
 
@@ -234,27 +186,23 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
+    user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
 
     otpStore.delete(email);
     clearOtpAttemptCounter(email);
 
     res.status(200).json({ message: 'Password reset successful' });
-  } catch (error: any) {
-    console.error('Reset password error:', error);
+  } catch {
     res.status(500).json({ message: 'Failed to reset password' });
   }
 };
 
 setInterval(() => {
   const now = Date.now();
-
   for (const [email, data] of otpStore.entries()) {
     if (now > data.expiresAt) otpStore.delete(email);
   }
-
   for (const [email, data] of emailRequestCounters.entries()) {
     if (now > data.resetAt) emailRequestCounters.delete(email);
   }
