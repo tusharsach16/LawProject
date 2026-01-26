@@ -2,3 +2,8 @@ node_modules
 .env
 src/testGemini.js
 src/listModels.js
+src/test-quiz-cache.js
+src/test-mocktrials-cache.js
+src/perfMetrics.js
+src/rate-limiter.js
+src/test-lawyers-api.js
