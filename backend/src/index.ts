@@ -20,7 +20,7 @@ import './models/Mocktrial/MockSituation';
 import './models/Mocktrial/Mock';
 import chatbotRoutes from './routes/chatbotRoutes';
 // import appointmentRoutes from './routes/appointmentRoutes';
-import { initRedis } from './utils/redisClient';
+import { initRedis, isRedisAvailable } from './utils/redisClient';
 // import { LawyerAvailability } from './models/Appointment';
 import cron from 'node-cron';
 
@@ -89,6 +89,11 @@ const startServer = async () => {
   try {
     await connectDB();
     await initRedis();
+    if (isRedisAvailable()) {
+      console.log("Server started with Redis caching enabled");
+    } else {
+      console.log("Server started WITHOUT Redis (caching disabled)");
+    }
     
     server.listen(PORT, () => {
       console.log(`Server running on port ${PORT} and WebSocket is ready.`);

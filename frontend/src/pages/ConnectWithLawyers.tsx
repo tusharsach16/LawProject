@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, ArrowDownUp, Scale, Sparkles, Loader2, Users } from 'lucide-react';
+import { Search, Filter, ArrowDownUp, Scale, Sparkles, Loader2, Users, AlertCircle } from 'lucide-react';
 import { getAllLawyers, getSpecializations } from '../services/authService';
 import LawyerCard from '../components/LawyerCard';
 
@@ -40,19 +40,52 @@ const ConnectWithLawyers = () => {
     const fetchLawyers = async () => {
       try {
         setLoading(true);
-        const params = {
-          q: debouncedTerm || undefined,
-          sortBy: sortBy || undefined,
-          specialization: filterSpec || undefined,
+        setError(null);
+        
+        const params: any = {
+          sortBy: sortBy || 'ratings',
+          order: 'desc'
         };
+        
+        if (debouncedTerm && debouncedTerm.trim()) {
+          params.q = debouncedTerm.trim();
+        }
+        
+        if (filterSpec && filterSpec.trim()) {
+          params.specialization = filterSpec;
+        }
+  
+        console.log('Fetching lawyers with params:', params);
+        
         const data = await getAllLawyers(params);
-        setLawyers(data);
-      } catch (err) {
-        setError('Failed to load lawyers. Please try again.');
+        
+        console.log('Received data:', data);
+        
+        if (Array.isArray(data)) {
+          const processedLawyers = data.map(lawyer => ({
+            ...lawyer,
+            specialization: Array.isArray(lawyer.specialization) 
+              ? lawyer.specialization 
+              : lawyer.specialization 
+                ? [lawyer.specialization] 
+                : []
+          }));
+          setLawyers(processedLawyers);
+          console.log(`Set ${processedLawyers.length} lawyers`);
+        } else {
+          console.error('Data is not an array:', data);
+          setLawyers([]);
+        }
+      } catch (err: any) {
+        console.error('Error fetching lawyers:', err);
+        const errorMsg = err.response?.data?.msg || err.message || 'Failed to load lawyers';
+        setError(errorMsg);
+        setLawyers([]);
       } finally {
         setLoading(false);
       }
     };
+    
     fetchLawyers();
   }, [debouncedTerm, sortBy, filterSpec]);
 
@@ -60,11 +93,21 @@ const ConnectWithLawyers = () => {
     const fetchSpecializations = async () => {
       try {
         const data = await getSpecializations();
-        setSpecializations(data);
+        console.log('Received specializations:', data);
+        
+        // Your backend returns an array directly
+        if (Array.isArray(data)) {
+          setSpecializations(data);
+        } else {
+          console.error('Specializations is not an array:', data);
+          setSpecializations([]);
+        }
       } catch (err) {
         console.error("Failed to load specializations:", err);
+        setSpecializations([]);
       }
     };
+    
     fetchSpecializations();
   }, []); 
 
@@ -112,7 +155,9 @@ const ConnectWithLawyers = () => {
               className="appearance-none bg-white border-2 border-slate-200 rounded-xl pl-4 pr-10 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-300 hover:border-amber-500/30 cursor-pointer"
             >
               <option value="">All Specializations</option>
-              {specializations.map(spec => <option key={spec} value={spec}>{spec}</option>)}
+              {specializations.map(spec => (
+                <option key={spec} value={spec}>{spec}</option>
+              ))}
             </select>
             <Filter size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           </div>
@@ -145,36 +190,96 @@ const ConnectWithLawyers = () => {
       )}
 
       {/* Error State */}
-      {error && (
+      {error && !loading && (
         <div className="flex flex-col items-center justify-center py-20">
           <div className="w-24 h-24 bg-gradient-to-br from-red-200 to-red-300 rounded-full flex items-center justify-center mb-6">
-            <Scale className="h-12 w-12 text-red-600" />
+            <AlertCircle className="h-12 w-12 text-red-600" />
           </div>
           <h3 className="text-2xl font-bold text-slate-900 mb-2">Error Loading Lawyers</h3>
-          <p className="text-slate-600 text-center max-w-md">{error}</p>
+          <p className="text-slate-600 text-center max-w-md mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-semibold"
+          >
+            Try Again
+          </button>
         </div>
       )}
 
       {/* Lawyers Grid */}
       {!loading && !error && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {lawyers.length > 0 ? lawyers.map((lawyer, index) => (
-            <div key={lawyer._id} style={{ animation: `slideInCase 0.4s ease-out ${index * 0.05}s both` }}>
-              <LawyerCard lawyer={lawyer} />
-            </div>
-          )) : (
-            <div className="col-span-full flex flex-col items-center justify-center py-20">
-              <div className="w-24 h-24 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center mb-6">
-                <Users className="h-12 w-12 text-slate-500" />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">No Lawyers Found</h3>
-              <p className="text-slate-600 text-center max-w-md">
-                No lawyers found matching your criteria. Try adjusting your search or filters.
-              </p>
+        <>
+          {/* Results count */}
+          {lawyers.length > 0 && (
+            <div className="mb-4 text-sm text-slate-600">
+              Found <span className="font-bold text-slate-900">{lawyers.length}</span> lawyer{lawyers.length !== 1 ? 's' : ''}
+              {(searchTerm || filterSpec) && (
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setFilterSpec('');
+                  }}
+                  className="ml-3 text-amber-600 hover:text-amber-700 font-medium"
+                >
+                  Clear filters
+                </button>
+              )}
             </div>
           )}
-        </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {lawyers.length > 0 ? (
+              lawyers.map((lawyer, index) => (
+                <div 
+                  key={lawyer._id} 
+                  style={{ 
+                    animation: `slideInCase 0.4s ease-out ${index * 0.05}s both` 
+                  }}
+                >
+                  <LawyerCard lawyer={lawyer} />
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-20">
+                <div className="w-24 h-24 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center mb-6">
+                  <Users className="h-12 w-12 text-slate-500" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">No Lawyers Found</h3>
+                <p className="text-slate-600 text-center max-w-md mb-4">
+                  {searchTerm || filterSpec 
+                    ? 'No lawyers found matching your criteria. Try adjusting your search or filters.'
+                    : 'No lawyers available at the moment. Please check back later.'
+                  }
+                </p>
+                {(searchTerm || filterSpec) && (
+                  <button
+                    onClick={() => {
+                      setSearchTerm('');
+                      setFilterSpec('');
+                    }}
+                    className="px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-semibold"
+                  >
+                    Clear All Filters
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </>
       )}
+
+      <style>{`
+        @keyframes slideInCase {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 };

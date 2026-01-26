@@ -25,26 +25,29 @@ const MockTrialLobby = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   const navigate = useNavigate();
+  
   useEffect(() => {
     const fetchCategories = async () => {
         try {
             const data = await getMockTrialCategories();
-            setCategories(data);
+            setCategories(data || []);
         } catch (err) {
             console.error("Failed to load categories:", err);
+            setCategories([]);
         }
     };
     fetchCategories();
   }, []);
-
+  
   useEffect(() => {
     const fetchSituations = async () => {
       try {
         setLoading(true);
         const data = await getMockTrialSituationsCat(selectedCategory || undefined);
-        setSituations(data);
+        setSituations(data || []);
       } catch (err) {
         console.error(err);
+        setSituations([]);
       } finally {
         setLoading(false);
       }
