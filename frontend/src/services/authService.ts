@@ -304,7 +304,7 @@ export const joinMockTrial = async (situationId: string, side: 'plaintiff' | 'de
 
 export const getMockTrialCategories = async () => {
   const response = await api.get('/mock-trials/categories');
-  return response.data;
+  return response.data.categories;
 };
 
 export const getMockTrialDetails = async (trialId: string) => {
@@ -378,10 +378,76 @@ export const getRecentActivities = async (limit?: number) =>
 // 
 export const getAllLawyers = async (params: { q?: string; sortBy?: string; order?: 'asc' | 'desc'; specialization?: string; }) => {
   const response = await api.get('/getLawyers', { params });
-  return response.data;
+  return response.data.data;
 };
 
 export const getSpecializations = async () => {
   const response = await api.get('/lawyers/specializations');
   return response.data;
 };
+
+// // Payment and appointments
+// export const createPaymentSession = async (data: {
+//   lawyerId: string;
+//   appointmentTime: Date;
+//   price: number;
+//   duration: number;
+// }) => {
+//   const response = await api.post('/appointments/create-session', data);
+//   return response.data;
+// };
+
+// // Lawyer appointment
+// export const getLawyerAppointments = async (status: string = 'all') => {
+//   const response = await api.get('/appointments/lawyer/appointments', {
+//     params: { status }
+//   });
+//   return response.data;
+// };
+
+// export const getLawyerAppointmentStats = async () => {
+//   const response = await api.get('/appointments/lawyer/stats');
+//   return response.data;
+// };
+
+// // User appointment
+// export const getUserAppointments = async (status: string = 'all') => {
+//   const response = await api.get('/appointments/user/appointments', {
+//     params: { status }
+//   });
+//   return response.data;
+// };
+
+
+// // Lawyer availability
+// export const setLawyerAvailability = async (data: {
+//   date?: string;
+//   dayOfWeek?: number;
+//   slots: { startTime: string; endTime: string; }[];
+// }) => {
+//   const response = await api.post('/appointments/lawyer/availability', data);
+//   return response.data;
+// };
+
+// export const getLawyerAvailability = async () => {
+//   const response = await api.get('/appointments/lawyer/availability');
+//   return response.data;
+// };
+
+// export const getAvailableSlots = async (lawyerId: string, date: string) => {
+//   console.log('Frontend calling available slots with: ', {lawyerId, date});
+//   const response = await api.get('/appointments/available-slots', {
+//     params: { lawyerId, date }
+//   });
+//   console.log('Recieved slots: ', response.data);
+//   return response.data;
+// };
+
+// // Appointment cancellation
+// export const cancelAppointment = async (appointmentId: string, reason?: string) => {
+//   const response = await api.post('/appointments/cancel', {
+//     appointmentId,
+//     reason
+//   });
+//   return response.data;
+// };
