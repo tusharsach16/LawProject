@@ -1,4 +1,4 @@
-import mongoose, {Schema, Document} from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 const specializationOptions = [
   "Civil Law",
@@ -43,7 +43,7 @@ const lawyerSchema = new Schema<Ilawyer>(
     },
     specialization: {
       type: [String],
-      default: [], 
+      default: [],
       enum: specializationOptions
     },
     ratings: {
@@ -61,12 +61,12 @@ const lawyerSchema = new Schema<Ilawyer>(
       default: 500
     }
   },
-  {timestamps: true}
+  { timestamps: true }
 )
 
-lawyerSchema.index({ specialization: 1 }); 
+lawyerSchema.index({ specialization: 1 });
 lawyerSchema.index({ ratings: -1 });
 
 const Lawyer = mongoose.model<Ilawyer>("Lawyer", lawyerSchema);
 
-export {Lawyer, Ilawyer, specializationOptions }; 
+export { Lawyer, Ilawyer, specializationOptions }; 
