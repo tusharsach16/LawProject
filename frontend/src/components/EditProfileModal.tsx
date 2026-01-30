@@ -37,16 +37,16 @@ const EditProfileModal = ({ isOpen, onClose, currentUser, onSave }: EditProfileM
           <ModalHeader onClose={onClose} onSave={handleSave} />
 
           <div className="flex-1 overflow-y-auto custom-scrollbar">
-            <BannerSection 
+            <BannerSection
               bannerImagePreview={imageState.bannerImagePreview}
               onImageSelect={(e) => handleImageSelect(e, 'banner')}
             />
 
-            <ProfilePictureSection 
+            <ProfilePictureSection
               profileImagePreview={imageState.profileImagePreview}
               onImageSelect={(e) => handleImageSelect(e, 'profile')}
             />
-            
+
             <div className="p-6 space-y-5 mt-4">
               <BasicInfoSection
                 name={formData.name}
@@ -56,7 +56,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser, onSave }: EditProfileM
                 onBioChange={(value) => updateFormField('bio', value)}
                 onLocationChange={(value) => updateFormField('location', value)}
               />
-              
+
               {currentUser.role === 'lawstudent' && (
                 <LawStudentSection
                   collegeName={formData.collegeName}
@@ -80,6 +80,8 @@ const EditProfileModal = ({ isOpen, onClose, currentUser, onSave }: EditProfileM
                   onExperienceChange={(value) => updateFormField('experience', value)}
                   onLicenseNumberChange={(value) => updateFormField('licenseNumber', value)}
                   onSpecializationToggle={(spec) => handleMultiSelectToggle(spec, 'specialization')}
+                  price={formData.price}
+                  onPriceChange={(value) => updateFormField('price', value)}
                 />
               )}
 
@@ -94,7 +96,7 @@ const EditProfileModal = ({ isOpen, onClose, currentUser, onSave }: EditProfileM
           </div>
         </div>
       </div>
-      
+
       {imageState.croppingImage && (
         <ImageCropper
           imageSrc={imageState.croppingImage.src}

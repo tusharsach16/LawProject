@@ -113,7 +113,7 @@ const Signupui = () => {
             >
               <div className="text-center space-y-2">
                 <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-amber-400 to-amber-600">
-                  {counters[index]?.toLocaleString()}{stat.suffix}a
+                  {counters[index]?.toLocaleString()}{stat.suffix}
                 </div>
                 <div className="text-slate-400 text-sm font-medium group-hover:text-slate-300 transition-colors">{stat.label}</div>
               </div>
