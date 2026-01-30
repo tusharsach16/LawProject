@@ -43,11 +43,16 @@ const Signin = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
+    const userStr = localStorage.getItem("user");
     const rememberMe = localStorage.getItem("rememberMe");
 
-    if (token && user && rememberMe === "true") {
-      navigate("/dashboard");
+    if (token && userStr && rememberMe === "true") {
+      const user = JSON.parse(userStr);
+      if(user.role === 'lawyer') {
+        navigate("/lawyer-dashboard")
+      } else {
+        navigate("/dashboard");
+      }
     }
   }, [navigate]);
 
@@ -67,10 +72,13 @@ const Signin = () => {
         email: formData.email,
         password: formData.password,
       });
+      
+      const userData = res.data.user;
   
-      dispatch(setUser(res.data.user));
+      dispatch(setUser(userData));
       localStorage.setItem("token", res.data.token);
-  
+      
+      localStorage.setItem("user", JSON.stringify(userData));
       if (formData.rememberMe) {
         localStorage.setItem("rememberMe", "true");
       }
@@ -78,7 +86,11 @@ const Signin = () => {
       showToast('success', 'Login successful! Redirecting...');
   
       setTimeout(() => {
-        navigate("/dashboard");
+        if(userData.role === 'lawyer') {
+          navigate("/lawyer-dashboard");
+        } else {
+          navigate("/dashboard");
+        }
       }, 800);      
     } catch (error: any) {
       console.error("Signin failed:", error.response?.data || error.message);

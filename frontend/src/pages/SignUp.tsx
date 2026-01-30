@@ -34,10 +34,9 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<Toast>({ type: 'success', message: '', show: false });
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
-    lastname:'',
+    lastname: '',
     email: '',
     username: '',
     password: '',
@@ -65,12 +64,12 @@ const SignUp = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       showToast('error', 'Passwords do not match!');
       return;
     }
-  
+
     // Validate role is selected
     if (!formData.role) {
       showToast('error', 'Please select your role');
@@ -81,9 +80,9 @@ const SignUp = () => {
       showToast('error', 'Please agree to Terms & Conditions and Privacy Policy');
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     const payload = {
       name: formData.name,
       lastname: formData.lastname,
@@ -93,41 +92,45 @@ const SignUp = () => {
       role: formData.role,
       phoneNumber: formData.phoneNumber
     };
-  
+
     console.log('Sending signup payload:', {
       ...payload,
-      password: '***hidden***' 
+      password: '***hidden***'
     });
-  
-    try{
+
+    try {
       const response = await axios.post(`${API}/api/signup`, payload);
-      
+
       console.log('User signed up, response:', response.data);
-      
+
       const { token, user } = response.data;
-  
+
       if (token && user) {
         localStorage.setItem('token', token);
         dispatch(setUser(user));
-        
+
         showToast('success', 'Account created successfully! Redirecting...');
-        
+
         setTimeout(() => {
-          navigate('/dashboard');
+          if (formData.role === 'lawyer') {
+            navigate('/lawyer-dashboard');
+          } else {
+            navigate('/dashboard');
+          }
         }, 1500);
       } else {
         throw new Error("Token or user data missing in signup response.");
       }
-    } catch(error: any) {
+    } catch (error: any) {
       console.error('Signup failed:', error.response?.data || error.message);
-      
+
       // Better error handling
       let errorMessage = 'An error occurred during signup.';
-      
+
       if (error.response) {
         const status = error.response.status;
         const data = error.response.data;
-        
+
         if (status === 500) {
           errorMessage = 'Server error. Please check console and contact support.';
         } else if (status === 409 || status === 400) {
@@ -138,7 +141,7 @@ const SignUp = () => {
       } else if (error.request) {
         errorMessage = 'No response from server. Check your connection.';
       }
-      
+
       showToast('error', errorMessage);
       setIsLoading(false);
     }
@@ -149,16 +152,14 @@ const SignUp = () => {
       {/* Toast Notification */}
       {toast.show && (
         <div className="fixed top-8 right-8 z-50 animate-slide-down">
-          <div className={`flex items-start gap-4 px-6 py-4 rounded-xl shadow-2xl border-2 backdrop-blur-sm ${
-            toast.type === 'success' 
-              ? 'bg-white border-amber-500/30' 
-              : 'bg-white border-red-500/30'
-          }`}>
-            <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
-              toast.type === 'success'
-                ? 'bg-gradient-to-br from-amber-500 to-amber-600'
-                : 'bg-gradient-to-br from-red-500 to-red-600'
+          <div className={`flex items-start gap-4 px-6 py-4 rounded-xl shadow-2xl border-2 backdrop-blur-sm ${toast.type === 'success'
+            ? 'bg-white border-amber-500/30'
+            : 'bg-white border-red-500/30'
             }`}>
+            <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${toast.type === 'success'
+              ? 'bg-gradient-to-br from-amber-500 to-amber-600'
+              : 'bg-gradient-to-br from-red-500 to-red-600'
+              }`}>
               {toast.type === 'success' ? (
                 <CheckCircle className="h-5 w-5 text-white" strokeWidth={2.5} />
               ) : (
@@ -166,9 +167,8 @@ const SignUp = () => {
               )}
             </div>
             <div className="flex-1 pt-0.5">
-              <p className={`font-bold text-base mb-0.5 ${
-                toast.type === 'success' ? 'text-slate-900' : 'text-slate-900'
-              }`}>
+              <p className={`font-bold text-base mb-0.5 ${toast.type === 'success' ? 'text-slate-900' : 'text-slate-900'
+                }`}>
                 {toast.type === 'success' ? 'Success' : 'Error'}
               </p>
               <p className="text-slate-600 text-sm font-medium">{toast.message}</p>
@@ -181,13 +181,13 @@ const SignUp = () => {
       <div className="hidden lg:block">
         <Signupui />
       </div>
-  
+
       {/* Right side - Sign up form */}
       <div className="flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 p-4 relative overflow-hidden">
         {/* Decorative background elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-400/5 rounded-full blur-3xl"></div>
-  
+
         <div className="w-full max-w-md space-y-8 relative z-10">
           {/* Header */}
           <div className="text-center animate-slide-down">
@@ -200,7 +200,7 @@ const SignUp = () => {
             <h1 className="text-4xl font-bold text-slate-900 mb-2">Create Your Account</h1>
             <p className="text-slate-600 text-lg">Join Legal Guide to access your legal dashboard</p>
           </div>
-  
+
           {/* Form card */}
           <div className="bg-white p-8 shadow-2xl border border-slate-200 rounded-2xl animate-slide-up">
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -208,7 +208,7 @@ const SignUp = () => {
                 <h2 className="text-2xl font-bold text-slate-800">Sign Up</h2>
                 <div className="w-16 h-1 bg-gradient-to-r from-amber-500 to-amber-600 mx-auto mt-2 rounded-full"></div>
               </div>
-  
+
               {/* Name Fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -242,7 +242,7 @@ const SignUp = () => {
                   </div>
                 </div>
               </div>
-  
+
               {/* Email */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700">Email Address</label>
@@ -259,7 +259,7 @@ const SignUp = () => {
                   />
                 </div>
               </div>
-  
+
               {/* Username */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700">Username</label>
@@ -276,7 +276,7 @@ const SignUp = () => {
                   />
                 </div>
               </div>
-  
+
               {/* Phone Number */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700">Phone Number</label>
@@ -293,7 +293,7 @@ const SignUp = () => {
                   />
                 </div>
               </div>
-  
+
               {/* Role - Better UI */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-3">I am a</label>
@@ -301,39 +301,36 @@ const SignUp = () => {
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, role: 'general' }))}
-                    className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${
-                      formData.role === 'general'
-                        ? 'border-amber-500 bg-amber-50 text-amber-700'
-                        : 'border-slate-200 text-slate-700 hover:border-amber-300'
-                    }`}
+                    className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${formData.role === 'general'
+                      ? 'border-amber-500 bg-amber-50 text-amber-700'
+                      : 'border-slate-200 text-slate-700 hover:border-amber-300'
+                      }`}
                   >
                     Individual
                   </button>
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, role: 'lawstudent' }))}
-                    className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${
-                      formData.role === 'lawstudent'
-                        ? 'border-amber-500 bg-amber-50 text-amber-700'
-                        : 'border-slate-200 text-slate-700 hover:border-amber-300'
-                    }`}
+                    className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${formData.role === 'lawstudent'
+                      ? 'border-amber-500 bg-amber-50 text-amber-700'
+                      : 'border-slate-200 text-slate-700 hover:border-amber-300'
+                      }`}
                   >
                     Law Student
                   </button>
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, role: 'lawyer' }))}
-                    className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${
-                      formData.role === 'lawyer'
-                        ? 'border-amber-500 bg-amber-50 text-amber-700'
-                        : 'border-slate-200 text-slate-700 hover:border-amber-300'
-                    }`}
+                    className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${formData.role === 'lawyer'
+                      ? 'border-amber-500 bg-amber-50 text-amber-700'
+                      : 'border-slate-200 text-slate-700 hover:border-amber-300'
+                      }`}
                   >
                     Lawyer
                   </button>
                 </div>
               </div>
-  
+
               {/* Passwords */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -358,7 +355,7 @@ const SignUp = () => {
                     </button>
                   </div>
                 </div>
-  
+
                 <div>
                   <label className="block text-sm font-semibold text-slate-700">Confirm Password</label>
                   <div className="relative group">
@@ -388,22 +385,22 @@ const SignUp = () => {
                 <input
                   type="checkbox"
                   id="agreeToTerms"
-                  checked={agreeToTerms}
-                  onChange={(e) => setAgreeToTerms(e.target.checked)}
+                  checked={formData.agreeToTerms}
+                  onChange={(e) => setFormData(prev => ({ ...prev, agreeToTerms: e.target.checked }))}
                   className="mt-1 w-4 h-4 text-amber-600 border-slate-300 rounded focus:ring-amber-500 focus:ring-2 cursor-pointer"
                 />
                 <label htmlFor="agreeToTerms" className="text-sm text-slate-700 cursor-pointer">
                   I agree to Nyay Setu's{' '}
-                  <Link 
-                    to="/terms-and-conditions" 
+                  <Link
+                    to="/terms-and-conditions"
                     target="_blank"
                     className="text-amber-600 hover:text-amber-700 font-semibold hover:underline"
                   >
                     Terms & Conditions
                   </Link>
                   {' '}and{' '}
-                  <Link 
-                    to="/privacy-policy" 
+                  <Link
+                    to="/privacy-policy"
                     target="_blank"
                     className="text-amber-600 hover:text-amber-700 font-semibold hover:underline"
                   >
@@ -411,7 +408,7 @@ const SignUp = () => {
                   </Link>
                 </label>
               </div>
-  
+
               {/* Submit Button */}
               <button
                 type="submit"
@@ -424,7 +421,7 @@ const SignUp = () => {
                 </span>
               </button>
             </form>
-  
+
             {/* Divider */}
             <div className="mt-8">
               {/* Sign in link */}
@@ -441,7 +438,7 @@ const SignUp = () => {
         </div>
       </div>
     </div>
-  );  
+  );
 };
 
 export default SignUp;

@@ -8,6 +8,8 @@ interface LawyerSectionProps {
   allSpecializations: string[];
   onExperienceChange: (value: number) => void;
   onLicenseNumberChange: (value: string) => void;
+  price: number | '';
+  onPriceChange: (value: number | '') => void;
   onSpecializationToggle: (spec: string) => void;
 }
 
@@ -18,6 +20,8 @@ const LawyerSection = ({
   allSpecializations,
   onExperienceChange,
   onLicenseNumberChange,
+  price,
+  onPriceChange,
   onSpecializationToggle
 }: LawyerSectionProps) => {
   return (
@@ -28,20 +32,30 @@ const LawyerSection = ({
       </h3>
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <input 
-            type="number" 
-            placeholder="Years of Experience" 
-            value={experience} 
-            onChange={(e) => onExperienceChange(Number(e.target.value))} 
+          <input
+            type="number"
+            placeholder="Years of Experience"
+            value={experience}
+            onChange={(e) => onExperienceChange(Number(e.target.value))}
             className="w-full p-3 border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
           />
-          <input 
-            type="text" 
-            placeholder="License Number" 
-            value={licenseNumber} 
-            onChange={(e) => onLicenseNumberChange(e.target.value)} 
+          <input
+            type="text"
+            placeholder="License Number"
+            value={licenseNumber}
+            onChange={(e) => onLicenseNumberChange(e.target.value)}
             className="w-full p-3 border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
           />
+          <div className="col-span-2">
+            <label className="block font-semibold text-sm text-slate-700 mb-1">Consultation Fee (₹)</label>
+            <input
+              type="number"
+              placeholder="e.g. 500"
+              value={price}
+              onChange={(e) => onPriceChange(e.target.value === '' ? '' : Number(e.target.value))}
+              className="w-full p-3 border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+            />
+          </div>
         </div>
         <div>
           <label className="block font-semibold text-sm text-slate-700 mb-3">Specializations</label>

@@ -14,7 +14,8 @@ export const useEditProfileForm = (currentUser: CurrentUserProfile, isOpen: bool
     licenseNumber: '',
     areaOfInterest: [],
     specialization: [],
-    interests: []
+    interests: [],
+    price: ''
   });
 
   const [imageState, setImageState] = useState<ImageState>({
@@ -55,7 +56,8 @@ export const useEditProfileForm = (currentUser: CurrentUserProfile, isOpen: bool
         licenseNumber: currentUser.roleData?.licenseNumber || '',
         areaOfInterest: Array.isArray(currentUser.roleData?.areaOfInterest) ? currentUser.roleData.areaOfInterest : [],
         specialization: Array.isArray(currentUser.roleData?.specialization) ? currentUser.roleData.specialization : [],
-        interests: Array.isArray(currentUser.roleData?.interests) ? currentUser.roleData.interests : []
+        interests: Array.isArray(currentUser.roleData?.interests) ? currentUser.roleData.interests : [],
+        price: currentUser.roleData?.price || ''
       });
 
       setImageState(prev => ({
@@ -134,7 +136,8 @@ export const useEditProfileForm = (currentUser: CurrentUserProfile, isOpen: bool
       roleSpecificData = {
         experience: formData.experience,
         specialization: formData.specialization,
-        licenseNumber: formData.licenseNumber
+        licenseNumber: formData.licenseNumber,
+        price: formData.price
       };
     } else if (role === 'general') {
       roleSpecificData = {
