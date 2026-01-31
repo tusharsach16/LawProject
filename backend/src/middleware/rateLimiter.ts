@@ -2,7 +2,7 @@ import rateLimit from "express-rate-limit";
 
 export const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 20,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -12,7 +12,7 @@ export const loginLimiter = rateLimit({
 
 export const signupLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 10,
+  max: 20,
   message: {
     message: "Too many signup attempts. Please try later."
   }
