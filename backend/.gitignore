@@ -7,3 +7,4 @@ src/test-mocktrials-cache.js
 src/perfMetrics.js
 src/rate-limiter.js
 src/test-lawyers-api.js
+src/generateSignature.js
