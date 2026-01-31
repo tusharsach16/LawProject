@@ -18,7 +18,6 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
 
   console.log('=== AUTH MIDDLEWARE ===');
   console.log('Has Authorization header:', !!authHeader);
-  console.log('Authorization header:', authHeader?.substring(0, 20) + '...');
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     console.log('No valid authorization header found');
@@ -44,14 +43,33 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as CustomJwtPayload;
     console.log("Token decoded successfully");
-    console.log("User ID from token:", decoded.id || decoded._id || decoded.userId);
     
+    // Extract user ID - try different field names
+    const userId = decoded._id || decoded.id || decoded.userId;
+    console.log("User ID from token:", userId);
+    
+    if (!userId) {
+      console.error('No user ID found in token');
+      res.status(401).json({ 
+        msg: 'Invalid token - no user ID',
+        error: 'INVALID_TOKEN_PAYLOAD' 
+      });
+      return;
+    }
+    
+    // Store user data with BOTH _id and id for compatibility
     (req as any).user = {
-      id: decoded.id || decoded._id || decoded.userId,
+      _id: userId,  // MongoDB style
+      id: userId,   // Standard style
       role: decoded.role,
       email: decoded.email,
     };
     
+    console.log('User attached to request:', {
+      _id: userId,
+      role: decoded.role,
+      email: decoded.email
+    });
     console.log('=== AUTH SUCCESS ===\n');
     next();
   } catch (err: any) {
