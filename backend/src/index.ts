@@ -8,7 +8,7 @@ import authRoutes from './routes/authRoutes';
 import quizRoutes from './routes/QuizRoutes';
 import friendRoute from './routes/FriendRequest';
 import profile from './routes/profileRoutes';
-import uploadRoutes from './routes/uploadRoutes'; 
+import uploadRoutes from './routes/uploadRoutes';
 import lawyerRoutes from './routes/lawyerRoutes';
 import mockTrialRoutes from './routes/mockTrialRoutes';
 import http from 'http';
@@ -19,26 +19,8 @@ import './models/quiz/Category';
 import './models/Mocktrial/MockSituation';
 import './models/Mocktrial/Mock';
 import chatbotRoutes from './routes/chatbotRoutes';
-// import appointmentRoutes from './routes/appointmentRoutes';
+import appointmentRoutes from './routes/appointmentRoutes';
 import { initRedis, isRedisAvailable } from './utils/redisClient';
-// import { LawyerAvailability } from './models/Appointment';
-import cron from 'node-cron';
-
-// cron.schedule('0 0 * * *', async () => {
-//   try {
-//     const yesterday = new Date();
-//     yesterday.setDate(yesterday.getDate() - 1);
-//     const yesterdayString = yesterday.toISOString().split('T')[0];
-    
-//     const result = await LawyerAvailability.deleteMany({
-//       date: { $exists: true, $ne: null, $lt: yesterdayString }
-//     });
-    
-//     console.log(`Midnight cleanup: Removed ${result.deletedCount} expired availability records`);
-//   } catch (error) {
-//     console.error('Cron job error:', error);
-//   }
-// });
 
 
 const envPath = path.resolve(__dirname, "../.env");
@@ -82,8 +64,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api', lawyerRoutes);
 app.use('/api', mockTrialRoutes);
 app.use('/api', chatbotRoutes);
-// app.post('/api/appointments/webhook', express.raw({ type: 'application/json' }), handlePaymentWebhook);
-// app.use('/api/appointments', appointmentRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 const startServer = async () => {
   try {
@@ -94,7 +75,7 @@ const startServer = async () => {
     } else {
       console.log("Server started WITHOUT Redis (caching disabled)");
     }
-    
+
     server.listen(PORT, () => {
       console.log(`Server running on port ${PORT} and WebSocket is ready.`);
     });
