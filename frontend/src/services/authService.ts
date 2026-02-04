@@ -5,7 +5,7 @@ const API = import.meta.env.VITE_API_URL;
 
 // ========== Auth ==========
 interface SignupData {
-  firstname: string;
+  name: string;
   lastname?: string;
   email: string;
   username: string;
@@ -128,7 +128,7 @@ export const uploadProfileImage = async (imageFile: File) => {
         },
         timeout: 30000, // 30 second timeout
         onUploadProgress: (progressEvent) => {
-          const percentCompleted = progressEvent.total 
+          const percentCompleted = progressEvent.total
             ? Math.round((progressEvent.loaded * 100) / progressEvent.total)
             : 0;
           console.log(`Upload progress: ${percentCompleted}%`);
@@ -181,7 +181,7 @@ export const uploadBannerImage = async (imageFile: File) => {
         },
         timeout: 30000, // 30 second timeout
         onUploadProgress: (progressEvent) => {
-          const percentCompleted = progressEvent.total 
+          const percentCompleted = progressEvent.total
             ? Math.round((progressEvent.loaded * 100) / progressEvent.total)
             : 0;
           console.log(`Upload progress: ${percentCompleted}%`);
@@ -341,7 +341,6 @@ export const analyzeTrial = async (trialId: string) => {
   const response = await api.post(`/mock-trials/${trialId}/analyse`);
   return response.data;
 };
-
 // ========== Chatbot ==========
 export const askAiAssistant = async (message: string) => {
   try {
@@ -386,68 +385,95 @@ export const getSpecializations = async () => {
   return response.data;
 };
 
-// // Payment and appointments
-// export const createPaymentSession = async (data: {
-//   lawyerId: string;
-//   appointmentTime: Date;
-//   price: number;
-//   duration: number;
-// }) => {
-//   const response = await api.post('/appointments/create-session', data);
-//   return response.data;
-// };
-
-// // Lawyer appointment
-// export const getLawyerAppointments = async (status: string = 'all') => {
-//   const response = await api.get('/appointments/lawyer/appointments', {
-//     params: { status }
-//   });
-//   return response.data;
-// };
-
-// export const getLawyerAppointmentStats = async () => {
-//   const response = await api.get('/appointments/lawyer/stats');
-//   return response.data;
-// };
-
-// // User appointment
-// export const getUserAppointments = async (status: string = 'all') => {
-//   const response = await api.get('/appointments/user/appointments', {
-//     params: { status }
-//   });
-//   return response.data;
-// };
+// Payment and appointments
+export const createPaymentSession = async (data: {
+  lawyerId: string;
+  appointmentTime: Date;
+  price: number;
+  duration: number;
+}) => {
+  const response = await api.post('/appointments/create-session', data);
+  return response.data;
+};
 
 
-// // Lawyer availability
-// export const setLawyerAvailability = async (data: {
-//   date?: string;
-//   dayOfWeek?: number;
-//   slots: { startTime: string; endTime: string; }[];
-// }) => {
-//   const response = await api.post('/appointments/lawyer/availability', data);
-//   return response.data;
-// };
+// Lawyer appointment
+export const getLawyerAppointments = async (status: string = 'all') => {
+  const response = await api.get('/appointments/lawyer/appointments', {
+    params: { status }
+  });
+  return response.data;
+};
 
-// export const getLawyerAvailability = async () => {
-//   const response = await api.get('/appointments/lawyer/availability');
-//   return response.data;
-// };
+export const getLawyerAppointmentStats = async () => {
+  const response = await api.get('/appointments/lawyer/stats');
+  return response.data;
+};
 
-// export const getAvailableSlots = async (lawyerId: string, date: string) => {
-//   console.log('Frontend calling available slots with: ', {lawyerId, date});
-//   const response = await api.get('/appointments/available-slots', {
-//     params: { lawyerId, date }
-//   });
-//   console.log('Recieved slots: ', response.data);
-//   return response.data;
-// };
+// User appointment
+export const getUserAppointments = async (status: string = 'all') => {
+  const response = await api.get('/appointments/user/appointments', {
+    params: { status }
+  });
+  return response.data;
+};
 
-// // Appointment cancellation
-// export const cancelAppointment = async (appointmentId: string, reason?: string) => {
-//   const response = await api.post('/appointments/cancel', {
-//     appointmentId,
-//     reason
-//   });
-//   return response.data;
-// };
+
+// Lawyer availability
+export const setLawyerAvailability = async (data: {
+  date?: string;
+  dayOfWeek?: number;
+  slots: { startTime: string; endTime: string; }[];
+}) => {
+  const response = await api.post('/appointments/lawyer/availability', data);
+  return response.data;
+};
+
+export const getLawyerAvailability = async () => {
+  const response = await api.get('/appointments/lawyer/availability');
+  return response.data;
+};
+
+export const getAvailableSlots = async (lawyerId: string, date: string) => {
+  console.log('Frontend calling available slots with: ', { lawyerId, date });
+  const response = await api.get('/appointments/available-slots', {
+    params: { lawyerId, date }
+  });
+  console.log('Recieved slots: ', response.data);
+  return response.data;
+};
+
+// Appointment cancellation
+export const cancelAppointment = async (appointmentId: string, reason?: string) => {
+  const response = await api.post('/appointments/cancel', {
+    appointmentId,
+    reason
+  });
+  return response.data;
+};
+
+// payment order
+// payment order
+export const createPaymentOrder = async (data: {
+  lawyerId: string;
+  appointmentTime: Date;
+  duration: number;
+}) => {
+  const response = await api.post('/appointments/create-order', data);
+  return response.data;
+};
+
+export const getPendingAppointments = async () => {
+  const response = await api.get('/appointments/pending');
+  return response.data;
+};
+
+export const verifyPayment = async (data: {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+  appointmentId: string;
+}) => {
+  const response = await api.post('/appointments/verify-payment', data);
+  return response.data;
+};
