@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 import { Lock, Mail, Phone, Scale, Eye, EyeOff, CheckCircle, XCircle, AtSign } from "lucide-react";
 import { CiUser } from "react-icons/ci";
 import Signupui from "@/components/Signupui";
-import axios from "axios";
+import { signUp } from "../services/authService";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/slices/userSlice";
-const API = import.meta.env.VITE_API_URL;
+
 
 type FormData = {
   name: string;
@@ -99,11 +99,11 @@ const SignUp = () => {
     });
 
     try {
-      const response = await axios.post(`${API}/api/signup`, payload);
+      const data = await signUp(payload);
 
-      console.log('User signed up, response:', response.data);
+      console.log('User signed up, response:', data);
 
-      const { token, user } = response.data;
+      const { token, user } = data;
 
       if (token && user) {
         localStorage.setItem('token', token);
