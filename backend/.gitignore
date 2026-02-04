@@ -8,3 +8,6 @@ src/perfMetrics.js
 src/rate-limiter.js
 src/test-lawyers-api.js
 src/generateSignature.js
+inspect_appointments.ts
+src/test-race-condition.ts
+src/migrate-index.ts
