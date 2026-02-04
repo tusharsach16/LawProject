@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowRight, CheckCircle, XCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import Signupui from "@/components/Signupui";
-import axios from "axios";
+import { signin } from "../services/authService";
 import { setUser } from "../redux/slices/userSlice";
 import { useDispatch } from "react-redux";
-const API = import.meta.env.VITE_API_URL;
+
 
 type FormData = {
   email: string;
@@ -48,7 +48,7 @@ const Signin = () => {
 
     if (token && userStr && rememberMe === "true") {
       const user = JSON.parse(userStr);
-      if(user.role === 'lawyer') {
+      if (user.role === 'lawyer') {
         navigate("/lawyer-dashboard")
       } else {
         navigate("/dashboard");
@@ -66,39 +66,39 @@ const Signin = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
-      const res = await axios.post(`${API}/api/login`, {
+      const data = await signin({
         email: formData.email,
         password: formData.password,
       });
-      
-      const userData = res.data.user;
-  
+
+      const userData = data.user;
+
       dispatch(setUser(userData));
-      localStorage.setItem("token", res.data.token);
-      
+      localStorage.setItem("token", data.token);
+
       localStorage.setItem("user", JSON.stringify(userData));
       if (formData.rememberMe) {
         localStorage.setItem("rememberMe", "true");
       }
 
       showToast('success', 'Login successful! Redirecting...');
-  
+
       setTimeout(() => {
-        if(userData.role === 'lawyer') {
+        if (userData.role === 'lawyer') {
           navigate("/lawyer-dashboard");
         } else {
           navigate("/dashboard");
         }
-      }, 800);      
+      }, 800);
     } catch (error: any) {
       console.error("Signin failed:", error.response?.data || error.message);
-      
-      const errorMessage = error.response?.status === 401 
-        ? "Incorrect email or password" 
+
+      const errorMessage = error.response?.status === 401
+        ? "Incorrect email or password"
         : error.response?.data?.message || "Sign in failed. Please try again.";
-      
+
       showToast('error', errorMessage);
       setIsLoading(false);
     }
@@ -109,16 +109,14 @@ const Signin = () => {
       {/* Toast Notification */}
       {toast.show && (
         <div className="fixed top-8 right-8 z-50 animate-slide-down">
-          <div className={`flex items-start gap-4 px-6 py-4 rounded-xl shadow-2xl border-2 backdrop-blur-sm ${
-            toast.type === 'success' 
-              ? 'bg-white border-amber-500/30' 
-              : 'bg-white border-red-500/30'
-          }`}>
-            <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
-              toast.type === 'success'
-                ? 'bg-gradient-to-br from-amber-500 to-amber-600'
-                : 'bg-gradient-to-br from-red-500 to-red-600'
+          <div className={`flex items-start gap-4 px-6 py-4 rounded-xl shadow-2xl border-2 backdrop-blur-sm ${toast.type === 'success'
+            ? 'bg-white border-amber-500/30'
+            : 'bg-white border-red-500/30'
             }`}>
+            <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${toast.type === 'success'
+              ? 'bg-gradient-to-br from-amber-500 to-amber-600'
+              : 'bg-gradient-to-br from-red-500 to-red-600'
+              }`}>
               {toast.type === 'success' ? (
                 <CheckCircle className="h-5 w-5 text-white" strokeWidth={2.5} />
               ) : (
@@ -126,9 +124,8 @@ const Signin = () => {
               )}
             </div>
             <div className="flex-1 pt-0.5">
-              <p className={`font-bold text-base mb-0.5 ${
-                toast.type === 'success' ? 'text-slate-900' : 'text-slate-900'
-              }`}>
+              <p className={`font-bold text-base mb-0.5 ${toast.type === 'success' ? 'text-slate-900' : 'text-slate-900'
+                }`}>
                 {toast.type === 'success' ? 'Success' : 'Error'}
               </p>
               <p className="text-slate-600 text-sm font-medium">{toast.message}</p>
@@ -147,7 +144,7 @@ const Signin = () => {
         {/* Decorative background elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-400/5 rounded-full blur-3xl"></div>
-        
+
         <div className="w-full max-w-md space-y-8 relative z-10">
           {/* Header */}
           <div className="text-center animate-slide-down">
