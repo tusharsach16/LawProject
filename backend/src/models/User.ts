@@ -9,10 +9,10 @@ interface Iuser extends Document {
   phoneNumber: string;
   password: string;
   role: 'general' | 'lawstudent' | 'lawyer';
-  bio?: string; 
-  location?: string; 
-  profileImageUrl?: string; 
-  bannerImageUrl?: string; 
+  bio?: string;
+  location?: string;
+  profileImageUrl?: string;
+  bannerImageUrl?: string;
   friends: mongoose.Types.ObjectId[];
   _id: mongoose.Types.ObjectId;
   comparePassword: (userPassword: string) => Promise<boolean>;
@@ -25,33 +25,33 @@ const userSchema = new Schema<Iuser>({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   phoneNumber: { type: String, required: true, unique: true },
   password: { type: String, required: true, select: false },
-  role: { 
-    type: String, 
-    required: true, 
-    enum: ['general', 'lawstudent', 'lawyer'] 
+  role: {
+    type: String,
+    required: true,
+    enum: ['general', 'lawstudent', 'lawyer']
   },
-  bio: { 
-    type: String, 
+  bio: {
+    type: String,
     default: 'Welcome to my profile!',
-    maxlength: 160 
+    maxlength: 160
   },
-  location: { 
-    type: String, 
+  location: {
+    type: String,
     default: '',
     maxlength: 50
   },
-  profileImageUrl: { 
-    type: String, 
-    default: 'https://placehold.co/150x150/7c3aed/ffffff?text=User' 
+  profileImageUrl: {
+    type: String,
+    default: 'https://placehold.co/150x150/7c3aed/ffffff?text=User'
   },
-  bannerImageUrl: { 
-    type: String, 
-    default: 'https://placehold.co/600x200/1e293b/ffffff?text=Profile' 
+  bannerImageUrl: {
+    type: String,
+    default: 'https://placehold.co/600x200/1e293b/ffffff?text=Profile'
   },
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] }]
 }, { timestamps: true });
 
-userSchema.methods.comparePassword = async function(
+userSchema.methods.comparePassword = async function (
   userPassword: string
 ): Promise<boolean> {
   return await bcrypt.compare(userPassword, this.password);
