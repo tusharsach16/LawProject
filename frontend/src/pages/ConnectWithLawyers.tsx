@@ -1,118 +1,31 @@
-import { useState, useEffect } from 'react';
-import { Search, Filter, ArrowDownUp, Scale, Sparkles, Loader2, Users, AlertCircle } from 'lucide-react';
-import { getAllLawyers, getSpecializations } from '../services/authService';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Scale, Sparkles, Loader2, Users, AlertCircle, Calendar } from 'lucide-react';
+import { useLawyerSearch, useSpecializations, usePendingPaymentCount } from '../hooks/useLawyers';
 import LawyerCard from '../components/LawyerCard';
+import SearchAndFilterBar from '../components/lawyers/SearchAndFilterBar';
+import PendingPaymentAlert from '../components/lawyers/PendingPaymentAlert';
 
-interface LawyerProfile {
-  _id: string;
-  name: string;
-  profileImageUrl?: string;
-  experience: number;
-  specialization: string[];
-  ratings: number;
-  price: number;
-}
+const ConnectWithLawyers: React.FC = () => {
+  const {
+    lawyers,
+    loading,
+    error,
+    searchTerm,
+    setSearchTerm,
+    sortBy,
+    setSortBy,
+    filterSpec,
+    setFilterSpec,
+    clearFilters,
+  } = useLawyerSearch();
 
-const ConnectWithLawyers = () => {
-  const [lawyers, setLawyers] = useState<LawyerProfile[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedTerm, setDebouncedTerm] = useState('');
-  const [sortBy, setSortBy] = useState('ratings');
-  const [filterSpec, setFilterSpec] = useState('');
-
-  const [specializations, setSpecializations] = useState<string[]>([]);
-
-  // Debouncing effect for search
-  useEffect(() => {
-    const timerId = setTimeout(() => {
-      setDebouncedTerm(searchTerm);
-    }, 500);
-
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [searchTerm]);
-
-  useEffect(() => {
-    const fetchLawyers = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const params: any = {
-          sortBy: sortBy || 'ratings',
-          order: 'desc'
-        };
-        
-        if (debouncedTerm && debouncedTerm.trim()) {
-          params.q = debouncedTerm.trim();
-        }
-        
-        if (filterSpec && filterSpec.trim()) {
-          params.specialization = filterSpec;
-        }
-  
-        console.log('Fetching lawyers with params:', params);
-        
-        const data = await getAllLawyers(params);
-        
-        console.log('Received data:', data);
-        
-        if (Array.isArray(data)) {
-          const processedLawyers = data.map(lawyer => ({
-            ...lawyer,
-            specialization: Array.isArray(lawyer.specialization) 
-              ? lawyer.specialization 
-              : lawyer.specialization 
-                ? [lawyer.specialization] 
-                : []
-          }));
-          setLawyers(processedLawyers);
-          console.log(`Set ${processedLawyers.length} lawyers`);
-        } else {
-          console.error('Data is not an array:', data);
-          setLawyers([]);
-        }
-      } catch (err: any) {
-        console.error('Error fetching lawyers:', err);
-        const errorMsg = err.response?.data?.msg || err.message || 'Failed to load lawyers';
-        setError(errorMsg);
-        setLawyers([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchLawyers();
-  }, [debouncedTerm, sortBy, filterSpec]);
-
-  useEffect(() => {
-    const fetchSpecializations = async () => {
-      try {
-        const data = await getSpecializations();
-        console.log('Received specializations:', data);
-        
-        // Your backend returns an array directly
-        if (Array.isArray(data)) {
-          setSpecializations(data);
-        } else {
-          console.error('Specializations is not an array:', data);
-          setSpecializations([]);
-        }
-      } catch (err) {
-        console.error("Failed to load specializations:", err);
-        setSpecializations([]);
-      }
-    };
-    
-    fetchSpecializations();
-  }, []); 
+  const { specializations } = useSpecializations();
+  const { pendingPaymentCount } = usePendingPaymentCount();
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-50 to-slate-100 min-h-full">
+      {/* Header */}
       <header className="mb-8">
         <div className="flex items-center gap-4 mb-3">
           <div className="p-3 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-lg">
@@ -123,60 +36,33 @@ const ConnectWithLawyers = () => {
               Talk to Lawyer
               <Sparkles className="h-7 w-7 text-amber-500" />
             </h1>
-            <p className="text-slate-600 mt-1 text-sm sm:text-base">Connect with experienced legal professionals for expert advice.</p>
+            <p className="text-slate-600 mt-1 text-sm sm:text-base">
+              Connect with experienced legal professionals for expert advice.
+            </p>
           </div>
+          <Link
+            to="/dashboard/user-appointments"
+            className="ml-auto flex items-center gap-2 px-4 py-2 bg-white text-slate-700 hover:text-amber-600 border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all font-medium"
+          >
+            <Calendar size={18} />
+            <span className="hidden sm:inline">My Appointments</span>
+          </Link>
         </div>
       </header>
 
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <Filter className="h-5 w-5 text-slate-600" />
-          <h2 className="text-lg font-bold text-slate-900">Search & Filter</h2>
-        </div>
-        
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          {/* Search Bar */}
-          <div className="relative flex-grow">
-            <input 
-              type="text" 
-              placeholder="Search name or specialty..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-300 font-medium text-slate-700 bg-white hover:border-amber-500/30" 
-            />
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          </div>
+      {/* Pending Payment Alert */}
+      <PendingPaymentAlert count={pendingPaymentCount} />
 
-          {/* Filter by Specialization */}
-          <div className="relative">
-            <select
-              value={filterSpec}
-              onChange={(e) => setFilterSpec(e.target.value)}
-              className="appearance-none bg-white border-2 border-slate-200 rounded-xl pl-4 pr-10 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-300 hover:border-amber-500/30 cursor-pointer"
-            >
-              <option value="">All Specializations</option>
-              {specializations.map(spec => (
-                <option key={spec} value={spec}>{spec}</option>
-              ))}
-            </select>
-            <Filter size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-          </div>
-
-          {/* Sort Dropdown */}
-          <div className="relative">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="appearance-none bg-white border-2 border-slate-200 rounded-xl pl-4 pr-10 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-300 hover:border-amber-500/30 cursor-pointer"
-            >
-              <option value="ratings">Sort by Rating</option>
-              <option value="experience">Sort by Experience</option>
-              <option value="price">Sort by Price</option>
-            </select>
-            <ArrowDownUp size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-          </div>
-        </div>
-      </div>
+      {/* Search and Filter */}
+      <SearchAndFilterBar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        filterSpec={filterSpec}
+        onFilterChange={setFilterSpec}
+        specializations={specializations}
+      />
 
       {/* Loading State */}
       {loading && (
@@ -212,13 +98,11 @@ const ConnectWithLawyers = () => {
           {/* Results count */}
           {lawyers.length > 0 && (
             <div className="mb-4 text-sm text-slate-600">
-              Found <span className="font-bold text-slate-900">{lawyers.length}</span> lawyer{lawyers.length !== 1 ? 's' : ''}
+              Found <span className="font-bold text-slate-900">{lawyers.length}</span> lawyer
+              {lawyers.length !== 1 ? 's' : ''}
               {(searchTerm || filterSpec) && (
                 <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setFilterSpec('');
-                  }}
+                  onClick={clearFilters}
                   className="ml-3 text-amber-600 hover:text-amber-700 font-medium"
                 >
                   Clear filters
@@ -226,14 +110,14 @@ const ConnectWithLawyers = () => {
               )}
             </div>
           )}
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {lawyers.length > 0 ? (
               lawyers.map((lawyer, index) => (
-                <div 
-                  key={lawyer._id} 
-                  style={{ 
-                    animation: `slideInCase 0.4s ease-out ${index * 0.05}s both` 
+                <div
+                  key={lawyer._id}
+                  style={{
+                    animation: `slideInCase 0.4s ease-out ${index * 0.05}s both`,
                   }}
                 >
                   <LawyerCard lawyer={lawyer} />
@@ -246,17 +130,13 @@ const ConnectWithLawyers = () => {
                 </div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-2">No Lawyers Found</h3>
                 <p className="text-slate-600 text-center max-w-md mb-4">
-                  {searchTerm || filterSpec 
+                  {searchTerm || filterSpec
                     ? 'No lawyers found matching your criteria. Try adjusting your search or filters.'
-                    : 'No lawyers available at the moment. Please check back later.'
-                  }
+                    : 'No lawyers available at the moment. Please check back later.'}
                 </p>
                 {(searchTerm || filterSpec) && (
                   <button
-                    onClick={() => {
-                      setSearchTerm('');
-                      setFilterSpec('');
-                    }}
+                    onClick={clearFilters}
                     className="px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-semibold"
                   >
                     Clear All Filters
