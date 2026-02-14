@@ -1,12 +1,21 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import App from './App.tsx';
-import { Provider } from 'react-redux';
-import { store, persistor } from './redux/store.ts'; 
-import { PersistGate } from 'redux-persist/integration/react';
-import { ToastProvider } from './components/useToast.tsx';
-createRoot(document.getElementById('root')!).render(
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+
+import App from "./App";
+import { store, persistor } from "./redux/store";
+import { ToastProvider } from "./components/useToast";
+
+import "./index.css";
+
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  throw new Error("Root element not found");
+}
+
+createRoot(rootElement).render(
   <StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -15,5 +24,5 @@ createRoot(document.getElementById('root')!).render(
         </ToastProvider>
       </PersistGate>
     </Provider>
-  </StrictMode>,
+  </StrictMode>
 );
