@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import PublicLayout from "./layouts/PublicLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PageLoader from "./components/PageLoader";
 
 const Home = lazy(() => import("./pages/Home"));
 const Signin = lazy(() => import("./pages/Signin"));
@@ -13,15 +15,15 @@ const MockTrialLobby = lazy(() => import("./pages/MockTrialLobby"));
 const ConnectWithLawyers = lazy(() => import("./pages/ConnectWithLawyers"));
 const ForgotPasswordFlow = lazy(() => import("./pages/ForgotPassword"));
 
-const TermsAndConditions = lazy(() => import("./pages/legal/TermsAndConditions"));
-const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
-const RefundPolicy = lazy(() => import("./pages/legal/RefundPolicy"));
-const ContactUs = lazy(() => import("./pages/legal/ContactUs"));
+import TermsAndConditions from "./pages/legal/TermsAndConditions";
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import RefundPolicy from "./pages/legal/RefundPolicy";
+import ContactUs from "./pages/legal/ContactUs";
 
 function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
@@ -56,6 +58,8 @@ function App() {
           />
         </Routes>
       </Suspense>
+
+      <SpeedInsights />
     </BrowserRouter>
   );
 }
