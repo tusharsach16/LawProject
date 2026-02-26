@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import bodyParser from 'body-parser';
+
 import connectDB from './config/db';
 import path from 'path';
 import authRoutes from './routes/authRoutes';
@@ -24,7 +24,6 @@ import { initRedis, isRedisAvailable } from './utils/redisClient';
 
 
 const envPath = path.resolve(__dirname, "../.env");
-console.log("🔍 Looking for .env at:", envPath);
 dotenv.config({ path: envPath });
 
 const app = express();
@@ -47,7 +46,6 @@ app.use(
     credentials: true,
   })
 );
-app.use(bodyParser.json());
 app.use(express.json());
 
 const server = http.createServer(app);
@@ -69,12 +67,15 @@ app.use('/api/appointments', appointmentRoutes);
 const startServer = async () => {
   try {
     await connectDB();
-    await initRedis();
-    if (isRedisAvailable()) {
-      console.log("Server started with Redis caching enabled");
-    } else {
-      console.log("Server started WITHOUT Redis (caching disabled)");
-    }
+
+    // Initialize Redis non-blocking
+    initRedis().then(() => {
+      if (isRedisAvailable()) {
+        console.log("Server started with Redis caching enabled");
+      } else {
+        console.log("Server started WITHOUT Redis (caching disabled)");
+      }
+    });
 
     server.listen(PORT, () => {
       console.log(`Server running on port ${PORT} and WebSocket is ready.`);
