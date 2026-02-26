@@ -13,7 +13,7 @@ interface JoinCallButtonProps {
 export const JoinCallButton: React.FC<JoinCallButtonProps> = ({
     appointmentId,
     appointmentTime,
-    callRoomId,
+    callRoomId: _callRoomId,
     paymentStatus,
     appointmentStatus,
 }) => {

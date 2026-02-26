@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, DollarSign, Video, XCircle } from 'lucide-react';
+import { Calendar, Clock, IndianRupee, XCircle } from 'lucide-react';
 import type { LawyerAppointment } from '../../types/appointment.types';
 import { formatDateLong, formatTime, getStatusBadge, getPlaceholderAvatar, isPastDate } from '../../utils/appointment.utils';
 import JoinCallButton from '../JoinCallButton';
@@ -22,9 +22,6 @@ const LawyerAppointmentCard: React.FC<LawyerAppointmentCardProps> = ({
     const formattedTime = formatTime(appointment.appointmentTime);
     const avatarUrl = appointment.userId.profileImageUrl || getPlaceholderAvatar(appointment.userId.name, 64);
 
-    const handleJoinCall = () => {
-        window.open(`/lawyer-dashboard/call/${appointment.callRoomId}`, '_blank');
-    };
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
@@ -69,7 +66,7 @@ const LawyerAppointmentCard: React.FC<LawyerAppointmentCardProps> = ({
                         </span>
                     </div>
                     <div className="flex items-center gap-2 text-slate-700">
-                        <DollarSign size={18} className="text-slate-400" />
+                        <IndianRupee size={18} className="text-slate-400" />
                         <span className="text-sm font-medium">₹{appointment.price}</span>
                     </div>
                 </div>

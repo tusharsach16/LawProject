@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, CheckCircle, XCircle, CreditCard, Video, AlertTriangle } from 'lucide-react';
+import { Calendar, Clock, CheckCircle, XCircle, CreditCard, AlertTriangle } from 'lucide-react';
 import type { Appointment } from '../../types/appointment.types';
 import { formatDate, formatTime, getPlaceholderAvatar } from '../../utils/appointment.utils';
 import JoinCallButton from '../JoinCallButton';
@@ -15,7 +15,7 @@ interface UserAppointmentCardProps {
 const UserAppointmentCard: React.FC<UserAppointmentCardProps> = ({
     appointment,
     onCancel,
-    onJoinCall,
+    onJoinCall: _onJoinCall,
     canCancel,
     cancelling,
 }) => {
