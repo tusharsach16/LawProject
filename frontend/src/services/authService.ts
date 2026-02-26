@@ -477,3 +477,11 @@ export const verifyPayment = async (data: {
   const response = await api.post('/appointments/verify-payment', data);
   return response.data;
 };
+
+
+// Video Call
+export {
+  generateCallToken,
+  verifyCallAccess,
+  markCallCompleted
+} from './callService';

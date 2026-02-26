@@ -76,33 +76,34 @@ const Signin = () => {
       const userData = data.user;
 
       dispatch(setUser(userData));
-      localStorage.setItem("token", data.token);
 
-      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(userData));
+
       if (formData.rememberMe) {
-        localStorage.setItem("rememberMe", "true");
+        localStorage.setItem('rememberMe', 'true');
       }
 
       showToast('success', 'Login successful! Redirecting...');
 
       setTimeout(() => {
         if (userData.role === 'lawyer') {
-          navigate("/lawyer-dashboard");
+          navigate('/lawyer-dashboard');
         } else {
-          navigate("/dashboard");
+          navigate('/dashboard');
         }
       }, 800);
     } catch (error: any) {
-      console.error("Signin failed:", error.response?.data || error.message);
-
-      const errorMessage = error.response?.status === 401
-        ? "Incorrect email or password"
-        : error.response?.data?.message || "Sign in failed. Please try again.";
+      const errorMessage =
+        error.response?.status === 401
+          ? 'Incorrect email or password'
+          : error.response?.data?.message || 'Sign in failed. Please try again.';
 
       showToast('error', errorMessage);
       setIsLoading(false);
     }
   };
+
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">

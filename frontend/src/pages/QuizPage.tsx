@@ -50,7 +50,7 @@ const CategorySelector = ({ onSelectCategory }: { onSelectCategory: (slug: strin
         { name: 'Constitutional Law', slug: 'constitutional', icon: BookOpen },
         { name: 'Indian Penal Code', slug: 'ipc', icon: Shield },
     ];
-    
+
     return (
         <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-50 to-slate-100 min-h-full">
             <header className="mb-12">
@@ -72,8 +72,8 @@ const CategorySelector = ({ onSelectCategory }: { onSelectCategory: (slug: strin
                 {categories.map((cat, index) => {
                     const Icon = cat.icon;
                     return (
-                        <button 
-                            key={cat.slug} 
+                        <button
+                            key={cat.slug}
                             onClick={() => onSelectCategory(cat.slug)}
                             className="bg-white border-2 border-slate-200 rounded-2xl p-8 hover:shadow-xl hover:border-amber-500/30 hover:-translate-y-1 transition-all duration-300 text-left group"
                             style={{
@@ -89,7 +89,7 @@ const CategorySelector = ({ onSelectCategory }: { onSelectCategory: (slug: strin
                         </button>
                     );
                 })}
-            </div>S
+            </div>
         </div>
     );
 };
@@ -139,7 +139,7 @@ const QuizPage: React.FC = () => {
                                 <div className="p-4 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl shadow-lg inline-block">
                                     <Scale className="h-16 w-16 text-white" strokeWidth={1.5} />
                                 </div>
-                                
+
                                 <div className="space-y-4">
                                     <h2 className="text-4xl font-bold text-slate-900">Quiz Completed</h2>
                                     <div className="border-t border-b border-slate-200 py-8">
@@ -157,8 +157,8 @@ const QuizPage: React.FC = () => {
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <button 
+
+                                <button
                                     onClick={handleRestart}
                                     className="w-full bg-gradient-to-r from-slate-900 to-slate-800 text-white font-bold py-4 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300"
                                 >

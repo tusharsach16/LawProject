@@ -21,9 +21,9 @@ const Overview: React.FC = () => {
   const { user } = useAppSelector(state => state.user);
 
   const [initialLoad, setInitialLoad] = useState(true);
-  const [chatCount, setChatCount] = useState<number | null>(null);
-  const [pastTrialCount, setPastTrialCount] = useState<number | null>(null);
-  const [quizCount, setQuizCount] = useState<number | null>(null);
+  const [chatCount, setChatCount] = useState<number>(0);
+  const [pastTrialCount, setPastTrialCount] = useState<number>(0);
+  const [quizCount, setQuizCount] = useState<number>(0);
   const [lastQuizPercent, setLastQuizPercent] = useState<number | null>(null);
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [quizStats, setQuizStats] = useState<any>(null);
@@ -31,33 +31,59 @@ const Overview: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setTimeout(() => setInitialLoad(false), 300);
+      const startTime = Date.now();
+      console.log('Overview: Starting data fetch...');
 
-      const [chats, trials, quizRes] = await Promise.all([
-        getChatHistory().catch(() => []),
-        getPastMockTrials().catch(() => []),
-        getQuizCount().catch(() => ({ quizCount: 0 })),
-      ]);
+      const [chats, trials, quizRes, quizDetails, activities, qStats, tStats] =
+        await Promise.allSettled([
+          getChatHistory(),
+          getPastMockTrials(),
+          getQuizCount(),
+          getDetailedQuizResults(),
+          getRecentActivities(),
+          getQuizStatistics(),
+          getMockTrialStatistics(),
+        ]);
 
-      setChatCount(chats.filter((c: any) => c.sender === "user").length);
-      setPastTrialCount(trials?.length || 0);
-      setQuizCount(Number(quizRes.quizCount || 0));
+      if (chats.status === 'fulfilled') {
+        setChatCount(chats.value.filter((c: any) => c.sender === 'user').length);
+      }
 
-      const [quizDetails, activities, qStats, tStats] = await Promise.all([
-        getDetailedQuizResults().catch(() => ({ attempts: [] })),
-        getRecentActivities().catch(() => ({ activities: [] })),
-        getQuizStatistics().catch(() => null),
-        getMockTrialStatistics().catch(() => null),
-      ]);
+      if (trials.status === 'fulfilled') {
+        setPastTrialCount(trials.value?.length || 0);
+      }
 
-      setLastQuizPercent(quizDetails?.attempts?.[0]?.percentage ?? null);
-      setRecentActivities(activities.activities || []);
-      setQuizStats(qStats);
-      setTrialStats(tStats);
+      if (quizRes.status === 'fulfilled') {
+        setQuizCount(Number(quizRes.value.quizCount || 0));
+      }
+
+      if (quizDetails.status === 'fulfilled') {
+        setLastQuizPercent(
+          quizDetails.value?.attempts?.[0]?.percentage ?? null
+        );
+      }
+
+      if (activities.status === 'fulfilled') {
+        setRecentActivities(activities.value.activities || []);
+      }
+
+      if (qStats.status === 'fulfilled') {
+        setQuizStats(qStats.value);
+      }
+
+      if (tStats.status === 'fulfilled') {
+        setTrialStats(tStats.value);
+      }
+
+      const totalTime = Date.now() - startTime;
+      console.log(`Overview data loaded in ${totalTime}ms`);
+
+      setTimeout(() => setInitialLoad(false), 200);
     };
 
     fetchData();
   }, []);
+
 
   if (initialLoad) return <LoadingScreen />;
 
