@@ -16,6 +16,9 @@ interface IAppointment extends Document {
   cancelledBy?: 'user' | 'lawyer';
   cancelledAt?: Date;
   allottedTime?: string;
+  actualCallDuration?: number;
+  participants?: mongoose.Types.ObjectId[];
+  maxParticipants?: number;
 }
 
 const appointmentSchema = new Schema<IAppointment>(
@@ -34,6 +37,9 @@ const appointmentSchema = new Schema<IAppointment>(
     cancelledBy: { type: String, enum: ['user', 'lawyer'] },
     cancelledAt: Date,
     allottedTime: { type: String },
+    actualCallDuration: { type: Number },
+    participants: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    maxParticipants: { type: Number, default: 2 }
   },
   { timestamps: true }
 );
