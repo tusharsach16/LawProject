@@ -153,4 +153,11 @@ export const redisExpire = async (key: string, seconds: number): Promise<boolean
   }
 };
 
+export const getRedisClient = (): RedisClientType => {
+  if (!redis) {
+    throw new Error("Redis client not initialized or connection failed");
+  }
+  return redis;
+};
+
 export { redis };
