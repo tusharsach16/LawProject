@@ -47,8 +47,16 @@ const LawyerDashboard: React.FC = () => {
     !location.pathname.startsWith("/lawyer-dashboard/profile/");
 
   useEffect(() => {
-    if (!user) dispatch(fetchCurrentUser());
-  }, [dispatch, user]);
+    if (!user && status !== 'loading') {
+      console.log('LawyerDashboard: Fetching user profile...');
+      const startTime = Date.now();
+
+      dispatch(fetchCurrentUser()).then(() => {
+        console.log(`User profile loaded in ${Date.now() - startTime}ms`);
+      });
+    }
+  }, [dispatch, user, status]);
+
 
   if (status === "loading") return <div className="p-6">Loading...</div>;
   if (status === "failed") return <div className="p-6 text-red-500">{error}</div>;

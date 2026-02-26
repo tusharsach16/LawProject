@@ -12,7 +12,6 @@ import {
   Bell,
   History,
   ChevronLeft,
-  ChevronRight,
   Scale,
   BarChart3,
   Calendar
@@ -27,6 +26,7 @@ type SidebarProps = {
   isCollapsed: boolean;
   onToggleCollapse: () => void;
   isLawyer?: boolean;
+  notificationCount?: number;
 };
 
 const Sidebar = ({
@@ -36,7 +36,8 @@ const Sidebar = ({
   onNotificationsClick,
   isCollapsed,
   onToggleCollapse,
-  isLawyer = false
+  isLawyer = false,
+  notificationCount = 0,
 }: SidebarProps) => {
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.user);
@@ -70,25 +71,30 @@ const Sidebar = ({
         {/* Header with Logo */}
         <div className="p-4 border-b border-slate-700/50 flex items-center justify-between">
           {/* Desktop: Show based on isCollapsed */}
-          <div className="hidden lg:flex items-center gap-3 flex-1">
+          <div className="hidden lg:flex items-center gap-3 flex-1 min-w-0">
             {!isCollapsed ? (
               <>
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-2 rounded-xl shadow-lg">
+                <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-2 rounded-xl shadow-lg flex-shrink-0">
                   <Scale className="h-6 w-6 text-white" strokeWidth={2.5} />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-amber-400 font-bold text-lg tracking-tight">
+                <div className="flex flex-col min-w-0">
+                  <span className="text-amber-400 font-bold text-lg tracking-tight truncate">
                     {isLawyer ? 'Lawyer Portal' : 'Nyay Setu'}
                   </span>
                   <span className="text-slate-400 text-xs">Legal Dashboard</span>
                 </div>
               </>
             ) : (
-              <div className="flex items-center justify-center w-full">
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-2 rounded-xl shadow-lg">
+              /* When collapsed: clicking the logo expands the sidebar */
+              <button
+                onClick={onToggleCollapse}
+                className="flex items-center justify-center w-full group"
+                title="Expand sidebar"
+              >
+                <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-2 rounded-xl shadow-lg group-hover:ring-2 group-hover:ring-amber-500/50 transition-all">
                   <Scale className="h-6 w-6 text-white" strokeWidth={2.5} />
                 </div>
-              </div>
+              </button>
             )}
           </div>
 
@@ -105,18 +111,15 @@ const Sidebar = ({
             </div>
           </div>
 
-          {/* Collapse Toggle Button - Desktop Only */}
-          <button
-            onClick={onToggleCollapse}
-            className={`hidden lg:flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 hover:border-amber-500/50 transition-all duration-300 group flex-shrink-0 ${isCollapsed ? 'absolute right-2 top-4' : ''
-              }`}
-          >
-            {isCollapsed ? (
-              <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-amber-400" />
-            ) : (
+          {/* Collapse Toggle Arrow — only shown when expanded */}
+          {!isCollapsed && (
+            <button
+              onClick={onToggleCollapse}
+              className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 hover:border-amber-500/50 transition-all duration-300 group flex-shrink-0"
+            >
               <ChevronLeft className="h-4 w-4 text-slate-400 group-hover:text-amber-400" />
-            )}
-          </button>
+            </button>
+          )}
         </div>
 
         {/* Navigation */}
@@ -164,8 +167,10 @@ const Sidebar = ({
                 <span className="lg:block hidden">Notifications</span>
               )}
               <span className="lg:hidden">Notifications</span>
-              {/* Notification badge */}
-              <span className={`absolute ${isCollapsed ? 'top-1 right-1/4' : 'top-2 right-2'} w-2 h-2 bg-red-500 rounded-full animate-pulse`}></span>
+              {/* Notification badge — only shows when there are unseen notifications */}
+              {notificationCount > 0 && (
+                <span className={`absolute ${isCollapsed ? 'top-1 right-1/4' : 'top-2 right-2'} w-2 h-2 bg-red-500 rounded-full animate-pulse`} />
+              )}
             </button>
 
             {/* Lawyer-specific: Appointments */}

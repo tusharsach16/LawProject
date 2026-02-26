@@ -41,29 +41,53 @@ const Dashboard: React.FC = () => {
     "/dashboard/profile",
   ];
 
+  const isTrialRoom = location.pathname.startsWith("/dashboard/mock-trial/room/");
+
   const shouldShowHeader =
+    !isTrialRoom &&
     !hideHeaderRoutes.includes(location.pathname) &&
     !location.pathname.startsWith("/dashboard/profile/");
 
   useEffect(() => {
-    if (!user) dispatch(fetchCurrentUser());
-  }, [dispatch, user]);
+    if (!user && status !== 'loading') {
+      console.log('Dashboard: Fetching user profile...');
+      const startTime = Date.now();
 
-  if (status === "loading") return <div className="p-6">Loading...</div>;
+      dispatch(fetchCurrentUser()).then(() => {
+        console.log(`User profile loaded in ${Date.now() - startTime}ms`);
+      });
+    }
+  }, [dispatch, user, status]);
+
+
+  const LoadingSkeleton = () => (
+    <div className="p-6 animate-pulse">
+      <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="h-32 bg-gray-200 rounded"></div>
+        <div className="h-32 bg-gray-200 rounded"></div>
+        <div className="h-32 bg-gray-200 rounded"></div>
+      </div>
+    </div>
+  );
+  if (status === "loading") return <LoadingSkeleton />;
   if (status === "failed") return <div className="p-6 text-red-500">{error}</div>;
   if (!user) return <div className="p-6">No user found</div>;
 
   return (
     <>
       <div className="flex h-screen">
-        <Sidebar
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-          onSearchClick={() => setIsSearchOpen(true)}
-          onNotificationsClick={() => setIsFollowRequestsOpen(true)}
-          isCollapsed={isSidebarCollapsed}
-          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-        />
+        {!isTrialRoom && (
+          <Sidebar
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+            onSearchClick={() => setIsSearchOpen(true)}
+            onNotificationsClick={() => setIsFollowRequestsOpen(true)}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            notificationCount={requests.length}
+          />
+        )}
 
         <div className="flex-1 flex flex-col overflow-hidden">
           {shouldShowHeader && (
