@@ -15,11 +15,12 @@ const AiChatbot: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [voiceResponseEnabled] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
   const [showWelcome, setShowWelcome] = useState(true);
   const [showHistoryList, setShowHistoryList] = useState(false);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+
   const {
     conversations,
     setConversations,
@@ -30,11 +31,11 @@ const AiChatbot: React.FC = () => {
   } = useConversationStorage();
 
   const { speakText, stopSpeaking, currentSpeechRef } = useSpeechSynthesis(voiceResponseEnabled);
-  
+
   const handleTranscript = (text: string) => {
     setInput(text);
   };
-  
+
   const { isRecording, toggleRecording, recognitionRef, lastTranscriptRef } = useSpeechRecognition(handleTranscript);
 
   const scrollToBottom = () => {
@@ -161,8 +162,8 @@ const AiChatbot: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await askAiAssistant(currentInput);
-      
+      const response = await askAiAssistant(currentInput, selectedLanguage);
+
       console.log('Response from API:', response);
 
       // Check if response exists
@@ -190,9 +191,9 @@ const AiChatbot: React.FC = () => {
         timestamp: new Date(),
         type: 'legal-advice'
       };
-      
+
       setMessages(prev => [...prev, botMessage]);
-      
+
       // Update conversation with both messages
       setConversations(prev => {
         const next = prev.map(c => {
@@ -204,20 +205,20 @@ const AiChatbot: React.FC = () => {
         localStorage.setItem('ai_conversations', JSON.stringify(next));
         return next;
       });
-      
+
       speakText(botMessage.content);
 
     } catch (error: any) {
       console.error("Error in handleSendMessage:", error);
-      
+
       // Extract error message from different error formats
       let errorMsg = "Sorry, I'm having trouble connecting right now. Please try again later.";
-      
+
       if (error?.response?.data) {
         // Axios error response
         const data = error.response.data;
         errorMsg = data.error || data.details || data.message || errorMsg;
-        
+
         // Add status code info
         if (error.response.status === 401) {
           errorMsg = "🔒 Authentication error. Please log in again.";
@@ -236,7 +237,7 @@ const AiChatbot: React.FC = () => {
           errorMsg = error.message;
         }
       }
-      
+
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: `❌ ${errorMsg}`,
@@ -244,9 +245,9 @@ const AiChatbot: React.FC = () => {
         timestamp: new Date(),
         type: 'text'
       };
-      
+
       setMessages(prev => [...prev, errorMessage]);
-      
+
       // Also update conversation with error message
       setConversations(prev => {
         const next = prev.map(c => {
@@ -274,14 +275,14 @@ const AiChatbot: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden">
-      <ChatHeader 
+      <ChatHeader
         onNewConversation={createNewConversation}
         onOpenHistory={openHistoryList}
       />
 
       <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
         {showHistoryList && (
-          <HistoryList 
+          <HistoryList
             conversations={conversations}
             onClose={closeHistoryList}
             onLoadConversation={loadHistoryConversation}
@@ -293,7 +294,7 @@ const AiChatbot: React.FC = () => {
         )}
 
         {!showHistoryList && !showWelcome && (
-          <ChatMessages 
+          <ChatMessages
             messages={messages}
             isLoading={isLoading}
             messagesEndRef={messagesEndRef}
@@ -301,14 +302,16 @@ const AiChatbot: React.FC = () => {
         )}
       </div>
 
-      <ChatInput 
+      <ChatInput
         input={input}
         isLoading={isLoading}
         isRecording={isRecording}
+        selectedLanguage={selectedLanguage}
         onInputChange={setInput}
         onSend={() => handleSendMessage()}
         onToggleRecording={toggleVoiceRecording}
         onKeyDown={handleKeyDown}
+        onLanguageChange={setSelectedLanguage}
       />
     </div>
   );

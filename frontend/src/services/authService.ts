@@ -342,14 +342,11 @@ export const analyzeTrial = async (trialId: string) => {
   return response.data;
 };
 // ========== Chatbot ==========
-export const askAiAssistant = async (message: string) => {
+export const askAiAssistant = async (message: string, language: string = 'English') => {
   try {
-    console.log('Asking AI Assistant:', message);
-    const response = await api.post('/chat', { message });
-    console.log('AI Response received:', response.data);
+    const response = await api.post('/chat', { message, language });
     return response.data;
   } catch (error: any) {
-    console.error('Error in askAiAssistant:', error);
     throw error;
   }
 };
