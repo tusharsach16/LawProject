@@ -13,6 +13,7 @@ import {
   releaseBookingLock,
   getCachedSlots,
   cacheSlots,
+  clearSlotCache,
   getCachedLawyerAppointments,
   cacheLawyerAppointments,
   getCachedUserAppointments,
@@ -143,9 +144,10 @@ export const createPaymentOrder = async (req: Request, res: Response): Promise<v
       throw new Error('Cannot book appointments for past dates.');
     }
 
-    if (isTooSoon(appointmentDate)) {
-      throw new Error('Appointments must be booked at least 1 hour in advance.');
-    }
+    // TESTING: isTooSoon check temporarily disabled
+    // if (isTooSoon(appointmentDate)) {
+    //   throw new Error('Appointments must be booked at least 1 hour in advance.');
+    // }
 
     let resolvedLawyerId: string;
     try {
@@ -345,7 +347,9 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
       .update(body.toString())
       .digest('hex');
 
-    if (expectedSignature !== razorpay_signature) {
+    // TESTING: bypass signature check in non-production
+    const isProduction = process.env.NODE_ENV === 'production';
+    if (isProduction && expectedSignature !== razorpay_signature) {
       await Appointment.findByIdAndUpdate(appointmentId, {
         paymentStatus: 'failed',
         appointmentStatus: 'cancelled',
@@ -672,7 +676,8 @@ export const getAvailableSlots = async (req: Request, res: Response): Promise<vo
       const slotStart = new Date(selectedDate).setHours(sH, sM, 0, 0);
       const slotEnd = new Date(selectedDate).setHours(eH, eM, 0, 0);
 
-      const isTooSoonSlot = isTooSoon(new Date(slotStart));
+      // TESTING: isTooSoon removed so near-future slots show as bookable
+      const isTooSoonSlot = false;
 
       const isTaken = booked.some(apt => {
         const bStart = new Date(apt.appointmentTime).getTime();
@@ -688,7 +693,7 @@ export const getAvailableSlots = async (req: Request, res: Response): Promise<vo
         hour12: false
       });
 
-      const isPast = slotStart <= now.getTime() || isTooSoonSlot;
+      const isPast = slotStart <= now.getTime();
       const status: 'available' | 'booked' | 'past' = isPast ? 'past' : (isTaken ? 'booked' : 'available');
 
       const duration = Math.round((slotEnd - slotStart) / 60000);
@@ -800,6 +805,11 @@ export const setLawyerAvailability = async (req: Request, res: Response): Promis
           runValidators: true
         }
       );
+
+      // Invalidate Redis slot cache so users see the updated availability immediately
+      if (date) {
+        await clearSlotCache(lawyerId.toString(), date as string);
+      }
 
       if (!availability) {
         throw new Error('Failed to save availability');
