@@ -1,5 +1,2 @@
 node_modules
 .env
-src/scripts/
-src/migrate-index.ts
-src/test-race-condition.ts
