@@ -2,6 +2,7 @@ import React from 'react';
 import { Calendar, Clock, DollarSign, Video, XCircle } from 'lucide-react';
 import type { LawyerAppointment } from '../../types/appointment.types';
 import { formatDateLong, formatTime, getStatusBadge, getPlaceholderAvatar, isPastDate } from '../../utils/appointment.utils';
+import JoinCallButton from '../JoinCallButton';
 
 interface LawyerAppointmentCardProps {
     appointment: LawyerAppointment;
@@ -77,13 +78,13 @@ const LawyerAppointmentCard: React.FC<LawyerAppointmentCardProps> = ({
                 <div className="flex flex-col gap-2 lg:w-auto">
                     {isUpcoming && (
                         <>
-                            <button
-                                onClick={handleJoinCall}
-                                className="flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-                            >
-                                <Video size={18} />
-                                Join Call
-                            </button>
+                            <JoinCallButton
+                                appointmentId={appointment._id}
+                                appointmentTime={appointment.appointmentTime}
+                                callRoomId={appointment.callRoomId}
+                                paymentStatus={appointment.paymentStatus}
+                                appointmentStatus={appointment.appointmentStatus}
+                            />
                             {canCancel && (
                                 <button
                                     onClick={onCancelClick}
