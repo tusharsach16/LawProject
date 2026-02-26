@@ -14,6 +14,7 @@ const LawyerDashboard = lazy(() => import("./pages/LawyerDashboard"));
 const MockTrialLobby = lazy(() => import("./pages/MockTrialLobby"));
 const ConnectWithLawyers = lazy(() => import("./pages/ConnectWithLawyers"));
 const ForgotPasswordFlow = lazy(() => import("./pages/ForgotPassword"));
+const VideoCall = lazy(() => import("./pages/VideoCall"));
 
 import TermsAndConditions from "./pages/legal/TermsAndConditions";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
@@ -53,6 +54,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <LawyerDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/video-call/:appointmentId"
+            element={
+              <ProtectedRoute>
+                <VideoCall />
               </ProtectedRoute>
             }
           />
