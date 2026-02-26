@@ -79,8 +79,13 @@ const updateConversationCache = async (
   );
 };
 
+const ALLOWED_LANGUAGES = new Set([
+  'English', 'Hindi', 'Marathi', 'Tamil', 'Telugu', 'Punjabi'
+]);
+
 export const chatbot = async (req: Request, res: Response): Promise<void> => {
-  const { message } = req.body;
+  const { message, language } = req.body;
+  const replyLanguage = ALLOWED_LANGUAGES.has(language) ? language : 'English';
   const userId = req.user?.id;
   const GOOGLE_GEMINI_API_KEY = process.env.GOOGLE_GEMINI_API_KEY;
 
@@ -95,7 +100,7 @@ export const chatbot = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    const systemPrompt = `You are an expert AI Legal Assistant specialized in Indian Law. Only answer legal questions related to India. Always end personal case answers with: "This is an AI-generated answer. Please consult a qualified lawyer before taking any action."`;
+    const systemPrompt = `You are an expert AI Legal Assistant specialized in Indian Law. Only answer legal questions related to India. Always respond in ${replyLanguage}, regardless of the language the user writes in — even if they write in Hinglish, Hindi, or any other language, always reply only in ${replyLanguage}. Always end personal case answers with: "This is an AI-generated answer. Please consult a qualified lawyer before taking any action."`;
 
     let conversationHistory: Array<{ role: string; parts: Array<{ text: string }> }> = [];
 
