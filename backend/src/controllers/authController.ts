@@ -8,34 +8,51 @@ import { Lawyer } from '../models/Lawyer';
 import { LawStudent } from '../models/LawStudent';
 import { GeneralUser } from '../models/GeneralUser';
 
-// --- HELPER FUNCTION  ---
+import { redisGet, redisSet, redisDel, isRedisAvailable } from '../utils/redisClient';
+
+const CACHE_TTL = 3600;
+
 const getFullUserProfile = async (userId: string) => {
-  const user = await User.findById(userId).select('-password').lean<Iuser>();
+  const cacheKey = `user_profile:${userId}`;
+
+  if (isRedisAvailable()) {
+    const cached = await redisGet(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  }
+
+  const [user, lawyerData, studentData, generalData] = await Promise.all([
+    User.findById(userId).select('-password').lean<Iuser>(),
+    Lawyer.findOne({ userId }).lean(),
+    LawStudent.findOne({ userId }).lean(),
+    GeneralUser.findOne({ userId }).lean()
+  ]);
+
   if (!user) return null;
 
   let roleData: any = {};
+  if (user.role === 'lawyer') roleData = lawyerData || {};
+  else if (user.role === 'lawstudent') roleData = studentData || {};
+  else roleData = generalData || {};
 
-  switch (user.role) {
-    case 'general':
-      roleData = await GeneralUser.findOne({ userId: user._id }).lean();
-      break;
-    case 'lawstudent':
-      roleData = await LawStudent.findOne({ userId: user._id }).lean();
-      break;
-    case 'lawyer':
-      roleData = await Lawyer.findOne({ userId: user._id }).lean();
-      break;
+  const profile = { ...user, roleData };
+
+  if (isRedisAvailable()) {
+    await redisSet(cacheKey, JSON.stringify(profile), CACHE_TTL);
   }
 
-  return { ...user, roleData: roleData || {} };
+  return profile;
 };
 
-// --- SIGNUP CONTROLLER ---
 const signupUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, lastname, username, email, phoneNumber, password, role, ...extraData } = req.body;
 
-    const existingUser: Iuser | null = await User.findOne({ $or: [{ email }, { username }] });
+    const existingUser: Iuser | null = await User.findOne({
+      $or: [{ email }, { username }]
+    });
+
     if (existingUser) {
       res.status(400).json({ message: 'Email or Username already in use' });
       return;
@@ -50,7 +67,7 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
       email,
       phoneNumber,
       password: hashedPassword,
-      role,
+      role
     });
 
     const userId = user._id as mongoose.Types.ObjectId;
@@ -64,14 +81,19 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
         await GeneralUser.create({ userId, ...extraData });
       }
     } catch (roleError) {
-      console.error('Error creating role-specific profile:', roleError);
       await User.findByIdAndDelete(userId);
       res.status(500).json({ message: 'Failed to create user profile' });
       return;
     }
 
     const token = jwt.sign(
-      {  _id: user._id.toString(), id: userId.toString(), userId: user._id.toString(), role: user.role, username: user.username },
+      {
+        _id: user._id.toString(),
+        id: userId.toString(),
+        userId: user._id.toString(),
+        role: user.role,
+        username: user.username
+      },
       process.env.JWT_SECRET!,
       { expiresIn: '1d' }
     );
@@ -94,34 +116,46 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
       }
     });
   } catch (error) {
-    console.error('Signup Error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-// --- LOGIN CONTROLLER ---
 const loginUser = async (req: Request, res: Response): Promise<void> => {
+  const startTime = Date.now();
+
   try {
     const { email, password } = req.body;
 
-    // Single query with password field
-    const user: Iuser | null = await User.findOne({ email }).select('+password');
-    
-    if (!user || !(await user.comparePassword(password))) {
+    const user: Iuser | null = await User.findOne({ email })
+      .select('+password')
+      .lean();
+
+    if (!user) {
+      res.status(400).json({ message: 'Invalid credentials' });
+      return;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
       res.status(400).json({ message: 'Invalid credentials' });
       return;
     }
 
     const userId = user._id as mongoose.Types.ObjectId;
 
-    // Generate token immediately
     const token = jwt.sign(
-      { _id: user._id.toString(), id: userId.toString(), userId: user._id.toString(), role: user.role, username: user.username },
+      {
+        _id: user._id.toString(),
+        id: userId.toString(),
+        userId: user._id.toString(),
+        role: user.role,
+        username: user.username
+      },
       process.env.JWT_SECRET!,
       { expiresIn: '1d' }
     );
 
-    // Return MINIMAL data - NO getFullUserProfile() call during login
     res.status(200).json({
       message: 'Login successful',
       token,
@@ -140,12 +174,10 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
       }
     });
   } catch (error) {
-    console.error('Login Error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-// --- GET USER CONTROLLER ---
 const getUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).user?.id as string;
@@ -164,9 +196,15 @@ const getUser = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).json({ user: fullUserProfile });
   } catch (error) {
-    console.error('GetUser Error:', error);
     res.status(500).json({ message: 'Server error' });
   }
+};
+
+export const invalidateUserCache = async (userId: string) => {
+  if (!isRedisAvailable()) return;
+
+  const cacheKey = `user_profile:${userId}`;
+  await redisDel(cacheKey);
 };
 
 export { getUser, signupUser, loginUser };
