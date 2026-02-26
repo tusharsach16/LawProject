@@ -5,28 +5,31 @@ interface StatCardProps {
     icon: LucideIcon;
     label: string;
     value: string | number;
-    color: 'blue' | 'amber' | 'green' | 'red' | 'emerald' | 'purple';
+    color: 'indigo' | 'slate' | 'teal' | 'rose' | 'amber' | 'blue' | 'green' | 'red' | 'emerald' | 'purple';
 }
 
 const StatCard: React.FC<StatCardProps> = ({ icon: Icon, label, value, color }) => {
     const colorClasses: Record<string, string> = {
-        blue: 'bg-blue-100 text-blue-600',
-        amber: 'bg-amber-100 text-amber-600',
-        green: 'bg-green-100 text-green-600',
-        red: 'bg-red-100 text-red-600',
-        emerald: 'bg-emerald-100 text-emerald-600',
-        purple: 'bg-purple-100 text-purple-600',
+        indigo: 'bg-indigo-50 text-indigo-600',
+        slate: 'bg-slate-100 text-slate-600',
+        teal: 'bg-teal-50 text-teal-600',
+        rose: 'bg-rose-50 text-rose-600',
+        // kept for backward compat but mapped to professional alternatives
+        blue: 'bg-indigo-50 text-indigo-600',
+        amber: 'bg-slate-100 text-slate-600',
+        green: 'bg-teal-50 text-teal-600',
+        red: 'bg-rose-50 text-rose-600',
+        emerald: 'bg-teal-50 text-teal-700',
+        purple: 'bg-indigo-50 text-indigo-600',
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
-            <div
-                className={`w-12 h-12 rounded-lg ${colorClasses[color]} flex items-center justify-center mb-3`}
-            >
-                <Icon size={24} />
+        <div className="bg-white rounded-2xl border-2 border-slate-200 p-5 hover:shadow-lg hover:border-indigo-200 transition-all duration-200">
+            <div className={`w-11 h-11 rounded-xl ${colorClasses[color]} flex items-center justify-center mb-4`}>
+                <Icon size={22} />
             </div>
             <p className="text-2xl font-bold text-slate-900">{value}</p>
-            <p className="text-sm text-slate-600 mt-1">{label}</p>
+            <p className="text-sm text-slate-500 mt-1 font-medium">{label}</p>
         </div>
     );
 };

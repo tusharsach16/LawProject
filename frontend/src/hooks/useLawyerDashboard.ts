@@ -56,7 +56,11 @@ export const useUpcomingAppointments = (limit: number = 3) => {
             const appointmentsRes = await getLawyerAppointments('scheduled').catch(() => ({
                 appointments: [],
             }));
-            setAppointments(appointmentsRes.appointments.slice(0, limit));
+            const now = new Date();
+            const futureAppointments = appointmentsRes.appointments.filter(
+                (a: any) => new Date(a.appointmentTime) > now
+            );
+            setAppointments(futureAppointments.slice(0, limit));
         } catch (error) {
             console.error('Error fetching appointments:', error);
         } finally {

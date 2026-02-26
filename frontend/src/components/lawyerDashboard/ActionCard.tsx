@@ -14,16 +14,17 @@ const ActionCard: React.FC<ActionCardProps> = ({
     title,
     description,
     onClick,
-    gradient,
 }) => {
     return (
         <button
             onClick={onClick}
-            className={`bg-gradient-to-br ${gradient} text-white rounded-xl p-6 text-left transition-all hover:shadow-lg hover:scale-105 transform`}
+            className="bg-white border-2 border-slate-200 rounded-2xl p-5 text-left transition-all hover:shadow-lg hover:border-indigo-300 hover:-translate-y-0.5 transform group w-full"
         >
-            <Icon size={32} className="mb-3" />
-            <h3 className="font-bold text-lg mb-1">{title}</h3>
-            <p className="text-sm text-white/90">{description}</p>
+            <div className="w-11 h-11 rounded-xl bg-indigo-50 flex items-center justify-center mb-4 group-hover:bg-indigo-100 transition-colors">
+                <Icon size={22} className="text-indigo-600" />
+            </div>
+            <h3 className="font-bold text-slate-900 mb-1">{title}</h3>
+            <p className="text-sm text-slate-500">{description}</p>
         </button>
     );
 };

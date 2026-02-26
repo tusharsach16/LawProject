@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Calendar,
-  DollarSign,
+  IndianRupee,
   CheckCircle,
   XCircle,
   Clock,
@@ -16,7 +16,7 @@ import LoadingScreen from '@/components/overview/LoadingScreen';
 import WelcomeHeader from '@/components/overview/WelcomeHeader';
 import ActivityAndStats from '@/components/overview/ActivityAndStats';
 import StatCard from '../components/lawyerDashboard/StatCard';
-import ActionCard from '../components/lawyerDashboard/ActionCard';
+import QuickActionCard from '../components/overview/QuickActionCard';
 import AppointmentPreviewCard from '../components/lawyerDashboard/AppointmentPreviewCard';
 
 const LawyerOverview: React.FC = () => {
@@ -60,48 +60,58 @@ const LawyerOverview: React.FC = () => {
         />
         <StatCard icon={XCircle} label="Cancelled" value={stats.cancelled} color="red" />
         <StatCard
-          icon={DollarSign}
+          icon={IndianRupee}
           label="Revenue"
-          value={`$${stats.revenue}`}
+          value={`₹${stats.revenue}`}
           color="emerald"
         />
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <ActionCard
-          icon={Calendar}
-          title="View Appointments"
-          description="Manage your schedule"
-          onClick={() => navigate('/lawyer-dashboard/appointments')}
-          gradient="from-blue-500 to-blue-600"
-        />
-        <ActionCard
-          icon={MessageSquare}
-          title="AI Assistant"
-          description="Legal research help"
-          onClick={() => navigate('/lawyer-dashboard/chatbot')}
-          gradient="from-purple-500 to-purple-600"
-        />
-        <ActionCard
-          icon={BookOpen}
-          title="Take Quiz"
-          description="Test your knowledge"
-          onClick={() => navigate('/lawyer-dashboard/quiz')}
-          gradient="from-amber-500 to-amber-600"
-        />
-        <ActionCard
-          icon={Video}
-          title="Mock Trials"
-          description="Practice your skills"
-          onClick={() => navigate('/lawyer-dashboard/mock-trials')}
-          gradient="from-green-500 to-green-600"
-        />
+      <div className="mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <QuickActionCard
+            actionNumber="1"
+            title="View Appointments"
+            description="Manage your schedule and upcoming sessions"
+            buttonText="Open Schedule"
+            onClick={() => navigate('/lawyer-dashboard/appointments')}
+            delay="0s"
+            iconType="users"
+          />
+          <QuickActionCard
+            actionNumber="2"
+            title="AI Assistant"
+            description="Get AI-powered legal research and insights"
+            buttonText="Open Chat"
+            onClick={() => navigate('/lawyer-dashboard/chatbot')}
+            delay="0.05s"
+            iconType="chat"
+          />
+          <QuickActionCard
+            actionNumber="3"
+            title="Take Quiz"
+            description="Test and sharpen your legal knowledge"
+            buttonText="Start Quiz"
+            onClick={() => navigate('/lawyer-dashboard/quiz')}
+            delay="0.1s"
+            iconType="award"
+          />
+          <QuickActionCard
+            actionNumber="4"
+            title="Mock Trials"
+            description="Practice your advocacy and courtroom skills"
+            buttonText="Join Trial"
+            onClick={() => navigate('/lawyer-dashboard/mock-trials')}
+            delay="0.15s"
+            iconType="award"
+          />
+        </div>
       </div>
 
       {/* Upcoming Appointments */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
-        <div className="flex justify-between items-center mb-4">
+      <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 mb-8 hover:shadow-lg transition-all duration-200">
+        <div className="flex justify-between items-center mb-5">
           <h2 className="text-xl font-bold text-slate-900">Upcoming Appointments</h2>
           <button
             onClick={() => navigate('/lawyer-dashboard/appointments')}
@@ -124,28 +134,34 @@ const LawyerOverview: React.FC = () => {
 
       {/* Activity Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-2">
+        <div className="bg-white rounded-2xl border-2 border-slate-200 p-5 hover:shadow-lg hover:border-indigo-200 transition-all duration-200">
+          <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-slate-700">AI Chats</h3>
-            <MessageSquare className="text-purple-500" size={20} />
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center">
+              <MessageSquare className="text-indigo-600" size={18} />
+            </div>
           </div>
           <p className="text-3xl font-bold text-slate-900">{chatCount}</p>
           <p className="text-sm text-slate-500 mt-1">Total conversations</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-2">
+        <div className="bg-white rounded-2xl border-2 border-slate-200 p-5 hover:shadow-lg hover:border-indigo-200 transition-all duration-200">
+          <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-slate-700">Quizzes</h3>
-            <BookOpen className="text-amber-500" size={20} />
+            <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center">
+              <BookOpen className="text-slate-600" size={18} />
+            </div>
           </div>
           <p className="text-3xl font-bold text-slate-900">{quizCount}</p>
           <p className="text-sm text-slate-500 mt-1">Completed</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-2">
+        <div className="bg-white rounded-2xl border-2 border-slate-200 p-5 hover:shadow-lg hover:border-indigo-200 transition-all duration-200">
+          <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-slate-700">Mock Trials</h3>
-            <Video className="text-green-500" size={20} />
+            <div className="w-9 h-9 rounded-xl bg-teal-50 flex items-center justify-center">
+              <Video className="text-teal-600" size={18} />
+            </div>
           </div>
           <p className="text-3xl font-bold text-slate-900">{trialCount}</p>
           <p className="text-sm text-slate-500 mt-1">Participated</p>

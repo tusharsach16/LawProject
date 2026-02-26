@@ -1,4 +1,5 @@
 import React from 'react';
+import { Calendar } from 'lucide-react';
 import { getPlaceholderAvatar } from '../../utils/appointment.utils';
 
 interface AppointmentPreviewCardProps {
@@ -23,21 +24,24 @@ const AppointmentPreviewCard: React.FC<AppointmentPreviewCardProps> = ({ appoint
         appointment.userId?.profileImageUrl || getPlaceholderAvatar(userName, 48);
 
     return (
-        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:bg-indigo-50/40 hover:border-indigo-200 transition-all duration-150">
             <div className="flex items-center gap-4">
                 <img
                     src={avatarUrl}
                     alt={userName}
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="w-11 h-11 rounded-full object-cover border-2 border-white shadow-sm"
                 />
                 <div>
                     <p className="font-semibold text-slate-900">{userName}</p>
-                    <p className="text-sm text-slate-600">{userEmail}</p>
+                    <p className="text-sm text-slate-500">{userEmail}</p>
                 </div>
             </div>
             <div className="text-right">
-                <p className="font-medium text-slate-900">{formattedDate}</p>
-                <p className="text-sm text-slate-600">{formattedTime}</p>
+                <div className="flex items-center gap-1.5 justify-end text-slate-700 font-medium text-sm">
+                    <Calendar size={13} className="text-indigo-500" />
+                    {formattedDate}
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">{formattedTime}</p>
             </div>
         </div>
     );
