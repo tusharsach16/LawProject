@@ -1,6 +1,6 @@
-# Law Connect
+# NyaySetu
 
-A comprehensive legal platform that connects users with expert lawyers, provides AI-powered legal assistance, and offers interactive learning experiences through mock trials and quizzes. Built specifically for the Indian legal system with support for multiple Indian languages.
+A full-stack legal platform that connects users with expert lawyers, provides AI-powered legal assistance, and offers interactive learning through mock trials and quizzes. Built for the Indian legal system with multi-language support.
 
 ## Table of Contents
 
@@ -14,148 +14,147 @@ A comprehensive legal platform that connects users with expert lawyers, provides
 - [Running the Application](#running-the-application)
 - [API Endpoints](#api-endpoints)
 - [Database Models](#database-models)
-- [Key Features Explained](#key-features-explained)
-- [Development](#development)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Overview
 
-Law Connect is a full-stack web application designed to bridge the gap between legal professionals and individuals seeking legal guidance in India. The platform offers multiple user roles, AI-powered legal assistance, interactive mock trials, educational quizzes, and appointment booking with payment integration.
+NyaySetu is a full-stack web application designed to bridge the gap between legal professionals and individuals seeking legal guidance in India. The platform supports multiple user roles, provides AI-powered legal assistance via Google Gemini, enables real-time mock trials, allows appointment booking with payment integration, and supports video consultations via WebRTC.
 
 ## Features
 
 ### User Management
-- **Multi-role Authentication**: Support for three distinct user types - General Users, Law Students, and Lawyers
-- **Secure Authentication**: JWT-based authentication with password hashing using bcrypt
-- **Profile Management**: Comprehensive user profiles with profile images, banners, bio, and location
-- **Social Connections**: Friend request system allowing users to connect with each other
-- **Password Recovery**: Forgot password functionality with OTP verification via email
+- Multi-role authentication: General Users, Law Students, and Lawyers
+- JWT-based authentication with bcrypt password hashing
+- Comprehensive user profiles with images, banners, bio, and location
+- Friend request and social connection system
+- Password recovery via OTP email verification
 
 ### AI Legal Assistant
-- **Intelligent Chatbot**: Powered by Google Gemini 2.5 Flash API
-- **Conversation History**: Persistent chat history stored in MongoDB and cached in Redis
-- **Multi-language Support**: Handles queries in multiple Indian languages
-- **Context Awareness**: Maintains conversation context for better responses
-- **Legal Disclaimer**: Automatically appends disclaimers to AI-generated legal advice
+- Powered by Google Gemini API
+- Persistent conversation history stored in MongoDB, cached in Redis
+- Multi-language support including Indian regional languages
+- Context-aware responses with automatic legal disclaimers
 
 ### Mock Trials
-- **Interactive Legal Practice**: Real-time mock trial system for law students
-- **Role-based Participation**: Students can participate as plaintiff or defendant
-- **Real-time Communication**: WebSocket-based messaging during trials
-- **Trial Matching**: Automatic matching system using Redis queues
-- **Trial Management**: Start, end, and leave trial functionality
-- **Trial History**: View past trials and results
-- **AI-powered Analysis**: Post-trial analysis using Gemini API
+- Real-time mock trial system for law students via WebSocket
+- Role-based participation (plaintiff or defendant)
+- Automatic opponent matching using Redis queues
+- Post-trial AI analysis using Gemini API
+- Trial history and result viewing
+
+### Video Consultations
+- WebRTC-based peer-to-peer video calls between users and lawyers
+- Dedicated signaling server for WebRTC negotiation (offer/answer/ICE)
+- Redis pub/sub for horizontal scaling across multiple signaling instances
+- Call room access verified via JWT tokens
+- Appointment time-window enforcement (±15 min window)
 
 ### Quiz System
-- **Categorized Questions**: Multiple legal categories with quiz questions
-- **Randomized Questions**: Dynamic question selection per attempt
-- **Performance Tracking**: Detailed quiz results with percentage scores
-- **Quiz History**: Track all quiz attempts and performance over time
-- **Explanation Support**: Questions can include explanations for correct answers
+- Categorized legal quiz questions with randomized selection
+- Performance tracking, scoring, and attempt history
+- Answer explanations for educational purposes
+- Redis caching for improved performance
 
 ### Lawyer Services
-- **Lawyer Profiles**: Detailed profiles with specialization, experience, and pricing
-- **Appointment Booking**: Schedule appointments with lawyers
-- **Payment Integration**: Razorpay integration for secure payment processing
-- **Availability Management**: Lawyers can set their available time slots
-- **Appointment Management**: View, cancel, and manage appointments
-- **Refund System**: Automated refund processing for cancellations
+- Detailed lawyer profiles with specialization, experience, and pricing
+- Appointment booking with Razorpay payment integration
+- Availability management and time slot selection
+- Refund processing for cancellations
 
-### Additional Features
-- **File Uploads**: Cloudinary integration for profile images and documents
-- **Email Notifications**: Nodemailer integration for appointment confirmations and password resets
-- **Rate Limiting**: Express rate limiting for API protection
-- **Redis Caching**: Performance optimization with Redis caching
-- **Real-time Updates**: WebSocket support for live updates
-- **Search Functionality**: User and lawyer search capabilities
-- [**Activity Tracking**: Comprehensive activity logging and history
+### Platform Features
+- File uploads via Cloudinary (profile images and documents)
+- Email notifications via Nodemailer for appointments and password resets
+- API rate limiting for protection against abuse
+- Redis caching across chatbot, quiz, and mock trial systems
 
 ## Technology Stack
 
 ### Frontend
-- **React 19.1.0**: Modern React with latest features
-- **TypeScript**: Type-safe development
-- **Vite**: Fast build tool and development server
-- **Tailwind CSS 4.1.8**: Utility-first CSS framework
-- **Redux Toolkit**: State management
-- **React Router DOM 7.6.2**: Client-side routing
-- **Axios**: HTTP client for API requests
-- **GSAP**: Animation library for smooth UI transitions
-- **Lucide React**: Icon library
-- **Recharts**: Data visualization for analytics
+- React 19 with TypeScript
+- Vite (build tool and dev server)
+- Tailwind CSS 4
+- Redux Toolkit (state management)
+- React Router DOM 7
+- Axios (HTTP client)
+- GSAP (animations)
+- Lucide React (icons)
+- Recharts (analytics)
 
-### Backend
-- **Node.js**: JavaScript runtime
-- **Express 5.1.0**: Web framework
-- **TypeScript**: Type-safe backend development
-- **MongoDB**: NoSQL database with Mongoose ODM
-- **Redis**: Caching and real-time data structures
-- **JWT**: JSON Web Tokens for authentication
-- **bcryptjs**: Password hashing
-- **WebSocket (ws)**: Real-time communication
-- **Multer**: File upload handling
-- **Cloudinary**: Cloud-based image and file storage
-- **Nodemailer**: Email service
-- **Razorpay**: Payment gateway integration
-- **Google Generative AI**: Gemini API for AI features
-- **Express Rate Limit**: API rate limiting
-- **Node Cron**: Scheduled tasks
+### Backend (REST API)
+- Node.js with Express 5
+- TypeScript
+- MongoDB with Mongoose
+- Redis (caching and pub/sub)
+- JWT authentication
+- bcryptjs
+- WebSocket (ws) — mock trial real-time messaging
+- Multer + Cloudinary (file storage)
+- Nodemailer (email)
+- Razorpay (payments)
+- Google Generative AI (Gemini)
+
+### Backend Signaling (WebRTC)
+- Node.js with Express and WebSocket (ws)
+- TypeScript
+- Redis pub/sub for cross-instance message routing
+- JWT verification for call room access
+- Horizontal scaling support via connection manager
 
 ## Project Structure
 
 ```
 LawProject/
-├── backend/
+├── backend/                        # REST API server
+│   ├── scripts/                    # Utility and test scripts (not compiled)
 │   ├── src/
-│   │   ├── config/          # Database and external service configurations
-│   │   ├── controllers/      # Request handlers
-│   │   ├── middleware/       # Authentication and rate limiting
-│   │   ├── models/           # MongoDB schemas
-│   │   ├── routes/           # API route definitions
-│   │   ├── scripts/          # Database seeding scripts
-│   │   ├── services/         # Business logic services
-│   │   ├── types/            # TypeScript type definitions
-│   │   ├── utils/            # Utility functions (Redis client)
-│   │   ├── webSockets.ts     # WebSocket server implementation
-│   │   └── index.ts          # Application entry point
-│   ├── data/                 # Seed data files
-│   ├── dist/                 # Compiled JavaScript output
+│   │   ├── config/                 # Database and service configurations
+│   │   ├── controllers/            # Request handlers
+│   │   ├── middleware/             # Auth and rate limiting
+│   │   ├── models/                 # MongoDB schemas
+│   │   ├── routes/                 # API route definitions
+│   │   ├── utils/                  # Redis client and helpers
+│   │   ├── webSockets.ts           # Mock trial WebSocket server
+│   │   └── index.ts                # Entry point
 │   └── package.json
-├── frontend/
+├── backend-signaling/              # WebRTC signaling server
 │   ├── src/
-│   │   ├── components/       # Reusable React components
-│   │   ├── pages/            # Page components
-│   │   ├── services/         # API service functions
-│   │   ├── redux/            # Redux store and slices
-│   │   ├── hooks/            # Custom React hooks
-│   │   ├── layouts/          # Layout components
-│   │   ├── lib/              # Utility functions
-│   │   ├── types/            # TypeScript type definitions
-│   │   ├── App.tsx           # Main application component
-│   │   └── main.tsx          # Application entry point
-│   ├── dist/                 # Production build output
+│   │   ├── services/
+│   │   │   ├── connectionManager.ts  # Per-instance WebSocket registry
+│   │   │   └── redisService.ts       # Redis pub/sub helpers
+│   │   ├── types/
+│   │   │   └── signalling.ts         # Message type definitions
+│   │   ├── turn.ts                   # ICE server configuration
+│   │   └── index.ts                  # Entry point (HTTP + WebSocket + Redis)
+│   └── package.json
+├── frontend/                       # React client
+│   ├── src/
+│   │   ├── components/             # Reusable UI components
+│   │   ├── hooks/                  # Custom React hooks (useWebRTC)
+│   │   ├── pages/                  # Page components
+│   │   ├── redux/                  # Store and slices
+│   │   ├── services/               # API and signaling service functions
+│   │   ├── types/                  # TypeScript type definitions
+│   │   ├── App.tsx
+│   │   └── main.tsx
 │   └── package.json
 └── README.md
 ```
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed on your system:
+- Node.js v18 or higher
+- npm v9 or higher
+- MongoDB v6 or higher (local or Atlas)
+- Redis v6 or higher (local, Redis Cloud, or Upstash)
+- Git
 
-- **Node.js** (v18 or higher)
-- **npm** (v9 or higher) or **yarn**
-- **MongoDB** (v6 or higher) - Local installation or MongoDB Atlas account
-- **Redis** (v6 or higher) - Local installation or Redis cloud service
-- **Git** for version control
-
-### Optional Services (for full functionality)
-- **Google Cloud Account** - For Gemini API access
-- **Razorpay Account** - For payment processing
-- **Cloudinary Account** - For file uploads
-- **SMTP Email Service** - For email notifications (Gmail, SendGrid, etc.)
+### Optional (for full functionality)
+- Google Cloud account — Gemini API access
+- Razorpay account — payment processing
+- Cloudinary account — file storage
+- SMTP email service — Gmail, SendGrid, etc.
 
 ## Installation
 
@@ -166,65 +165,42 @@ git clone <repository-url>
 cd LawProject
 ```
 
-### 2. Install Backend Dependencies
+### 2. Install Dependencies
 
 ```bash
+# Backend
 cd backend
 npm install
-```
 
-### 3. Install Frontend Dependencies
+# Signaling server
+cd ../backend-signaling
+npm install
 
-```bash
+# Frontend
 cd ../frontend
 npm install
 ```
 
-### 4. Set Up MongoDB
-
-Ensure MongoDB is running on your system. You can either:
-- Install MongoDB locally and run it
-- Use MongoDB Atlas (cloud) and get a connection string
-
-### 5. Set Up Redis
-
-Ensure Redis is running on your system. You can either:
-- Install Redis locally and run it
-- Use a Redis cloud service (Redis Cloud, Upstash, etc.)
-
 ## Configuration
 
-### Backend Environment Variables
-
-Create a `.env` file in the `backend` directory with the following variables:
+### Backend — `backend/.env`
 
 ```env
-# Server Configuration
 PORT=5000
 NODE_ENV=development
 
-# Database
 MONGODB_URL=mongodb://localhost:27017/lawconnect
-# Or for MongoDB Atlas:
-# MONGODB_URL=mongodb+srv://username:password@cluster.mongodb.net/lawconnect
 
-# Redis Configuration
 REDIS_URL=redis://localhost:6379
-# Or for Redis Cloud:
-# REDIS_URL=redis://username:password@host:port
 
-# JWT Secret
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_SECRET=your-secret-key
 
-# Google Gemini API
 GOOGLE_GEMINI_API_KEY=your-gemini-api-key
 
-# Cloudinary Configuration
 CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 
-# Email Configuration (Nodemailer)
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
@@ -232,339 +208,224 @@ SMTP_PASS=your-app-password
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASSWORD=your-app-password
 
-# Razorpay Configuration
 RAZORPAY_KEY_ID=your-razorpay-key-id
 RAZORPAY_KEY_SECRET=your-razorpay-key-secret
 
-# Client URL (for email links)
 CLIENT_URL=http://localhost:5173
+
+SIGNALING_SERVER_URL=http://localhost:8080
+SIGNALING_WS_URL=ws://localhost:8080
 ```
 
-### Frontend Environment Variables
-
-Create a `.env` file in the `frontend` directory:
+### Signaling Server — `backend-signaling/.env`
 
 ```env
-# Backend API URL
-VITE_API_URL=http://localhost:5000
+PORT=8080
 
-# WebSocket URL (optional, defaults to API URL)
+JWT_SECRET=your-secret-key
+
+REDIS_URL=redis://localhost:6379
+
+FRONTEND_URL=http://localhost:5173
+```
+
+`JWT_SECRET` and `REDIS_URL` must match the values used in the backend.
+
+### Frontend — `frontend/.env`
+
+```env
+VITE_API_URL=http://localhost:5000
 VITE_WS_URL=ws://localhost:5000
 
-# Razorpay Key (for frontend)
 REACT_APP_RAZORPAY_KEY_ID=your-razorpay-key-id
 ```
 
-### Getting API Keys
-
-1. **Google Gemini API**:
-   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-   - Create a new API key
-   - Copy and add to `GOOGLE_GEMINI_API_KEY`
-
-2. **Razorpay**:
-   - Sign up at [Razorpay](https://razorpay.com)
-   - Get your Key ID and Key Secret from the dashboard
-   - Add to both backend and frontend `.env` files
-
-3. **Cloudinary**:
-   - Sign up at [Cloudinary](https://cloudinary.com)
-   - Get your Cloud Name, API Key, and API Secret
-   - Add to backend `.env` file
-
-4. **Email Service**:
-   - For Gmail: Enable 2-factor authentication and create an app password
-   - For other services: Use their SMTP credentials
-
 ## Running the Application
 
-### Development Mode
-
-#### 1. Start MongoDB
-```bash
-# If installed locally
-mongod
-
-# Or ensure MongoDB service is running
-```
-
-#### 2. Start Redis
-```bash
-# If installed locally
-redis-server
-
-# Or ensure Redis service is running
-```
-
-#### 3. Start Backend Server
+Start all three services in separate terminals:
 
 ```bash
+# Terminal 1 — Backend REST API
 cd backend
 npm run dev
-```
 
-The backend server will start on `http://localhost:5000`
-
-#### 4. Start Frontend Development Server
-
-In a new terminal:
-
-```bash
-cd frontend
-npm run dev
-```
-
-The frontend will start on `http://localhost:5173`
-
-### Production Build
-
-#### Build Backend
-
-```bash
-cd backend
-npm run build
+# Terminal 2 — Signaling server
+cd backend-signaling
 npm start
-```
 
-#### Build Frontend
-
-```bash
+# Terminal 3 — Frontend
 cd frontend
-npm run build
-npm run preview
+npm run dev
 ```
+
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:5173 |
+| Backend API | http://localhost:5000 |
+| Signaling Server | ws://localhost:8080 |
 
 ### Database Seeding
 
-To populate the database with initial data:
-
 ```bash
 cd backend
-
-# Seed quiz categories
 npm run seed:categories
-
-# Seed quiz questions
 npm run seed:questions
-
-# Seed mock trial situations
 npm run seed:mockTrails
 ```
 
 ## API Endpoints
 
 ### Authentication
-- `POST /api/signup` - User registration
-- `POST /api/login` - User login
-- `GET /api/user` - Get current user (protected)
-- `POST /api/forgot-password` - Request password reset
-- `POST /api/verify-otp` - Verify OTP
-- `POST /api/reset-password` - Reset password
+- `POST /api/signup` — Register
+- `POST /api/login` — Login
+- `GET /api/user` — Get current user (protected)
+- `POST /api/forgot-password` — Request OTP
+- `POST /api/verify-otp` — Verify OTP
+- `POST /api/reset-password` — Reset password
 
 ### Chatbot
-- `POST /api/chat` - Send message to AI assistant (protected)
-- `GET /api/chat/history` - Get chat history (protected)
+- `POST /api/chat` — Send message to AI assistant (protected)
+- `GET /api/chat/history` — Get conversation history (protected)
 
 ### Quiz
-- `GET /api/quiz/getQuiz` - Get quiz questions by category
-- `POST /api/quiz/submit` - Submit quiz attempt (protected)
-- `GET /api/quiz/categories` - Get all quiz categories
-- `GET /api/quiz/history` - Get user quiz history (protected)
+- `GET /api/quiz/getQuiz` — Get quiz by category
+- `POST /api/quiz/submit` — Submit attempt (protected)
+- `GET /api/quiz/categories` — List categories
+- `GET /api/quiz/history` — Get attempt history (protected)
 
 ### Mock Trials
-- `GET /api/mock-trial/categories` - Get mock trial categories
-- `GET /api/mock-trial/situations` - Get situations by category
-- `POST /api/mock-trial/join` - Join mock trial queue (protected)
-- `POST /api/mock-trial/cancel-waiting` - Cancel waiting in queue (protected)
-- `GET /api/mock-trial/:trialId` - Get trial details (protected)
-- `POST /api/mock-trial/end` - End a trial (protected)
-- `POST /api/mock-trial/leave` - Leave a trial (protected)
-- `GET /api/mock-trial/past` - Get past trials (protected)
-- `POST /api/mock-trial/analyze` - Analyze trial with AI (protected)
-
-### Lawyers
-- `GET /api/lawyers` - Get all lawyers
-- `GET /api/lawyers/:id` - Get lawyer details
-- `GET /api/lawyers/search` - Search lawyers
-- `POST /api/lawyers/availability` - Set availability (lawyer only, protected)
-- `GET /api/lawyers/availability/:lawyerId` - Get lawyer availability
+- `GET /api/mock-trial/categories` — List categories
+- `GET /api/mock-trial/situations` — Get situations by category
+- `POST /api/mock-trial/join` — Join matchmaking queue (protected)
+- `POST /api/mock-trial/cancel-waiting` — Cancel queue (protected)
+- `GET /api/mock-trial/:trialId` — Get trial details (protected)
+- `POST /api/mock-trial/end` — End trial (protected)
+- `POST /api/mock-trial/leave` — Leave trial (protected)
+- `GET /api/mock-trial/past` — Get past trials (protected)
+- `POST /api/mock-trial/analyze` — Run AI analysis (protected)
 
 ### Appointments
-- `POST /api/appointments/create-order` - Create payment order (protected)
-- `POST /api/appointments/verify-payment` - Verify payment (protected)
-- `GET /api/appointments` - Get user appointments (protected)
-- `GET /api/appointments/available-slots` - Get available slots
-- `POST /api/appointments/cancel` - Cancel appointment (protected)
+- `POST /api/appointments/create-order` — Create payment order (protected)
+- `POST /api/appointments/verify-payment` — Verify payment (protected)
+- `GET /api/appointments` — Get user appointments (protected)
+- `GET /api/appointments/available-slots` — Get available slots
+- `POST /api/appointments/cancel` — Cancel appointment (protected)
 
-### Friends/Connections
-- `POST /apiFriend/send-request` - Send friend request (protected)
-- `POST /apiFriend/respond` - Accept/reject friend request (protected)
-- `GET /apiFriend/requests` - Get friend requests (protected)
-- `GET /apiFriend/friends` - Get user's friends (protected)
-- `GET /apiFriend/profile/:username` - Get user profile by username
+### Video Calls
+- `POST /api/appointments/call-token` — Generate WebRTC call token (protected)
+- `GET /api/appointments/call-access/:callRoomId` — Verify call access (protected)
+- `POST /api/appointments/call-completed` — Mark call as completed (protected)
+
+### Lawyers
+- `GET /api/lawyers` — List lawyers
+- `GET /api/lawyers/:id` — Get lawyer details
+- `GET /api/lawyers/search` — Search lawyers
+- `POST /api/lawyers/availability` — Set availability (protected, lawyer only)
+- `GET /api/lawyers/availability/:lawyerId` — Get availability
+
+### Connections
+- `POST /apiFriend/send-request` — Send friend request (protected)
+- `POST /apiFriend/respond` — Accept/reject request (protected)
+- `GET /apiFriend/requests` — List requests (protected)
+- `GET /apiFriend/friends` — List friends (protected)
+- `GET /apiFriend/profile/:username` — Get profile by username
 
 ### Profile
-- `GET /api/profile` - Get current user profile (protected)
-- `PUT /api/profile` - Update profile (protected)
-- `POST /api/upload` - Upload profile image/banner (protected)
+- `GET /api/profile` — Get profile (protected)
+- `PUT /api/profile` — Update profile (protected)
+- `POST /api/upload` — Upload image/banner (protected)
+
+### Signaling Server Endpoints
+- `GET /health` — Health check
+- `GET /ice` — Get ICE server configuration
+- `POST /cache-call` — Cache call room data (called by backend)
+- `POST /generate-call-token` — Generate call JWT
+- `WS /` — WebSocket connection for WebRTC signaling
 
 ## Database Models
 
-### User Model
-- Basic user information (name, email, username, password)
-- Role-based system (general, lawstudent, lawyer)
-- Profile customization (bio, location, profile image, banner)
-- Friends array for connections
+### User
+- Name, email, username, hashed password
+- Role: `general`, `lawstudent`, or `lawyer`
+- Profile image, banner, bio, location
+- Friends array
 
-### Role-Specific Models
-- **Lawyer**: Specialization, experience, pricing, availability
-- **LawStudent**: Academic information, mock trial participation
-- **GeneralUser**: Basic user information
+### Role-Specific
+- **Lawyer**: Specialization, experience, pricing, availability slots
+- **LawStudent**: Academic info, trial participation
+- **GeneralUser**: Basic user data
 
-### Quiz Models
-- **Category**: Quiz categories with slugs
-- **Question**: Questions with options, correct answer, and explanations
-- **QuizResult**: User quiz attempts with scores and answers
-- **UserQuizAttempt**: Detailed attempt tracking
+### Quiz
+- **Category**: Slug-based categories
+- **Question**: Options, correct answer, optional explanation
+- **QuizResult / UserQuizAttempt**: Score and answer tracking
 
-### Mock Trial Models
-- **MockTrialSituation**: Predefined trial scenarios
-- **MockTrial**: Active and completed trials with messages
-- Real-time messaging support
+### Mock Trial
+- **MockTrialSituation**: Predefined scenarios
+- **MockTrial**: Active/completed trials with embedded message history
 
-### Other Models
-- **Appointment**: Lawyer appointments with payment tracking
-- **FriendRequest**: Friend request management
-- **ChatHistory**: AI chatbot conversation history
+### Appointment
+- Linked user and lawyer
+- Payment status, Razorpay order/payment IDs
+- `callRoomId`, `callToken`, `participants` array, `maxParticipants`
+- Appointment time, duration, status
 
-## Key Features Explained
-
-### Authentication System
-The application uses JWT (JSON Web Tokens) for authentication. Upon successful login or signup, a token is generated and stored in localStorage. This token is sent with each protected API request in the Authorization header.
-
-### AI Chatbot
-The chatbot uses Google's Gemini 2.5 Flash API to provide legal assistance. Conversation history is maintained both in MongoDB for persistence and Redis for quick access. The system includes a specialized prompt for Indian law and automatically appends disclaimers to responses.
-
-### Mock Trial System
-Mock trials use a sophisticated matching system:
-1. Users select a situation and side (plaintiff/defendant)
-2. The system uses Redis queues to match opponents
-3. Once matched, a WebSocket connection is established
-4. Real-time messaging occurs during the trial
-5. Trials can be ended by either party or automatically after inactivity
-6. Post-trial analysis is available using AI
-
-### Quiz System
-The quiz system provides:
-- Randomized questions from selected categories
-- Performance tracking with detailed results
-- Explanation support for educational purposes
-- History tracking for progress monitoring
-- Caching for improved performance
-
-### Payment Integration
-Razorpay integration handles:
-- Payment order creation
-- Payment verification
-- Refund processing for cancellations
-- Secure payment handling with signature verification
-
-### Caching Strategy
-Redis is used extensively for:
-- Quiz question caching (2-minute TTL)
-- Mock trial category caching (10-minute TTL)
-- Conversation history caching (1-hour TTL)
-- Performance optimization for frequently accessed data
-
-## Development
-
-### Code Structure
-- **TypeScript**: Both frontend and backend use TypeScript for type safety
-- **Modular Architecture**: Controllers, services, and models are separated
-- **Middleware**: Authentication and rate limiting are handled via middleware
-- **Error Handling**: Comprehensive error handling throughout the application
-
-### Adding New Features
-
-1. **Backend**:
-   - Create model in `backend/src/models/`
-   - Create controller in `backend/src/controllers/`
-   - Create routes in `backend/src/routes/`
-   - Add route to `backend/src/index.ts`
-
-2. **Frontend**:
-   - Create component in `frontend/src/components/`
-   - Create page in `frontend/src/pages/`
-   - Add route in `frontend/src/App.tsx`
-   - Add API service in `frontend/src/services/`
-
-### Testing
-Currently, the project includes test files for API endpoints. To add more tests:
-- Create test files in appropriate directories
-- Use testing frameworks like Jest or Mocha
-- Test API endpoints, models, and utilities
+### Other
+- **FriendRequest**: Sender, receiver, status
+- **ChatHistory**: Per-user AI conversation history
 
 ## Deployment
 
-### Backend Deployment
-1. Build the TypeScript code: `npm run build`
-2. Set production environment variables
-3. Deploy to platforms like:
-   - Heroku
-   - Railway
-   - AWS EC2
-   - DigitalOcean
-   - Render
+### Current Setup
 
-### Frontend Deployment
-1. Build the production bundle: `npm run build`
-2. Deploy the `dist` folder to:
-   - Vercel (recommended for React apps)
-   - Netlify
-   - AWS S3 + CloudFront
-   - GitHub Pages
+| Service | Platform |
+|---|---|
+| Frontend | Vercel |
+| Backend (REST API) | Render |
+| Backend Signaling | Render (keep-alive via UptimeRobot) |
+| Redis | Upstash (free tier) |
 
-### Environment Setup for Production
-- Use secure, randomly generated JWT secrets
-- Enable HTTPS for all connections
-- Configure CORS properly for production domains
-- Set up proper MongoDB and Redis connections
-- Configure email service with production credentials
-- Set up monitoring and logging
+### Environment Variables for Production
+
+**Backend (Render)**
+- All variables from the development `.env`
+- `CLIENT_URL` — production Vercel URL
+- `SIGNALING_SERVER_URL` / `SIGNALING_WS_URL` — production signaling server URL
+
+**Signaling Server (Render)**
+- `JWT_SECRET` — must match backend
+- `REDIS_URL` — same Redis instance as backend
+- `FRONTEND_URL` — production Vercel URL
+
+**Frontend (Vercel)**
+- `VITE_API_URL` — production backend URL
+- `REACT_APP_RAZORPAY_KEY_ID`
+
+### Build Commands
+
+```bash
+# Backend
+npm run build
+npm start
+
+# Signaling server
+npm run build
+npm start
+
+# Frontend (Vercel handles this automatically)
+npm run build
+```
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
-
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes
+4. Push to the branch
 5. Open a Pull Request
 
-### Code Style
-- Follow TypeScript best practices
-- Use meaningful variable and function names
-- Add comments for complex logic
-- Maintain consistent code formatting
-- Follow the existing project structure
+Follow TypeScript best practices, use meaningful names, and maintain the existing project structure.
 
 ## License
 
 This project is licensed under the ISC License.
-
-## Support
-
-For issues, questions, or contributions, please open an issue on the GitHub repository.
-
-## Acknowledgments
-
-- Google Gemini API for AI capabilities
-- Razorpay for payment processing
-- Cloudinary for file storage
-- All open-source libraries and frameworks used in this project
-
----
-
-**Note**: This is a comprehensive legal platform. Ensure all legal disclaimers are properly displayed, and users are informed that AI-generated advice should be verified with qualified legal professionals.
-
