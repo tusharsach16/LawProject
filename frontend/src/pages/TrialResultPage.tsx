@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getMockTrialDetails } from '../services/authService'; 
+import { getMockTrialDetails, analyzeTrial } from '../services/authService';
 import { Scale, Trophy, Gavel, FileText, Loader2, ArrowLeft, Sparkles } from 'lucide-react';
 
 const TrialResultPage = () => {
@@ -8,30 +8,72 @@ const TrialResultPage = () => {
     const navigate = useNavigate();
     const [trialResult, setTrialResult] = useState<any>(null);
     const [loadingMessage, setLoadingMessage] = useState("Analyzing your trial, please wait...");
+    const analysisTriggered = useRef(false);
 
     useEffect(() => {
         if (!trialId) return;
 
-        const intervalId = setInterval(async () => {
+        const fetchAndAnalyze = async () => {
             try {
                 const data = await getMockTrialDetails(trialId);
-                
-                if (data.status === 'completed' || data.status === 'ended') {
-                    setTrialResult(data); 
-                    clearInterval(intervalId);
+                console.log("Trial details fetched:", data);
+
+                // Also handle 'left' status which was missing
+                if (data.status === 'completed' || data.status === 'ended' || data.status === 'left') {
+                    // Trigger analysis if it hasn't been done yet
+                    if (!data.judgementText && !analysisTriggered.current && data.status !== 'left') {
+                        console.log("Judgement missing, triggering analysis...");
+                        analysisTriggered.current = true;
+                        try {
+                            await analyzeTrial(trialId);
+                        } catch (err) {
+                            console.error("Failed to trigger analysis:", err);
+                        }
+                    }
+
+                    // If we have a judgement or it's a 'left' trial (which has an immediate winner), search is over
+                    if (data.judgementText || data.status === 'left') {
+                        setTrialResult(data);
+                        return true; // Stop polling
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching trial details:", error);
                 setLoadingMessage("Could not fetch results. Please check your dashboard.");
+                return true; // Stop polling
+            }
+            return false;
+        };
+
+        // Hold the interval ID in the synchronous scope so the cleanup
+        // function returned below can always cancel it, even if the component
+        // unmounts before the initial fetch resolves.
+        let intervalId: ReturnType<typeof setInterval> | undefined;
+
+        fetchAndAnalyze().then(shouldStop => {
+            if (shouldStop) return;
+
+            intervalId = setInterval(async () => {
+                const stop = await fetchAndAnalyze();
+                if (stop) {
+                    clearInterval(intervalId);
+                    intervalId = undefined;
+                }
+            }, 3000);
+        });
+
+        // This cleanup is returned synchronously, so React will always call it
+        // on unmount regardless of when (or whether) the promise resolved.
+        return () => {
+            if (intervalId !== undefined) {
                 clearInterval(intervalId);
             }
-        }, 3000); 
-
-        return () => clearInterval(intervalId);
+        };
 
     }, [trialId]);
 
     if (!trialResult) {
+        // ... (rest of the loading UI remains similar)
         return (
             <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
                 <div className="text-center">
@@ -56,14 +98,15 @@ const TrialResultPage = () => {
         );
     }
 
-    const isPlaintiffWinner = trialResult.winnerId === trialResult.plaintiffId;
+    const plaintiffIdStr = typeof trialResult.plaintiffId === 'object' ? trialResult.plaintiffId._id : trialResult.plaintiffId;
+    const isPlaintiffWinner = trialResult.winnerId === plaintiffIdStr;
     const winnerSide = isPlaintiffWinner ? 'Plaintiff' : 'Defendant';
     const winnerColor = isPlaintiffWinner ? 'from-slate-700 to-slate-900' : 'from-slate-800 to-slate-950';
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 sm:p-6 lg:p-8">
             <div className="max-w-4xl mx-auto">
-                <button 
+                <button
                     onClick={() => navigate(-1)}
                     className="mb-6 px-4 py-2 bg-white border-2 border-slate-200 rounded-xl text-slate-700 hover:border-amber-500/30 hover:shadow-md transition-all duration-300 flex items-center gap-2 font-semibold"
                 >
@@ -117,14 +160,14 @@ const TrialResultPage = () => {
                         </div>
 
                         <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                            <button 
+                            <button
                                 onClick={() => navigate('/dashboard/past-trials')}
                                 className="flex-1 px-6 py-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
                             >
                                 View All Trials
                                 <ArrowLeft className="h-5 w-5 rotate-180" />
                             </button>
-                            <button 
+                            <button
                                 onClick={() => navigate('/dashboard/mock-trials')}
                                 className="flex-1 px-6 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
                             >
