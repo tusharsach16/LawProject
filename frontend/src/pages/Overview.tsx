@@ -40,7 +40,7 @@ const Overview: React.FC = () => {
           getPastMockTrials(),
           getQuizCount(),
           getDetailedQuizResults(),
-          getRecentActivities(),
+          getRecentActivities(6),
           getQuizStatistics(),
           getMockTrialStatistics(),
         ]);

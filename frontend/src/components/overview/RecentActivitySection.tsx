@@ -41,37 +41,39 @@ const RecentActivitySection: React.FC<RecentActivitySectionProps> = ({
   }
 
   return (
-    <div className="lg:col-span-2">
-      <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 flex flex-col hover:shadow-xl hover:border-amber-500/30 transition-all duration-300">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-blue-600" />
-            Recent Activity
-          </h2>
-          <button onClick={() => navigate('/dashboard/all-activities')} className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 hover:gap-2 transition-all">
-            View All <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="space-y-4">
-          {recentActivities.length > 0 ? (
-            recentActivities.map((activity, index) => (
-              <ActivityItem
-                key={activity._id || index}
-                icon={getActivityIcon(activity.type)}
-                title={activity.title}
-                description={activity.description}
-                time={formatTime(activity.timestamp)}
-                status="completed"
-              />
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <Clock className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>No recent activity</p>
-              <p className="text-sm mt-1">Start using features to see your activity here</p>
-            </div>
-          )}
-        </div>
+    <div className="bg-white border-2 border-slate-200 rounded-2xl p-5 sm:p-6 flex flex-col h-full hover:shadow-xl hover:border-amber-500/30 transition-all duration-300">
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+          <Clock className="w-5 h-5 text-blue-600 shrink-0" />
+          Recent Activity
+        </h2>
+        <button
+          onClick={() => navigate('/dashboard/all-activities')}
+          className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 hover:gap-2 transition-all shrink-0"
+        >
+          View All <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="flex-1 divide-y divide-slate-100 -mx-1 px-1">
+        {recentActivities.length > 0 ? (
+          recentActivities.map((activity, index) => (
+            <ActivityItem
+              key={activity._id || index}
+              icon={getActivityIcon(activity.type)}
+              title={activity.title}
+              description={activity.description}
+              time={formatTime(activity.timestamp)}
+              status="completed"
+            />
+          ))
+        ) : (
+          <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+            <Clock className="w-12 h-12 mb-3 opacity-40" />
+            <p className="font-medium text-slate-500">No recent activity</p>
+            <p className="text-sm mt-1 text-center">Start using features to see your activity here</p>
+          </div>
+        )}
       </div>
     </div>
   )

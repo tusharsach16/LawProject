@@ -1,6 +1,6 @@
 import React from 'react'
 import { BarChart3, TrendingUp, TrendingDown, Award, Target } from 'lucide-react'
-import {XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts'
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts'
 
 interface QuizStatsProps {
   stats: {
@@ -21,7 +21,7 @@ interface QuizStatsProps {
 const QuizPerformanceCard: React.FC<QuizStatsProps> = ({ stats }) => {
   // Calculate trend
   const recentScores = stats.recentScores || []
-  const isImproving = recentScores.length >= 2 && 
+  const isImproving = recentScores.length >= 2 &&
     recentScores[recentScores.length - 1].score > recentScores[0].score
 
   // Format data for chart
@@ -32,15 +32,15 @@ const QuizPerformanceCard: React.FC<QuizStatsProps> = ({ stats }) => {
   }))
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600'
-    if (score >= 60) return 'text-yellow-600'
-    return 'text-red-600'
+    if (score >= 80) return 'text-teal-700'
+    if (score >= 60) return 'text-indigo-600'
+    return 'text-slate-600'
   }
 
   const getScoreBg = (score: number) => {
-    if (score >= 80) return 'bg-green-50'
-    if (score >= 60) return 'bg-yellow-50'
-    return 'bg-red-50'
+    if (score >= 80) return 'bg-teal-50'
+    if (score >= 60) return 'bg-indigo-50'
+    return 'bg-slate-100'
   }
 
   if (stats.totalAttempts === 0) {
@@ -82,28 +82,28 @@ const QuizPerformanceCard: React.FC<QuizStatsProps> = ({ stats }) => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className={`${getScoreBg(stats.averageScore)} rounded-xl p-3 border border-slate-200`}>
-          <div className="text-xs text-slate-600 mb-1">Average Score</div>
+      <div className="grid grid-cols-2 gap-3 mb-5">
+        <div className={`${getScoreBg(stats.averageScore)} rounded-xl p-3.5 border border-slate-200`}>
+          <div className="text-xs text-slate-500 mb-1 font-medium">Average Score</div>
           <div className={`text-2xl font-bold ${getScoreColor(stats.averageScore)}`}>
             {stats.averageScore}%
           </div>
         </div>
-        <div className="bg-blue-50 rounded-xl p-3 border border-slate-200">
-          <div className="text-xs text-slate-600 mb-1">Pass Rate</div>
-          <div className="text-2xl font-bold text-blue-600">
+        <div className="bg-indigo-50 rounded-xl p-3.5 border border-slate-200">
+          <div className="text-xs text-slate-500 mb-1 font-medium">Pass Rate</div>
+          <div className="text-2xl font-bold text-indigo-600">
             {stats.passRate}%
           </div>
         </div>
-        <div className="bg-green-50 rounded-xl p-3 border border-slate-200">
-          <div className="text-xs text-slate-600 mb-1">Best Score</div>
-          <div className="text-2xl font-bold text-green-600">
+        <div className="bg-teal-50 rounded-xl p-3.5 border border-slate-200">
+          <div className="text-xs text-slate-500 mb-1 font-medium">Best Score</div>
+          <div className="text-2xl font-bold text-teal-700">
             {stats.bestScore}%
           </div>
         </div>
-        <div className="bg-purple-50 rounded-xl p-3 border border-slate-200">
-          <div className="text-xs text-slate-600 mb-1">Total Quizzes</div>
-          <div className="text-2xl font-bold text-purple-600">
+        <div className="bg-slate-100 rounded-xl p-3.5 border border-slate-200">
+          <div className="text-xs text-slate-500 mb-1 font-medium">Total Quizzes</div>
+          <div className="text-2xl font-bold text-slate-700">
             {stats.totalAttempts}
           </div>
         </div>
@@ -111,40 +111,41 @@ const QuizPerformanceCard: React.FC<QuizStatsProps> = ({ stats }) => {
 
       {/* Chart */}
       {chartData.length > 0 && (
-        <div>
-          <div className="text-xs text-slate-600 mb-3 font-medium">Score Trend</div>
-          <ResponsiveContainer width="100%" height={180}>
+        <div className="mb-4">
+          <div className="text-xs text-slate-500 mb-2 font-medium">Score Trend</div>
+          <ResponsiveContainer width="100%" height={160}>
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis 
-                dataKey="name" 
-                tick={{ fontSize: 11 }}
-                stroke="#64748b"
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 10 }}
+                stroke="#94a3b8"
               />
-              <YAxis 
+              <YAxis
                 domain={[0, 100]}
-                tick={{ fontSize: 11 }}
-                stroke="#64748b"
+                tick={{ fontSize: 10 }}
+                stroke="#94a3b8"
+                width={28}
               />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'white', 
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'white',
                   border: '2px solid #e2e8f0',
                   borderRadius: '8px',
                   fontSize: '12px'
                 }}
               />
-              <Area 
-                type="monotone" 
-                dataKey="score" 
-                stroke="#3b82f6" 
-                strokeWidth={3}
+              <Area
+                type="monotone"
+                dataKey="score"
+                stroke="#6366f1"
+                strokeWidth={2.5}
                 fillOpacity={1}
                 fill="url(#colorScore)"
               />
@@ -154,15 +155,15 @@ const QuizPerformanceCard: React.FC<QuizStatsProps> = ({ stats }) => {
       )}
 
       {/* Quick Tip */}
-      <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
         <div className="flex items-start gap-2">
-          <Target className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-blue-900">
-            {stats.averageScore >= 80 
+          <Target className="w-4 h-4 text-indigo-600 mt-0.5 shrink-0" />
+          <p className="text-xs text-slate-700 leading-relaxed">
+            {stats.averageScore >= 80
               ? "Excellent work! Keep maintaining this performance."
-              : stats.averageScore >= 60 
-              ? "Good progress! Review weak areas to improve further."
-              : "Focus on understanding concepts. Review and practice more."}
+              : stats.averageScore >= 60
+                ? "Good progress! Review weak areas to improve further."
+                : "Focus on understanding concepts. Review and practice more."}
           </p>
         </div>
       </div>

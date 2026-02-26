@@ -16,23 +16,22 @@ export default function ActivityItem({ icon, title, description, time, status }:
   }
 
   return (
-    <div className="border-b border-gray-200 py-3 flex items-start gap-3">
-      <div className="mt-0.5">
+    <div className="py-3.5 flex items-start gap-3.5 first:pt-0 last:border-none">
+      <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 mt-0.5">
         {icon}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <div>
-            <p className="font-semibold text-gray-900">{title}</p>
-            <p className="text-sm text-gray-600 mt-1">{description}</p>
+          <div className="min-w-0">
+            <p className="font-semibold text-slate-900 truncate">{title}</p>
+            <p className="text-sm text-slate-500 mt-0.5 leading-snug line-clamp-2">{description}</p>
           </div>
-          <span className={`text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap ${getStatusColor(status)}`}>
+          <span className={`text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 ${getStatusColor(status)}`}>
             {status}
           </span>
         </div>
-        <span className="text-xs text-gray-500 mt-2 inline-block">{time}</span>
+        <span className="text-xs text-slate-400 mt-1.5 inline-block">{time}</span>
       </div>
     </div>
   );
 }
-  
