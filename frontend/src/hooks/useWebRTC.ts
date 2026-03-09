@@ -41,7 +41,8 @@ export interface UseWebRTCReturn {
     callDuration: number;
     localVideoRef: React.RefObject<HTMLVideoElement>;
     remoteStreams: Map<string, MediaStream>;
-    joinCall: (token: string) => Promise<void>;
+    /** Pass signalingUrl as the second argument to avoid the React-state race condition */
+    joinCall: (token: string, signalingUrl?: string) => Promise<void>;
     toggleMic: () => void;
     toggleCamera: () => void;
     leaveCall: () => void;
@@ -62,6 +63,8 @@ export function useWebRTC({
     const [isCameraEnabled, setIsCameraEnabled] = useState(true);
     const [callDuration, setCallDuration] = useState(0);
     const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(new Map());
+    // Tracks whether a local stream is ready so the useEffect can attach it to the video element
+    const [localStreamReady, setLocalStreamReady] = useState(false);
 
     // ── Refs ────────────────────────────────────────────────────────────────
     const wsRef = useRef<WebSocket | null>(null);
@@ -87,7 +90,9 @@ export function useWebRTC({
     }, []);
 
     // connectWebSocketRef allows attemptReconnect to always call the latest connectWebSocket
-    const connectWebSocketRef = useRef<(token: string) => void>(() => { });
+    const connectWebSocketRef = useRef<(token: string, url?: string) => void>(() => { });
+    // Stores the signaling URL actually used for this session (set at join time)
+    const activeSignalingUrlRef = useRef<string>(signalingUrl);
 
     // ── ICE Servers ──────────────────────────────────────────────────────────
     const fetchIceServers = useCallback(async (): Promise<RTCIceServer[]> => {
@@ -296,6 +301,7 @@ export function useWebRTC({
 
         localStreamRef.current?.getTracks().forEach((t) => t.stop());
         localStreamRef.current = null;
+        setLocalStreamReady(false);
 
         if (localVideoRef.current) localVideoRef.current.srcObject = null;
 
@@ -319,17 +325,22 @@ export function useWebRTC({
         reconnectTimerRef.current = setTimeout(() => {
             if (authTokenRef.current) {
                 // Always calls the latest version of connectWebSocket via ref
-                connectWebSocketRef.current(authTokenRef.current);
+                // Re-use the same URL that was used when the session started
+                connectWebSocketRef.current(authTokenRef.current, activeSignalingUrlRef.current);
             }
         }, delay);
     }, [setStatusSynced]);
 
     // ── WebSocket ────────────────────────────────────────────────────────────
     const connectWebSocket = useCallback(
-        (token: string) => {
+        (token: string, url?: string) => {
             if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
-            const ws = new WebSocket(signalingUrl);
+            // Use explicit url if provided (avoids stale closure on the signalingUrl prop)
+            const wsUrl = url ?? activeSignalingUrlRef.current;
+            activeSignalingUrlRef.current = wsUrl;
+
+            const ws = new WebSocket(wsUrl);
             wsRef.current = ws;
 
             ws.onopen = () => {
@@ -391,7 +402,11 @@ export function useWebRTC({
                         break;
 
                     case "peer_joined":
-                        if (statusRef.current === "waiting") setStatusSynced("connecting");
+                        // Bug fix: must initiate WebRTC offer to the newly joined peer
+                        if (statusRef.current === "waiting" || statusRef.current === "in-call") {
+                            setStatusSynced("connecting");
+                        }
+                        await initiateCallToPeer(msg.otherUserId);
                         break;
 
                     case "peer_disconnected": {
@@ -416,7 +431,6 @@ export function useWebRTC({
             };
         },
         [
-            signalingUrl,
             startHeartbeat,
             stopHeartbeat,
             attemptReconnect,
@@ -434,9 +448,18 @@ export function useWebRTC({
         connectWebSocketRef.current = connectWebSocket;
     }, [connectWebSocket]);
 
+    // ── Local video attachment effect ─────────────────────────────────────────
+    // Runs whenever localStreamReady flips true, which guarantees the <video>
+    // element is already in the DOM (loading spinner is gone by then).
+    useEffect(() => {
+        if (localStreamReady && localVideoRef.current && localStreamRef.current) {
+            localVideoRef.current.srcObject = localStreamRef.current;
+        }
+    }, [localStreamReady]);
+
     // ── Public API ───────────────────────────────────────────────────────────
     const joinCall = useCallback(
-        async (token: string) => {
+        async (token: string, overrideSignalingUrl?: string) => {
             setStatusSynced("acquiring-media");
             setErrorMessage("");
             authTokenRef.current = token;
@@ -448,11 +471,12 @@ export function useWebRTC({
                 });
 
                 localStreamRef.current = stream;
-                if (localVideoRef.current) {
-                    localVideoRef.current.srcObject = stream;
-                }
+                // Signal the effect above to attach the stream once the video element is mounted
+                setLocalStreamReady(true);
 
-                connectWebSocket(token);
+                // Use overrideSignalingUrl if provided (avoids React-state race condition)
+                const urlToUse = overrideSignalingUrl ?? signalingUrl;
+                connectWebSocket(token, urlToUse);
             } catch (err: unknown) {
                 const name = err instanceof Error ? err.name : "UnknownError";
                 setStatusSynced("error");
@@ -467,7 +491,7 @@ export function useWebRTC({
                 }
             }
         },
-        [connectWebSocket, setStatusSynced],
+        [connectWebSocket, setStatusSynced, signalingUrl],
     );
 
     const toggleMic = useCallback(() => {
