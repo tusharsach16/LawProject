@@ -38,6 +38,9 @@ export default defineConfig({
         manualChunks: {
           react: ["react", "react-dom"],
           router: ["react-router-dom"],
+          gsap: ["gsap"],
+          redux: ["redux", "@reduxjs/toolkit", "react-redux", "redux-persist"],
+          axios: ["axios"],
         },
       },
     },
