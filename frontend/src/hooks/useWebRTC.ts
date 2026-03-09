@@ -246,7 +246,9 @@ export function useWebRTC({
 
                 wsSend({ type: "answer", from: userIdRef.current, to: msg.from, sdp: answer });
                 setStatusSynced("in-call");
-            } catch { }
+            } catch (err) {
+                console.error("[WebRTC] handleOffer failed:", err);
+            }
         },
         [drainIceQueue, getOrCreatePc, wsSend, setStatusSynced],
     );
@@ -259,7 +261,9 @@ export function useWebRTC({
                 await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
                 await drainIceQueue(msg.from, pc);
                 setStatusSynced("in-call");
-            } catch { }
+            } catch (err) {
+                console.error("[WebRTC] handleAnswer failed:", err);
+            }
         },
         [drainIceQueue, setStatusSynced],
     );
@@ -285,7 +289,9 @@ export function useWebRTC({
                 const offer = await pc.createOffer();
                 await pc.setLocalDescription(offer);
                 wsSend({ type: "offer", from: userIdRef.current, to: peerId, sdp: offer });
-            } catch { }
+            } catch (err) {
+                console.error("[WebRTC] initiateCallToPeer failed:", err);
+            }
         },
         [getOrCreatePc, wsSend],
     );
@@ -402,11 +408,14 @@ export function useWebRTC({
                         break;
 
                     case "peer_joined":
-                        // Bug fix: must initiate WebRTC offer to the newly joined peer
+                        // Do NOT initiate an offer here — the new joiner sends the offer
+                        // via the "existing_participants" path. If both sides call
+                        // initiateCallToPeer simultaneously you get an SDP collision that
+                        // silently breaks the connection.
                         if (statusRef.current === "waiting" || statusRef.current === "in-call") {
                             setStatusSynced("connecting");
                         }
-                        await initiateCallToPeer(msg.otherUserId);
+                        // The new peer will send us an offer; we just wait for it.
                         break;
 
                     case "peer_disconnected": {

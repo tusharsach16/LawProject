@@ -101,12 +101,16 @@ export const VideoCall: React.FC = () => {
                     otherPartyRole: response.otherPartyRole,
                 });
 
-                // Use the URL returned by the backend (most authoritative source)
+                // Pass signalingUrl directly as the second arg to joinCall.
+                // Do NOT rely on setSignalingUrl + re-render — React state updates
+                // are async and the new value would NOT be available when joinCall
+                // runs in the same tick, causing it to connect to the stale URL.
+                const resolvedSignalingUrl = response.signalingUrl ?? signalingUrl;
                 if (response.signalingUrl) {
-                    setSignalingUrl(response.signalingUrl);
+                    setSignalingUrl(response.signalingUrl); // keep state in sync for reconnects
                 }
 
-                await joinCall(response.token);
+                await joinCall(response.token, resolvedSignalingUrl);
             } catch (error: unknown) {
                 console.error('Failed to join call:', error);
             } finally {
