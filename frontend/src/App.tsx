@@ -16,10 +16,10 @@ const ConnectWithLawyers = lazy(() => import("./pages/ConnectWithLawyers"));
 const ForgotPasswordFlow = lazy(() => import("./pages/ForgotPassword"));
 const VideoCall = lazy(() => import("./pages/VideoCall"));
 
-import TermsAndConditions from "./pages/legal/TermsAndConditions";
-import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
-import RefundPolicy from "./pages/legal/RefundPolicy";
-import ContactUs from "./pages/legal/ContactUs";
+const TermsAndConditions = lazy(() => import("./pages/legal/TermsAndConditions"));
+const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
+const RefundPolicy = lazy(() => import("./pages/legal/RefundPolicy"));
+const ContactUs = lazy(() => import("./pages/legal/ContactUs"));
 
 function App() {
   return (

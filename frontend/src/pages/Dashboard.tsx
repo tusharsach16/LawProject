@@ -5,7 +5,7 @@ import { fetchCurrentUser } from "../redux/slices/userSlice";
 import Header from "../components/dashboard/Header";
 import Sidebar from "../components/dashboard/Sidebar";
 import SearchBar from "../components/SearchBar";
-import FollowRequests from "./FollowRequests";
+const FollowRequests = lazy(() => import("./FollowRequests"));
 import { useNotifications } from "../hooks/useNotifications";
 
 const Overview = lazy(() => import("./Overview"));
