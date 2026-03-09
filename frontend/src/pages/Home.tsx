@@ -1,16 +1,21 @@
-import Featuresection from "../components/Featuresection"
-import Footer from "../components/Footer"
-import GetHelp from "../components/GetHelp"
+import { lazy, Suspense } from "react"
 import Herosection from "../components/Herosection"
-import Stats from "../components/Stats"
+import Footer from "../components/Footer"
+
+const Featuresection = lazy(() => import("../components/Featuresection"))
+const Stats = lazy(() => import("../components/Stats"))
+const GetHelp = lazy(() => import("../components/GetHelp"))
+
 const Home = () => {
   return (
     <>
-      <Herosection/>
-      <Featuresection/>
-      <Stats/>
-      <GetHelp/>
-      <Footer/>
+      <Herosection />
+      <Suspense fallback={null}>
+        <Featuresection />
+        <Stats />
+        <GetHelp />
+      </Suspense>
+      <Footer />
     </>
   )
 }
