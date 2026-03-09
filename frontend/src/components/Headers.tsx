@@ -1,50 +1,27 @@
 import { Link } from "react-router-dom";
 import { Scale, Menu, X } from "lucide-react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-import { useRef, useState } from "react";
-
-gsap.registerPlugin(ScrollTrigger);
+import { useState } from "react";
 
 const Header = () => {
-  const logoHeaderRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  useGSAP(() => {
-    const icon = document.getElementById("logo");
-    const wrapper = logoHeaderRef.current;
-    if (!icon || !wrapper) return;
-
-    const tl = gsap.timeline({ paused: true });
-    tl.to(icon, {
-      rotate: 12,
-      duration: 0.1,
-      ease: "power2.inOut",
-    });
-    const handleEnter = () => tl.play();
-    const handleLeave = () => tl.reverse();
-
-    wrapper.addEventListener("mouseenter", handleEnter);
-    wrapper.addEventListener("mouseleave", handleLeave);
-
-    return () => {
-      wrapper.removeEventListener("mouseenter", handleEnter);
-      wrapper.removeEventListener("mouseleave", handleLeave);
-    };
-  }, []);
-
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b-2 border-amber-500/20 shadow-2xl">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         {/* Logo */}
-        <div ref={logoHeaderRef} className="flex items-center gap-3 cursor-pointer">
+        <div className="flex items-center gap-3 cursor-pointer group">
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-2 rounded-xl shadow-lg border border-slate-700">
-            <Scale id="logo" className="h-6 w-6 text-white" strokeWidth={2.5} />
+            <Scale
+              id="logo"
+              className="h-6 w-6 text-white group-hover:rotate-12 transition-transform duration-100"
+              strokeWidth={2.5}
+            />
           </div>
-          <Link to="/" className="text-xl font-bold text-amber-400 tracking-tight hover:text-amber-300 transition-colors duration-300">
+          <Link
+            to="/"
+            className="text-xl font-bold text-amber-400 tracking-tight hover:text-amber-300 transition-colors duration-300"
+          >
             Nyay Setu
           </Link>
         </div>
