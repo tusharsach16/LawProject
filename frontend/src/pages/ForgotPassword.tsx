@@ -17,7 +17,7 @@ const ForgotPasswordStep = ({ onNext, email, setEmail }: ForgotPasswordStepProps
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
       toast.show('Please enter your email address', 'error');
       return;
@@ -107,7 +107,7 @@ const ForgotPasswordStep = ({ onNext, email, setEmail }: ForgotPasswordStepProps
 
 // Step 2: Verify OTP
 type VerifyOTPStepProps = {
-  onNext: () => void;
+  onNext: (resetToken: string) => void;
   email: string;
   otp: string;
   setOtp: (value: string) => void;
@@ -147,7 +147,7 @@ const VerifyOTPStep = ({ onNext, email, otp, setOtp }: VerifyOTPStepProps) => {
 
       if (response.ok) {
         toast.show('OTP verified successfully!', 'success');
-        setTimeout(() => onNext(), 1000);
+        setTimeout(() => onNext(data.resetToken as string), 1000);
       } else {
         toast.show(data.message || 'Invalid OTP', 'error');
       }
@@ -261,8 +261,9 @@ const VerifyOTPStep = ({ onNext, email, otp, setOtp }: VerifyOTPStepProps) => {
 // Main Component - ForgotPassword (default export)
 const ForgotPassword = () => {
   const [step, setStep] = useState(1);
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [resetToken, setResetToken] = useState('');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 flex items-center justify-center p-4 relative">
@@ -271,8 +272,15 @@ const ForgotPassword = () => {
 
       <div className="relative z-10 w-full flex items-center justify-center">
         {step === 1 && <ForgotPasswordStep onNext={() => setStep(2)} email={email} setEmail={setEmail} />}
-        {step === 2 && <VerifyOTPStep onNext={() => setStep(3)} email={email} otp={otp} setOtp={setOtp} />}
-        {step === 3 && <ResetPasswordStep email={email} otp={otp} />}
+        {step === 2 && (
+          <VerifyOTPStep
+            onNext={(token) => { setResetToken(token); setStep(3); }}
+            email={email}
+            otp={otp}
+            setOtp={setOtp}
+          />
+        )}
+        {step === 3 && <ResetPasswordStep resetToken={resetToken} />}
       </div>
     </div>
   );

@@ -4,11 +4,10 @@ import { useToast } from "../components/useToast";
 const API = import.meta.env.VITE_API_URL;
 
 type ResetPasswordStepProps = {
-  email: string;
-  otp: string;
+  resetToken: string;
 };
 
-const ResetPasswordStep = ({ email, otp }: ResetPasswordStepProps) => {
+const ResetPasswordStep = ({ resetToken }: ResetPasswordStepProps) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +33,7 @@ const ResetPasswordStep = ({ email, otp }: ResetPasswordStepProps) => {
       const response = await fetch(`${API}/api/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp, newPassword }),
+        body: JSON.stringify({ resetToken, newPassword }),
       });
 
       const data = await response.json();
