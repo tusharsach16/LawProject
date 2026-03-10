@@ -7,6 +7,7 @@ import {
     MicOff,
     PhoneOff,
     LogOut,
+    RotateCcw,
     Loader2,
     AlertCircle,
     Clock,
@@ -68,6 +69,7 @@ export const VideoCall: React.FC = () => {
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(true);
+    const [hasLeft, setHasLeft] = useState(false);
     const [callInfo, setCallInfo] = useState<{
         otherPartyName?: string;
         otherPartyRole?: string;
@@ -94,53 +96,60 @@ export const VideoCall: React.FC = () => {
         toggleCamera,
         leaveCall,
     } = useWebRTC({
-        // Only pass signalingUrl once we have it; hook internally handles reconnect
         signalingUrl: signalingUrl ?? 'wss://your-signaling-server.com',
     });
+
+    // Lifted out so both initial mount and Rejoin button can call it
+    const initCall = useCallback(async () => {
+        if (!appointmentId) return;
+        try {
+            setLoading(true);
+            setHasLeft(false);
+            const response = await generateCallToken(appointmentId);
+
+            setCallInfo({
+                otherPartyName: response.otherPartyName,
+                otherPartyRole: response.otherPartyRole,
+            });
+
+            const resolvedSignalingUrl = response.signalingUrl ?? signalingUrl;
+            if (response.signalingUrl) {
+                setSignalingUrl(response.signalingUrl);
+            }
+
+            await joinCall(response.token, resolvedSignalingUrl);
+        } catch (error: unknown) {
+            console.error('Failed to join call:', error);
+        } finally {
+            setLoading(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [appointmentId, joinCall]);
 
     useEffect(() => {
         if (!appointmentId) {
             navigate('/dashboard');
             return;
         }
-
-        const initCall = async () => {
-            try {
-                setLoading(true);
-                const response = await generateCallToken(appointmentId);
-
-                setCallInfo({
-                    otherPartyName: response.otherPartyName,
-                    otherPartyRole: response.otherPartyRole,
-                });
-
-                // Pass signalingUrl directly as the second arg to joinCall.
-                // Do NOT rely on setSignalingUrl + re-render — React state updates
-                // are async and the new value would NOT be available when joinCall
-                // runs in the same tick, causing it to connect to the stale URL.
-                const resolvedSignalingUrl = response.signalingUrl ?? signalingUrl;
-                if (response.signalingUrl) {
-                    setSignalingUrl(response.signalingUrl); // keep state in sync for reconnects
-                }
-
-                await joinCall(response.token, resolvedSignalingUrl);
-            } catch (error: unknown) {
-                console.error('Failed to join call:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         initCall();
-
-        // leaveCall is handled internally by useWebRTC's own cleanup effect on unmount.
-        // Do NOT call leaveCall here to avoid a double-cleanup.
+        // leaveCall cleanup handled by useWebRTC unmount effect
     }, [appointmentId, navigate]);
 
-    // Leave call: just disconnect, don't mark as completed — allows rejoin
+    // Leave call: disconnect but keep appointment scheduled → allows rejoin
     const handleLeaveCall = () => {
         leaveCall();
-        navigate(isLawyer ? '/dashboard/appointments' : '/dashboard/user-appointments');
+        setHasLeft(true); // show the Rejoin screen instead of navigating away
+    };
+
+    // Rejoin: clean up current session then re-init
+    const handleRejoin = () => {
+        leaveCall(); // ensure previous session is fully torn down
+        initCall();
+    };
+
+    // Go back to dashboard after leaving
+    const handleGoToDashboard = () => {
+        navigate(isLawyer ? '/lawyer-dashboard/appointments' : '/dashboard/user-appointments');
     };
 
     // End call (lawyer only): mark as completed then disconnect — prevents rejoin
@@ -167,6 +176,42 @@ export const VideoCall: React.FC = () => {
         );
     }
 
+    // "You left" interstitial — shown after Leave; lets the user rejoin instantly
+    if (hasLeft) {
+        return (
+            <div className="fixed inset-0 bg-slate-900 flex items-center justify-center p-4">
+                <div className="bg-slate-800 rounded-2xl p-8 max-w-md w-full text-center border border-slate-700 shadow-2xl">
+                    <div className="w-20 h-20 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <LogOut className="w-10 h-10 text-amber-400" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">You left the call</h2>
+                    <p className="text-slate-400 mb-8">
+                        The session is still active.
+                        {callInfo.otherPartyName && (
+                            <span className="text-slate-300 font-medium"> {callInfo.otherPartyName} </span>
+                        )}
+                        {callInfo.otherPartyName ? 'may still be waiting.' : 'You can rejoin any time before the slot ends.'}
+                    </p>
+                    <div className="flex flex-col gap-3">
+                        <button
+                            onClick={handleRejoin}
+                            className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl font-semibold transition-all shadow-lg shadow-green-500/30"
+                        >
+                            <RotateCcw className="w-5 h-5" />
+                            Rejoin Call
+                        </button>
+                        <button
+                            onClick={handleGoToDashboard}
+                            className="w-full px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl font-medium transition-colors"
+                        >
+                            Go to Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     if (status === 'error') {
         return (
             <div className="fixed inset-0 bg-slate-900 flex items-center justify-center p-4">
@@ -177,7 +222,7 @@ export const VideoCall: React.FC = () => {
                     <h2 className="text-2xl font-bold text-slate-900 mb-2">Call Error</h2>
                     <p className="text-slate-600 mb-6">{errorMessage}</p>
                     <button
-                        onClick={() => navigate('/dashboard/appointments')}
+                        onClick={handleGoToDashboard}
                         className="w-full px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium"
                     >
                         Back to Appointments
