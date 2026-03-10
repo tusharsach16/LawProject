@@ -89,6 +89,7 @@ const UserAppointmentCard: React.FC<UserAppointmentCardProps> = ({
                             <JoinCallButton
                                 appointmentId={appointment._id}
                                 appointmentTime={appointment.appointmentTime}
+                                duration={appointment.duration}
                                 callRoomId={appointment.callRoomId}
                                 paymentStatus={appointment.paymentStatus}
                                 appointmentStatus={appointment.appointmentStatus}

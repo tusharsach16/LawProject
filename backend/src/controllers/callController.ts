@@ -123,8 +123,10 @@ export const generateCallToken = async (
 
         const now = new Date();
         const apptTime = new Date(appointment.appointmentTime);
-        const windowOpen = new Date(apptTime.getTime() - 15 * 60_000);
-        const windowClose = new Date(apptTime.getTime() + 2 * 60 * 60_000);
+        const durationMs = (appointment.duration ?? 30) * 60_000;
+        // Window opens exactly at appointment start time (no early entry)
+        const windowOpen = apptTime;
+        const windowClose = new Date(apptTime.getTime() + durationMs);
 
         if (now < windowOpen) {
             const minutesUntil = Math.ceil(

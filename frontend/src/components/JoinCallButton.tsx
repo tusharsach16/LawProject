@@ -1,75 +1,85 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Video, Clock } from 'lucide-react';
+import { Video, Clock, Lock } from 'lucide-react';
 
 interface JoinCallButtonProps {
     appointmentId: string;
     appointmentTime: string | Date;
+    duration: number; // in minutes
     callRoomId: string;
     paymentStatus: string;
     appointmentStatus: string;
 }
 
+function getWindowBounds(appointmentTime: string | Date, duration: number) {
+    const start = new Date(appointmentTime).getTime();
+    const end = start + duration * 60 * 1000;
+    return { start, end };
+}
+
 export const JoinCallButton: React.FC<JoinCallButtonProps> = ({
     appointmentId,
     appointmentTime,
-    callRoomId: _callRoomId,
+    duration,
     paymentStatus,
     appointmentStatus,
 }) => {
     const navigate = useNavigate();
+    const [now, setNow] = useState(Date.now());
 
-    // Check if call is available (15 min before to 2 hours after appointment)
-    const now = new Date();
-    const appointmentDate = new Date(appointmentTime);
-    const fifteenMinBefore = new Date(appointmentDate.getTime() - 15 * 60 * 1000);
-    const twoHoursAfter = new Date(appointmentDate.getTime() + 2 * 60 * 60 * 1000);
+    // Re-evaluate every second so the button activates exactly on time
+    useEffect(() => {
+        const id = setInterval(() => setNow(Date.now()), 1000);
+        return () => clearInterval(id);
+    }, []);
 
-    const isCallAvailable =
-        now >= fifteenMinBefore &&
-        now <= twoHoursAfter &&
-        paymentStatus === 'paid' &&
-        appointmentStatus === 'scheduled';
+    if (paymentStatus !== 'paid' || appointmentStatus !== 'scheduled') return null;
 
-    const isUpcoming = now < fifteenMinBefore;
-    const isExpired = now > twoHoursAfter;
+    const { start, end } = getWindowBounds(appointmentTime, duration);
 
-    const handleJoinCall = () => {
-        navigate(`/video-call/${appointmentId}`);
-    };
+    // Window has expired → hide the button entirely
+    if (now > end) return null;
 
-    if (isExpired || appointmentStatus === 'completed' || appointmentStatus === 'cancelled') {
-        return null;
-    }
+    // Window not yet open → show countdown
+    if (now < start) {
+        const msLeft = start - now;
+        const totalSeconds = Math.ceil(msLeft / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
 
-    if (isUpcoming) {
-        const minutesUntil = Math.floor((fifteenMinBefore.getTime() - now.getTime()) / (1000 * 60));
-        const hoursUntil = Math.floor(minutesUntil / 60);
-        const remainingMinutes = minutesUntil % 60;
+        const parts: string[] = [];
+        if (hours > 0) parts.push(`${hours}h`);
+        if (minutes > 0 || hours > 0) parts.push(`${minutes}m`);
+        parts.push(`${seconds}s`);
 
         return (
-            <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm">
-                <Clock className="w-4 h-4" />
-                <span>
-                    Available in {hoursUntil > 0 ? `${hoursUntil}h ` : ''}{remainingMinutes}m
-                </span>
+            <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-500 rounded-lg text-sm select-none">
+                <Lock className="w-4 h-4" />
+                <span>Opens in {parts.join(' ')}</span>
             </div>
         );
     }
 
-    if (isCallAvailable) {
-        return (
+    // Window is open → active join button
+    const msRemaining = end - now;
+    const minutesLeft = Math.floor(msRemaining / 60000);
+
+    return (
+        <div className="flex flex-col items-start gap-1">
             <button
-                onClick={handleJoinCall}
+                onClick={() => navigate(`/video-call/${appointmentId}`)}
                 className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-medium transition-all shadow-lg shadow-green-500/30 hover:shadow-green-500/50"
             >
                 <Video className="w-5 h-5" />
                 <span>Join Video Call</span>
             </button>
-        );
-    }
-
-    return null;
+            <span className="flex items-center gap-1 text-xs text-slate-400 pl-1">
+                <Clock className="w-3 h-3" />
+                {minutesLeft > 0 ? `${minutesLeft}m remaining` : 'Ending soon'}
+            </span>
+        </div>
+    );
 };
 
 export default JoinCallButton;

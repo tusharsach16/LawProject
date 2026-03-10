@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Video,
@@ -6,6 +6,7 @@ import {
     Mic,
     MicOff,
     PhoneOff,
+    LogOut,
     Loader2,
     AlertCircle,
     Clock,
@@ -27,18 +28,21 @@ const formatDuration = (seconds: number): string => {
 };
 
 const RemoteVideo: React.FC<{ peerId: string; stream: MediaStream }> = ({ peerId, stream }) => {
-    const videoRef = useRef<HTMLVideoElement>(null);
-
-    useEffect(() => {
-        if (videoRef.current && stream) {
-            videoRef.current.srcObject = stream;
-        }
-    }, [stream]);
+    // Use a ref-callback so srcObject is always assigned whether the element
+    // mounts before or after the stream becomes available.
+    const attachStream = useCallback(
+        (el: HTMLVideoElement | null) => {
+            if (el && stream) {
+                el.srcObject = stream;
+            }
+        },
+        [stream],
+    );
 
     return (
         <div className="relative bg-slate-800 rounded-2xl overflow-hidden shadow-2xl aspect-video">
             <video
-                ref={videoRef}
+                ref={attachStream}
                 autoPlay
                 playsInline
                 className="w-full h-full object-cover"
@@ -62,6 +66,9 @@ export const VideoCall: React.FC = () => {
         otherPartyName?: string;
         otherPartyRole?: string;
     }>({});
+
+    // Derived: if the other party is 'client', I am the lawyer
+    const isLawyer = callInfo.otherPartyRole === 'client';
 
     // signalingUrl is set from the backend-returned value after generateCallToken
     const [signalingUrl, setSignalingUrl] = useState(
@@ -124,14 +131,21 @@ export const VideoCall: React.FC = () => {
         // Do NOT call leaveCall here to avoid a double-cleanup.
     }, [appointmentId, navigate]);
 
-    const handleLeaveCall = async () => {
+    // Leave call: just disconnect, don't mark as completed — allows rejoin
+    const handleLeaveCall = () => {
+        leaveCall();
+        navigate(isLawyer ? '/dashboard/appointments' : '/dashboard/user-appointments');
+    };
+
+    // End call (lawyer only): mark as completed then disconnect — prevents rejoin
+    const handleEndCall = async () => {
         try {
             await markCallCompleted(appointmentId!, callDuration);
         } catch (error) {
             console.error('Failed to mark call as completed:', error);
         } finally {
             leaveCall();
-            navigate('/dashboard/user-appointments');
+            navigate('/dashboard/appointments');
         }
     };
 
@@ -281,8 +295,8 @@ export const VideoCall: React.FC = () => {
                 <button
                     onClick={toggleMic}
                     className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isMicEnabled
-                        ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                        : 'bg-red-500 hover:bg-red-600 text-white'
+                            ? 'bg-slate-700 hover:bg-slate-600 text-white'
+                            : 'bg-red-500 hover:bg-red-600 text-white'
                         }`}
                     title={isMicEnabled ? 'Mute microphone' : 'Unmute microphone'}
                 >
@@ -292,21 +306,39 @@ export const VideoCall: React.FC = () => {
                 <button
                     onClick={toggleCamera}
                     className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isCameraEnabled
-                        ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                        : 'bg-red-500 hover:bg-red-600 text-white'
+                            ? 'bg-slate-700 hover:bg-slate-600 text-white'
+                            : 'bg-red-500 hover:bg-red-600 text-white'
                         }`}
                     title={isCameraEnabled ? 'Turn off camera' : 'Turn on camera'}
                 >
                     {isCameraEnabled ? <Video className="w-6 h-6" /> : <VideoOff className="w-6 h-6" />}
                 </button>
 
-                <button
-                    onClick={handleLeaveCall}
-                    className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-all"
-                    title="End call"
-                >
-                    <PhoneOff className="w-6 h-6 text-white" />
-                </button>
+                {/* Leave Call — available to everyone; does NOT mark completed */}
+                <div className="flex flex-col items-center gap-1">
+                    <button
+                        onClick={handleLeaveCall}
+                        className="w-14 h-14 rounded-full bg-amber-500 hover:bg-amber-600 flex items-center justify-center transition-all"
+                        title="Leave call (you can rejoin)"
+                    >
+                        <LogOut className="w-6 h-6 text-white" />
+                    </button>
+                    <span className="text-xs text-slate-400">Leave</span>
+                </div>
+
+                {/* End Call — lawyer only; marks appointment as completed */}
+                {isLawyer && (
+                    <div className="flex flex-col items-center gap-1">
+                        <button
+                            onClick={handleEndCall}
+                            className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-all"
+                            title="End call for everyone"
+                        >
+                            <PhoneOff className="w-6 h-6 text-white" />
+                        </button>
+                        <span className="text-xs text-red-400">End</span>
+                    </div>
+                )}
             </div>
 
             <style>{`
