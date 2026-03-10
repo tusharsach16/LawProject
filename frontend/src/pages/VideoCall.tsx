@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Video,
@@ -295,8 +295,8 @@ export const VideoCall: React.FC = () => {
                 <button
                     onClick={toggleMic}
                     className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isMicEnabled
-                            ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                            : 'bg-red-500 hover:bg-red-600 text-white'
+                        ? 'bg-slate-700 hover:bg-slate-600 text-white'
+                        : 'bg-red-500 hover:bg-red-600 text-white'
                         }`}
                     title={isMicEnabled ? 'Mute microphone' : 'Unmute microphone'}
                 >
@@ -306,8 +306,8 @@ export const VideoCall: React.FC = () => {
                 <button
                     onClick={toggleCamera}
                     className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isCameraEnabled
-                            ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                            : 'bg-red-500 hover:bg-red-600 text-white'
+                        ? 'bg-slate-700 hover:bg-slate-600 text-white'
+                        : 'bg-red-500 hover:bg-red-600 text-white'
                         }`}
                     title={isCameraEnabled ? 'Turn off camera' : 'Turn on camera'}
                 >
