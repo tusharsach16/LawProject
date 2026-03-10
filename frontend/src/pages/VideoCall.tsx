@@ -30,10 +30,16 @@ const formatDuration = (seconds: number): string => {
 const RemoteVideo: React.FC<{ peerId: string; stream: MediaStream }> = ({ peerId, stream }) => {
     // Use a ref-callback so srcObject is always assigned whether the element
     // mounts before or after the stream becomes available.
+    // A new stream reference (from ontrack) causes useCallback to return a new
+    // function → React re-fires the callback → srcObject + play() are updated.
     const attachStream = useCallback(
         (el: HTMLVideoElement | null) => {
             if (el && stream) {
                 el.srcObject = stream;
+                // Explicit play() — required on some browsers / mobile Safari
+                el.play().catch(() => {
+                    // Autoplay blocked; user interaction will trigger play
+                });
             }
         },
         [stream],
@@ -145,7 +151,8 @@ export const VideoCall: React.FC = () => {
             console.error('Failed to mark call as completed:', error);
         } finally {
             leaveCall();
-            navigate('/dashboard/appointments');
+            // Lawyer lives under /lawyer-dashboard, user under /dashboard
+            navigate('/lawyer-dashboard/appointments');
         }
     };
 

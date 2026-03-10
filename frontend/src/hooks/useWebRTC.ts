@@ -72,6 +72,9 @@ export function useWebRTC({
     const localVideoRef = useRef<HTMLVideoElement | null>(null);
     const pcsRef = useRef<Map<string, RTCPeerConnection>>(new Map());
     const iceQueuesRef = useRef<Map<string, RTCIceCandidateInit[]>>(new Map());
+    // Accumulates remote tracks per peer so we can build a fresh MediaStream
+    // snapshot on each ontrack event (giving React a new reference each time)
+    const remoteTracksRef = useRef<Map<string, MediaStreamTrack[]>>(new Map());
     const authTokenRef = useRef<string | null>(null);
     const userIdRef = useRef<string | null>(null);
     const callRoomIdRef = useRef<string | null>(null);
@@ -192,8 +195,19 @@ export function useWebRTC({
             });
 
             pc.ontrack = (ev) => {
-                const [stream] = ev.streams;
-                if (stream) setRemoteStream(peerId, stream);
+                // Accumulate tracks per peer so audio + video both appear.
+                // Build a brand-new MediaStream snapshot each time so React
+                // sees a different object reference and re-fires the ref callback.
+                const existing = remoteTracksRef.current.get(peerId) ?? [];
+                const incoming = ev.track;
+                // Insert if not already tracked (avoid duplicates on reconnect)
+                if (!existing.find(t => t.id === incoming.id)) {
+                    existing.push(incoming);
+                }
+                remoteTracksRef.current.set(peerId, existing);
+                // Create a fresh MediaStream snapshot from current tracks
+                const snapshot = new MediaStream(existing);
+                setRemoteStream(peerId, snapshot);
             };
 
             pc.onicecandidate = (ev) => {
@@ -215,6 +229,7 @@ export function useWebRTC({
                     pc.restartIce();
                 } else if (state === "closed") {
                     setRemoteStream(peerId, null);
+                    remoteTracksRef.current.delete(peerId);
                     pcsRef.current.delete(peerId);
                     if (pcsRef.current.size === 0) setStatusSynced("waiting");
                 }
@@ -304,6 +319,7 @@ export function useWebRTC({
         pcsRef.current.forEach((pc) => pc.close());
         pcsRef.current.clear();
         iceQueuesRef.current.clear();
+        remoteTracksRef.current.clear();
 
         localStreamRef.current?.getTracks().forEach((t) => t.stop());
         localStreamRef.current = null;
@@ -422,6 +438,7 @@ export function useWebRTC({
                         const { userId } = msg;
                         const pc = pcsRef.current.get(userId);
                         if (pc) { pc.close(); pcsRef.current.delete(userId); }
+                        remoteTracksRef.current.delete(userId);
                         setRemoteStream(userId, null);
                         if (pcsRef.current.size === 0) setStatusSynced("waiting");
                         break;
