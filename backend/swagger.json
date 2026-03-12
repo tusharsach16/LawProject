@@ -1,0 +1,1508 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "NyaySetu API",
+    "version": "1.0.0",
+    "description": "Backend REST API for the NyaySetu legal services platform"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local development"
+    },
+    {
+      "url": "https://your-production-url.com",
+      "description": "Production"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token from login/signup response"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "60d0fe4f5311236168a109ca"
+          },
+          "name": {
+            "type": "string",
+            "example": "Rahul"
+          },
+          "lastname": {
+            "type": "string",
+            "example": "Sharma"
+          },
+          "username": {
+            "type": "string",
+            "example": "rahuls"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "general",
+              "lawstudent",
+              "lawyer"
+            ]
+          },
+          "bio": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "profileImageUrl": {
+            "type": "string"
+          },
+          "bannerImageUrl": {
+            "type": "string"
+          },
+          "friends": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Appointment": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "lawyerId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "appointmentTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          },
+          "paymentStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "paid",
+              "failed",
+              "refunded"
+            ]
+          },
+          "appointmentStatus": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "cancelled",
+              "completed"
+            ]
+          },
+          "callRoomId": {
+            "type": "string"
+          },
+          "razorpayOrderId": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Something went wrong"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/appointments/create-order": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Create a Razorpay payment order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "lawyerId",
+                  "appointmentTime",
+                  "duration",
+                  "price"
+                ],
+                "properties": {
+                  "lawyerId": {
+                    "type": "string"
+                  },
+                  "appointmentTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "duration": {
+                    "type": "number",
+                    "example": 30
+                  },
+                  "price": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created"
+          }
+        }
+      }
+    },
+    "/api/appointments/verify-payment": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Verify Razorpay payment signature",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "razorpay_order_id",
+                  "razorpay_payment_id",
+                  "razorpay_signature",
+                  "appointmentId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment verified"
+          }
+        }
+      }
+    },
+    "/api/appointments/cancel": {
+      "post": {
+        "tags": [
+          "Appointments"
+        ],
+        "summary": "Cancel a scheduled appointment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "appointmentId",
+                  "reason"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Appointment cancelled"
+          }
+        }
+      }
+    },
+    "/api/appointments/available-slots": {
+      "get": {
+        "tags": [
+          "Lawyer Availability"
+        ],
+        "summary": "Get available slots for a lawyer on a specific date",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lawyerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of time slots"
+          }
+        }
+      }
+    },
+    "/api/appointments/lawyer/availability": {
+      "post": {
+        "tags": [
+          "Lawyer Availability"
+        ],
+        "summary": "Set or update lawyer availability slots",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Availability updated"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Lawyer Availability"
+        ],
+        "summary": "Get lawyer schedule",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Availability data"
+          }
+        }
+      }
+    },
+    "/api/appointments/lawyer/appointments": {
+      "get": {
+        "tags": [
+          "Appointments"
+        ],
+        "summary": "Get all appointments for the logged-in lawyer",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of appointments"
+          }
+        }
+      }
+    },
+    "/api/appointments/lawyer/stats": {
+      "get": {
+        "tags": [
+          "Appointments"
+        ],
+        "summary": "Get summary statistics for lawyer appointments",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stats data"
+          }
+        }
+      }
+    },
+    "/api/appointments/user/appointments": {
+      "get": {
+        "tags": [
+          "Appointments"
+        ],
+        "summary": "Get all appointments for the logged-in user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of appointments"
+          }
+        }
+      }
+    },
+    "/api/appointments/pending": {
+      "get": {
+        "tags": [
+          "Appointments"
+        ],
+        "summary": "Get pending/unpaid appointments",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of pending appointments"
+          }
+        }
+      }
+    },
+    "/api/appointments/generate-call-token": {
+      "post": {
+        "tags": [
+          "Video Calls"
+        ],
+        "summary": "Generate authentication token for a video callroom",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "appointmentId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Call token and room details"
+          }
+        }
+      }
+    },
+    "/api/appointments/verify-call-access/{callRoomId}": {
+      "get": {
+        "tags": [
+          "Video Calls"
+        ],
+        "summary": "Verify if user has access to a specific call room",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "callRoomId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Access granted"
+          }
+        }
+      }
+    },
+    "/api/appointments/mark-call-completed": {
+      "post": {
+        "tags": [
+          "Video Calls"
+        ],
+        "summary": "Mark a call as finished and update session duration",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Call updated"
+          }
+        }
+      }
+    },
+    "/api/appointments/add-participant": {
+      "post": {
+        "tags": [
+          "Video Calls"
+        ],
+        "summary": "Log participant joining call",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Participant added"
+          }
+        }
+      }
+    },
+    "/api/appointments/remove-participant": {
+      "post": {
+        "tags": [
+          "Video Calls"
+        ],
+        "summary": "Log participant leaving call",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Participant removed"
+          }
+        }
+      }
+    },
+    "/api/signup": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "username",
+                  "email",
+                  "phoneNumber",
+                  "password",
+                  "role"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "general",
+                      "lawstudent",
+                      "lawyer"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Sign in user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/api/get": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Get current authenticated user details",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/forgot-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Send OTP for password recovery",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP sent"
+          }
+        }
+      }
+    },
+    "/api/verify-otp": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Verify recovery OTP",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "otp"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "otp": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP verified"
+          }
+        }
+      }
+    },
+    "/api/reset-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Set new password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successful"
+          }
+        }
+      }
+    },
+    "/api/chat": {
+      "post": {
+        "tags": [
+          "Chatbot"
+        ],
+        "summary": "Send a message to the AI chatbot",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "message"
+                ],
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI response"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Chatbot"
+        ],
+        "summary": "Retrieve chat history for the user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of previous messages"
+          }
+        }
+      }
+    },
+    "/apiFriend/sendfriendRequest": {
+      "post": {
+        "tags": [
+          "Friends"
+        ],
+        "summary": "Send a friend request to another user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "recipientId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Request sent"
+          }
+        }
+      }
+    },
+    "/apiFriend/respondRequest": {
+      "post": {
+        "tags": [
+          "Friends"
+        ],
+        "summary": "Accept or reject a friend request",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestId",
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "rejected"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response recorded"
+          }
+        }
+      }
+    },
+    "/apiFriend/getRequest": {
+      "get": {
+        "tags": [
+          "Friends"
+        ],
+        "summary": "Get all pending friend requests for the user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of requests"
+          }
+        }
+      }
+    },
+    "/apiFriend/getFriends": {
+      "get": {
+        "tags": [
+          "Friends"
+        ],
+        "summary": "Get user's friend list",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of friends"
+          }
+        }
+      }
+    },
+    "/apiFriend/removeFriend": {
+      "post": {
+        "tags": [
+          "Friends"
+        ],
+        "summary": "Remove a friend from the user's friend list",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Friend removed"
+          }
+        }
+      }
+    },
+    "/apiFriend/profile/{username}": {
+      "get": {
+        "tags": [
+          "Friends"
+        ],
+        "summary": "View another user's public profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Public profile data"
+          }
+        }
+      }
+    },
+    "/apiFriend/search": {
+      "get": {
+        "tags": [
+          "Friends"
+        ],
+        "summary": "Search for users by name or username",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results"
+          }
+        }
+      }
+    },
+    "/api/getLawyers": {
+      "get": {
+        "tags": [
+          "Lawyers"
+        ],
+        "summary": "Retrieve all lawyers with optional filtering",
+        "responses": {
+          "200": {
+            "description": "List of lawyers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/lawyers/specializations": {
+      "get": {
+        "tags": [
+          "Lawyers"
+        ],
+        "summary": "Get unique list of lawyer specializations",
+        "responses": {
+          "200": {
+            "description": "Array of specialization strings"
+          }
+        }
+      }
+    },
+    "/api/mock-trials/situationsCategory": {
+      "get": {
+        "tags": [
+          "Mock Trials"
+        ],
+        "summary": "Retrieve situations grouped by category",
+        "responses": {
+          "200": {
+            "description": "Categorized situations"
+          }
+        }
+      }
+    },
+    "/api/mock-trials/categories": {
+      "get": {
+        "tags": [
+          "Mock Trials"
+        ],
+        "summary": "Get available mock trial categories",
+        "responses": {
+          "200": {
+            "description": "List of categories"
+          }
+        }
+      }
+    },
+    "/api/mock-trials/past-trials": {
+      "get": {
+        "tags": [
+          "Mock Trials"
+        ],
+        "summary": "Get user's mock trial history",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "History of trials"
+          }
+        }
+      }
+    },
+    "/api/mock-trials/statistics": {
+      "get": {
+        "tags": [
+          "Mock Trials"
+        ],
+        "summary": "Get mock trial experience/performance stats",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Summary stats"
+          }
+        }
+      }
+    },
+    "/api/mock-trials/check-match/{situationId}": {
+      "get": {
+        "tags": [
+          "Mock Trials"
+        ],
+        "summary": "Check if user is currently matched in a trial for a situation",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "situationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Match status"
+          }
+        }
+      }
+    },
+    "/api/mock-trials/{trialId}": {
+      "get": {
+        "tags": [
+          "Mock Trials"
+        ],
+        "summary": "Get full details of a specific trial",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trialId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trial data"
+          }
+        }
+      }
+    },
+    "/api/mock-trials/join": {
+      "post": {
+        "tags": [
+          "Mock Trials"
+        ],
+        "summary": "Join a mock trial queue or session",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Joined session"
+          }
+        }
+      }
+    },
+    "/api/mock-trials/end": {
+      "post": {
+        "tags": [
+          "Mock Trials"
+        ],
+        "summary": "Formally end a mock trial",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trial ended"
+          }
+        }
+      }
+    },
+    "/api/mock-trials/leave": {
+      "post": {
+        "tags": [
+          "Mock Trials"
+        ],
+        "summary": "Leave an ongoing trial session",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Left session"
+          }
+        }
+      }
+    },
+    "/api/mock-trials/message": {
+      "post": {
+        "tags": [
+          "Mock Trials"
+        ],
+        "summary": "Send a message within a trial session",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Message sent"
+          }
+        }
+      }
+    },
+    "/api/mock-trials/{trialId}/analyse": {
+      "post": {
+        "tags": [
+          "Mock Trials"
+        ],
+        "summary": "Trigger AI analysis of a completed trial",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trialId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analysis report"
+          }
+        }
+      }
+    },
+    "/api/edit/profile": {
+      "patch": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Update current user profile details",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully"
+          }
+        }
+      }
+    },
+    "/api/quiz/getQuiz": {
+      "get": {
+        "tags": [
+          "Quiz"
+        ],
+        "summary": "Get quiz questions for a category",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of questions"
+          }
+        }
+      }
+    },
+    "/api/quiz/submit": {
+      "post": {
+        "tags": [
+          "Quiz"
+        ],
+        "summary": "Submit quiz answers",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Submission successful"
+          }
+        }
+      }
+    },
+    "/api/quiz/getResult": {
+      "get": {
+        "tags": [
+          "Quiz"
+        ],
+        "summary": "Get result of a specific quiz attempt",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result details"
+          }
+        }
+      }
+    },
+    "/api/quiz/count": {
+      "get": {
+        "tags": [
+          "Quiz"
+        ],
+        "summary": "Get total number of quizzes completed",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Count value"
+          }
+        }
+      }
+    },
+    "/api/quiz/detailed-results": {
+      "get": {
+        "tags": [
+          "Quiz"
+        ],
+        "summary": "Get comprehensive history of quiz performance",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of detailed results"
+          }
+        }
+      }
+    },
+    "/api/quiz/statistics": {
+      "get": {
+        "tags": [
+          "Quiz"
+        ],
+        "summary": "Get aggregated quiz statistics",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stats data"
+          }
+        }
+      }
+    },
+    "/api/quiz/recent-activities": {
+      "get": {
+        "tags": [
+          "Quiz"
+        ],
+        "summary": "Get user's recent quiz activity feed",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Activity log"
+          }
+        }
+      }
+    },
+    "/api/upload/profile-image": {
+      "post": {
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Upload a profile picture",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "profileImage": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image uploaded successfully"
+          }
+        }
+      }
+    },
+    "/api/upload/banner-image": {
+      "post": {
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Upload a profile banner image",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "bannerImage": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Banner uploaded successfully"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Appointments",
+      "description": "Appointment booking and management"
+    },
+    {
+      "name": "Payments",
+      "description": "Razorpay integration and payment verification"
+    },
+    {
+      "name": "Lawyer Availability",
+      "description": "Manage lawyer working hours and slots"
+    },
+    {
+      "name": "Video Calls",
+      "description": "WebRTC signaling and call management"
+    },
+    {
+      "name": "Auth",
+      "description": "User authentication and password management"
+    },
+    {
+      "name": "Chatbot",
+      "description": "AI-powered legal assistant and chat history"
+    },
+    {
+      "name": "Friends",
+      "description": "Social features, friend requests, and user discovery"
+    },
+    {
+      "name": "Lawyers",
+      "description": "Lawyer profile discovery and filtering"
+    },
+    {
+      "name": "Mock Trials",
+      "description": "Real-time simulated legal proceedings and analysis"
+    },
+    {
+      "name": "Profile",
+      "description": "User profile management"
+    },
+    {
+      "name": "Quiz",
+      "description": "Legal knowledge assessment and progress tracking"
+    },
+    {
+      "name": "Uploads",
+      "description": "Cloudinary image upload services"
+    }
+  ]
+}
