@@ -1,12 +1,12 @@
 import { Outlet } from 'react-router-dom';
-import Header from '../components/Headers'; 
+import Header from '../components/Headers';
 
 const PublicLayout = () => {
   return (
     <div>
       <Header />
       <main>
-        <Outlet /> 
+        <Outlet />
       </main>
     </div>
   );
