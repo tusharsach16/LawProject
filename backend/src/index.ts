@@ -23,6 +23,7 @@ import appointmentRoutes from './routes/appointmentRoutes';
 import { initRedis, isRedisAvailable } from './utils/redisClient';
 
 
+
 const envPath = path.resolve(__dirname, "../.env");
 dotenv.config({ path: envPath });
 
@@ -64,6 +65,27 @@ app.use('/api', lawyerRoutes);
 app.use('/api', mockTrialRoutes);
 app.use('/api', chatbotRoutes);
 app.use('/api/appointments', appointmentRoutes);
+
+// Swagger Documentation
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+// ReDoc Documentation
+import redoc from 'redoc-express';
+app.get(
+  '/docs',
+  redoc({
+    title: 'NyaySetu API Documentation',
+    specUrl: '/api-docs.json',
+  })
+);
+
+
 
 const startServer = async () => {
   try {
