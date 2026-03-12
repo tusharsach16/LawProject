@@ -8,7 +8,7 @@ services:
       - "6379:6379"
 
   backend:
-    build: ./backend
+    image: tushar1610/nyaysetu-backend:latest
     restart: unless-stopped
     ports:
       - "5000:5000"
@@ -19,7 +19,7 @@ services:
       REDIS_URL: redis://redis:6379
 
   backend-signaling:
-    build: ./backend-signaling
+    image: tushar1610/nyaysetu-signaling:latest
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -30,11 +30,7 @@ services:
       REDIS_URL: redis://redis:6379
 
   frontend:
-    build:
-      context: ./frontend
-      args:
-        VITE_API_URL: http://localhost:5000
-        VITE_SIGNALING_WS_URL: ws://localhost:8080
+    image: tushar1610/nyaysetu-frontend:latest
     restart: unless-stopped
     ports:
       - "3000:80"
