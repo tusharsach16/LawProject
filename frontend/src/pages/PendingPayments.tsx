@@ -2,7 +2,7 @@ import React from 'react';
 import { AlertCircle } from 'lucide-react';
 import { usePendingAppointments } from '../hooks/useAppointments';
 import type { PendingAppointment } from '../types/appointment.types';
-import { verifyPayment, cancelAppointment } from '../services/authService';
+import { verifyPayment, cancelAppointment } from '../services';
 import PendingAppointmentCard from '../components/appointments/PendingAppointmentCard';
 
 declare global {

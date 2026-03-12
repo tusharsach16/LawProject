@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { CurrentUserProfile, FormData, ImageState } from '../types/useEditProfileForm';
-import { getSpecializations } from '../../../services/authService';
+import { getSpecializations } from '../../../services';
 
 export const useEditProfileForm = (currentUser: CurrentUserProfile, isOpen: boolean) => {
   const [formData, setFormData] = useState<FormData>({

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAppDispatch } from '../../../redux/hooks';
 import { updateProfile } from '../../../redux/slices/userSlice';
-import { uploadProfileImage, uploadBannerImage } from '../../../services/authService';
+import { uploadProfileImage, uploadBannerImage } from '../../../services';
 import type { ProfileUpdatePayload } from '../types/profile.types';
 
 export const useProfileUpdate = () => {

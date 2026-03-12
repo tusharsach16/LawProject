@@ -8,7 +8,7 @@ import {
   getRecentActivities,
   getQuizStatistics,
   getMockTrialStatistics,
-} from "@/services/authService";
+} from "@/services";
 import { useAppSelector } from "../redux/hooks";
 import LoadingScreen from "@/components/overview/LoadingScreen";
 import WelcomeHeader from "@/components/overview/WelcomeHeader";

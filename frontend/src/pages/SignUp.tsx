@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Lock, Mail, Phone, Scale, Eye, EyeOff, CheckCircle, XCircle, AtSign } from "lucide-react";
 import { CiUser } from "react-icons/ci";
 import Signupui from "@/components/Signupui";
-import { signUp } from "../services/authService";
+import { signUp } from "../services";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/slices/userSlice";
 

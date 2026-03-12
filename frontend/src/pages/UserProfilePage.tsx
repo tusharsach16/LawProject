@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Users, UserPlus, UserCheck, Clock, Scale, Loader2, AlertCircle } from 'lucide-react';
-import { getUserProfile, sendFriendRequest } from '../services/authService'; 
+import { getUserProfile, sendFriendRequest } from '../services'; 
 import { useToast } from '../components/useToast';
 
 interface UserProfileData {

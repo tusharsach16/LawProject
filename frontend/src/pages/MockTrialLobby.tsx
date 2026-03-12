@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Gavel, Scale, Loader2, Sparkles, Filter, ChevronRight } from 'lucide-react';
-import { getMockTrialSituationsCat, getMockTrialCategories } from '../services/authService';
+import { getMockTrialSituationsCat, getMockTrialCategories } from '../services';
 import Matchmaking from '../components/MatchMaking';
 import { useNavigate } from 'react-router-dom';
 

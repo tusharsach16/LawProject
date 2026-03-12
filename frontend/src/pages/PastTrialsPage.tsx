@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getPastMockTrials } from '../services/authService';
+import { getPastMockTrials } from '../services';
 import { useAppSelector } from '../redux/hooks'; 
 import { History, Trophy, TrendingDown, Scale, Loader2, ChevronRight, User, AlertCircle } from 'lucide-react';
 

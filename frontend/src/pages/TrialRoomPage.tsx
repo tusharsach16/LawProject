@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Send, LogOut, Scale, Shield, Timer, Loader2 } from 'lucide-react';
-import { getMockTrialDetails, endTrial, leaveTrial, analyzeTrial } from '../services/authService';
+import { getMockTrialDetails, endTrial, leaveTrial, analyzeTrial } from '../services';
 import { useAppSelector } from '../redux/hooks';
 import MessageBubble, { type Message } from '../components/MessageBubble';
 import { getWebSocketUrl } from '../lib/utils';

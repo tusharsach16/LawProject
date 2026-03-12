@@ -8,7 +8,7 @@ import {
     getRecentActivities,
     getQuizStatistics,
     getMockTrialStatistics,
-} from '../services/authService';
+} from '../services';
 import type { AppointmentStats } from '../types/appointment.types';
 
 //Hook for fetching lawyer dashboard stats

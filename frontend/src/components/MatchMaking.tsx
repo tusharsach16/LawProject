@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Scale, Shield, Loader2, X } from 'lucide-react';
-import { joinMockTrial, checkMatchStatus } from '../services/authService'; 
+import { joinMockTrial, checkMatchStatus } from '../services'; 
 
 interface Situation {
   _id: string;

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { askAiAssistant } from '../services/authService';
+import { askAiAssistant } from '../services';
 import type { Message, Conversation } from '../components/chatbot/types';
 import ChatHeader from '../components/chatbot/ChatHeader';
 import HistoryList from '../components/chatbot/HistoryList';

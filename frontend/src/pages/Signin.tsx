@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowRight, CheckCircle, XCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import Signupui from "@/components/Signupui";
-import { signin } from "../services/authService";
+import { signin } from "../services";
 import { setUser } from "../redux/slices/userSlice";
 import { useDispatch } from "react-redux";
 

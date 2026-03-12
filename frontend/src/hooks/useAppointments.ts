@@ -4,7 +4,7 @@ import {
     getLawyerAppointments,
     getPendingAppointments,
     cancelAppointment as cancelAppointmentAPI,
-} from '../services/authService';
+} from '../services';
 import type { Appointment, PendingAppointment, AppointmentTab, UserAppointmentTab } from '../types/appointment.types';
 import { AUTO_REFRESH_INTERVAL } from '../constants/appointment.constants';
 

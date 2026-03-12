@@ -34,7 +34,7 @@ const sections = [
 const Footer = () => {
   return (
     <footer className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white py-16 px-4 relative overflow-hidden border-t-2 border-amber-500/20">
-      
+
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div
@@ -92,7 +92,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-slate-700/50 mt-12 pt-8 text-center">
           <p className="text-slate-400">
-            © 2024 Nyay Setu. All rights reserved.
+            © 2026 Nyay Setu. All rights reserved.
           </p>
         </div>
       </div>

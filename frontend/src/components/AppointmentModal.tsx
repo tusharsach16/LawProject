@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, Loader2, AlertCircle } from 'lucide-react';
-import { getAvailableSlots, createPaymentOrder, verifyPayment } from '../services/authService';
+import { getAvailableSlots, createPaymentOrder, verifyPayment } from '../services';
 
 declare global {
   interface Window {

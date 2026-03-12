@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import api from '../../services/api';
-import { updateUserProfile } from '../../services/authService';
+import { updateUserProfile } from '../../services';
 
 interface UserProfile {
   _id: string;

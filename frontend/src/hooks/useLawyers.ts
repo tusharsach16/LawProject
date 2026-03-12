@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getAllLawyers, getSpecializations, getPendingAppointments } from '../services/authService';
+import { getAllLawyers, getSpecializations, getPendingAppointments } from '../services';
 import type { LawyerProfile } from '../types/appointment.types';
 import { DEBOUNCE_DELAY } from '../constants/appointment.constants';
 

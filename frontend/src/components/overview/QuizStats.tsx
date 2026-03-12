@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getQuizCount, getDetailedQuizResults } from '../../services/authService';
+import { getQuizCount, getDetailedQuizResults } from '../../services';
 import { Trophy, BarChart3, Calendar, CheckCircle, XCircle, Loader2, Scale, AlertCircle, ChevronRight, Award } from 'lucide-react';
 
 interface QuizAttempt {

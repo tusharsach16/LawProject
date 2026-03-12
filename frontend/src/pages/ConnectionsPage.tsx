@@ -1,7 +1,7 @@
 import {useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, UserCheck, UserMinus, Scale, AlertCircle } from 'lucide-react';
-import { getConnections, removeFriend } from '../services/authService';
+import { getConnections, removeFriend } from '../services';
 import UnfollowModal from '../components/UnfollowModal';
 
 interface Connection {

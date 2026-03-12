@@ -4,7 +4,7 @@ import {
   MessageCircle, Award, Video, Clock, ArrowLeft, Loader2,
   Scale, Filter, Calendar
 } from 'lucide-react'
-import { getRecentActivities } from '@/services/authService'
+import { getRecentActivities } from '@/services'
 
 interface Activity {
   _id: string

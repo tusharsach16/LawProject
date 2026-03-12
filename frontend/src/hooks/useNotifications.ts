@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getFriendRequests, respondToFriendRequest } from '../services/authService'; 
+import { getFriendRequests, respondToFriendRequest } from '../services'; 
 
 interface FriendRequest {
   _id: string;

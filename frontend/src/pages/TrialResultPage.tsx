@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getMockTrialDetails, analyzeTrial } from '../services/authService';
+import { getMockTrialDetails, analyzeTrial } from '../services';
 import { Scale, Trophy, Gavel, FileText, Loader2, ArrowLeft, Sparkles } from 'lucide-react';
 
 const TrialResultPage = () => {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, X, Scale, Users, Loader2 } from 'lucide-react';
-import { searchUsers } from '../services/authService';
+import { searchUsers } from '../services';
 
 interface SearchBarProps {
   isOpen: boolean;
