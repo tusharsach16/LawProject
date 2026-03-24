@@ -70,7 +70,8 @@ const updateConversationCache = async (
 };
 
 const ALLOWED_LANGUAGES = new Set([
-  'English', 'Hindi', 'Marathi', 'Tamil', 'Telugu', 'Punjabi'
+  'English', 'Hindi', 'Marathi', 'Tamil', 'Telugu', 'Punjabi',
+  'Bengali', 'Gujarati', 'Kannada', 'Malayalam'
 ]);
 
 export const chatbot = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
