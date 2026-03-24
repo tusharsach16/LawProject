@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import WebSocket, { WebSocketServer } from "ws";
 import http from "http";
 import express from "express";
