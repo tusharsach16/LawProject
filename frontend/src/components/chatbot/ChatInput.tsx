@@ -8,6 +8,10 @@ const LANGUAGES = [
   { label: 'Tamil', value: 'Tamil' },
   { label: 'Telugu', value: 'Telugu' },
   { label: 'Punjabi', value: 'Punjabi' },
+  { label: 'Bengali', value: 'Bengali' },
+  { label: 'Gujarati', value: 'Gujarati' },
+  { label: 'Kannada', value: 'Kannada' },
+  { label: 'Malayalam', value: 'Malayalam' },
 ];
 
 interface ChatInputProps {

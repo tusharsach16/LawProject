@@ -19,6 +19,9 @@ const AiChatbot: React.FC = () => {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showHistoryList, setShowHistoryList] = useState(false);
 
+  // Ref always holds the latest selectedLanguage — fixes stale closure in async callbacks
+  const selectedLanguageRef = useRef(selectedLanguage);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -45,6 +48,11 @@ const AiChatbot: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Keep the ref in sync with state so handleSendMessage always reads the latest value
+  useEffect(() => {
+    selectedLanguageRef.current = selectedLanguage;
+  }, [selectedLanguage]);
 
   useEffect(() => {
     const saved = localStorage.getItem('ai_conversations');
@@ -162,7 +170,7 @@ const AiChatbot: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await askAiAssistant(currentInput, selectedLanguage);
+      const response = await askAiAssistant(currentInput, selectedLanguageRef.current);
 
       console.log('Response from API:', response);
 
