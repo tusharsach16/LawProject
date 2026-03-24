@@ -4,22 +4,26 @@ import { GeneralUser } from '../../models/GeneralUser';
 import { LawStudent } from '../../models/LawStudent';
 import { Lawyer } from '../../models/Lawyer';
 import mongoose from 'mongoose';
+import { AuthenticatedRequest } from '../../types/express';
+import { Ilawyer } from '../../models/Lawyer';
+import { IStudent } from '../../models/LawStudent';
+import { IGeneralUser } from '../../models/GeneralUser';
 
-export const getUserProfileByUsername = async (req: Request, res: Response): Promise<void> => {
+export const getUserProfileByUsername = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { username } = req.params;
-    const loggedInUserId = (req as any).user?.id; // Logged-in user ki ID
+    const loggedInUserId = req.user?.id; // Logged-in user ki ID
 
     // Username se user ka common data dhoondein
     const user = await User.findOne({ username: username.toLowerCase() }).select('-password').lean();
 
     if (!user) {
       res.status(404).json({ msg: 'User not found' });
-      return; 
+      return;
     }
 
     // User ka role-specific data dhoondein
-    let roleData: any = {};
+    let roleData: IGeneralUser | IStudent | Ilawyer | null = null;
     switch (user.role) {
       case 'general':
         roleData = await GeneralUser.findOne({ userId: user._id }).lean();
@@ -37,16 +41,17 @@ export const getUserProfileByUsername = async (req: Request, res: Response): Pro
     const isFollowing = loggedInUser?.friends.includes(user._id as mongoose.Types.ObjectId);
 
     // Sab kuch milakar ek poora profile object banayein
-    const fullUserProfile = { 
-      ...user, 
+    const fullUserProfile = {
+      ...user,
       roleData: roleData || {},
       isFollowing: isFollowing || false // Frontend ko batayein ki follow status kya hai
     };
 
     res.status(200).json(fullUserProfile);
 
-  } catch (error) {
-    console.error("Error fetching user profile:", error);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("Error fetching user profile:", error.message);
     res.status(500).json({ msg: 'Server error' });
   }
 };
@@ -58,7 +63,7 @@ export const searchUsers = async (req: Request, res: Response): Promise<void> =>
 
     if (!query || query.trim().length < 2) {
       res.status(200).json([]);
-      return; 
+      return;
     }
 
     // Ek regular expression banayein jo case-insensitive match karega
@@ -70,13 +75,14 @@ export const searchUsers = async (req: Request, res: Response): Promise<void> =>
         { username: { $regex: searchRegex } }
       ]
     })
-    .select('name username profileImageUrl') // Sirf imp details bhejein
-    .limit(10); // Result ko 10 tak limit karein
+      .select('name username profileImageUrl') // Sirf imp details bhejein
+      .limit(10); // Result ko 10 tak limit karein
 
     res.status(200).json(users);
 
-  } catch (error) {
-    console.error("Error searching users:", error);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("Error searching users:", error.message);
     res.status(500).json({ msg: 'Server error' });
   }
 };

@@ -9,6 +9,7 @@ import { LawStudent } from '../models/LawStudent';
 import { GeneralUser } from '../models/GeneralUser';
 
 import { redisGet, redisSet, redisDel, isRedisAvailable } from '../utils/redisClient';
+import { AuthenticatedRequest } from '../types/express';
 
 const CACHE_TTL = 3600;
 
@@ -115,8 +116,10 @@ const signupUser = async (req: Request, res: Response): Promise<void> => {
         bannerImageUrl: user.bannerImageUrl
       }
     });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error('Signup error:', error.message);
+    res.status(500).json({ message: 'Server error during signup' });
   }
 };
 
@@ -173,14 +176,16 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
         bannerImageUrl: user.bannerImageUrl
       }
     });
-  } catch (error) {
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error('Error:', error.message);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-const getUser = async (req: Request, res: Response): Promise<void> => {
+const getUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const userId = (req as any).user?.id as string;
+    const userId = req.user?.id;
 
     if (!userId) {
       res.status(401).json({ message: 'Unauthorized - Missing token' });
@@ -195,7 +200,9 @@ const getUser = async (req: Request, res: Response): Promise<void> => {
     }
 
     res.status(200).json({ user: fullUserProfile });
-  } catch (error) {
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error('Error:', error.message);
     res.status(500).json({ message: 'Server error' });
   }
 };

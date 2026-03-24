@@ -123,8 +123,9 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
     });
 
     res.status(200).json({ message: 'If an account exists with this email, an OTP has been sent.' });
-  } catch (err) {
-    console.error('[forgotPassword]', err);
+  } catch (e: unknown) {
+    const error = e instanceof Error ? e : new Error(String(e));
+    console.error('[forgotPassword]', error.message);
     res.status(500).json({ message: 'Failed to send OTP. Please try again.' });
   }
 };
@@ -167,8 +168,9 @@ export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
     resetTokenStore.set(resetToken, { email, expiresAt: Date.now() + 15 * 60 * 1000 });
 
     res.status(200).json({ message: 'OTP verified successfully', resetToken });
-  } catch (err) {
-    console.error('[verifyOtp]', err);
+  } catch (e: unknown) {
+    const error = e instanceof Error ? e : new Error(String(e));
+    console.error('[verifyOtp]', error.message);
     res.status(500).json({ message: 'Failed to verify OTP' });
   }
 };
@@ -204,8 +206,9 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     resetTokenStore.delete(resetToken);
 
     res.status(200).json({ message: 'Password reset successful' });
-  } catch (err) {
-    console.error('[resetPassword]', err);
+  } catch (e: unknown) {
+    const error = e instanceof Error ? e : new Error(String(e));
+    console.error('[resetPassword]', error.message);
     res.status(500).json({ message: 'Failed to reset password' });
   }
 };
