@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import * as jwt from "jsonwebtoken";
 import { Appointment, IAppointment } from "../models/Appointment";
+import { AuthenticatedRequest } from "../types/express";
 import { User, Iuser } from "../models/User";
 import { getRedisClient, isRedisAvailable } from "../utils/redisClient";
 import mongoose from "mongoose";
@@ -10,9 +11,7 @@ const JWT_SECRET = process.env.JWT_SECRET as string;
 const SIGNALING_SERVER_URL =
     process.env.SIGNALING_SERVER_URL ?? "http://localhost:8080";
 
-interface AuthenticatedRequest extends Request {
-    user: Iuser;
-}
+// Using global AuthenticatedRequest
 
 type PopulatedUser = Pick<Iuser, "_id" | "name" | "email">;
 
@@ -69,11 +68,11 @@ async function cacheCallData(
 
 // generateCallToken
 export const generateCallToken = async (
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
 ): Promise<void> => {
     try {
-        const userId = (req as AuthenticatedRequest).user._id.toString();
+        const userId = req.user?.id || "";
         const appointmentId = (req.body as { appointmentId?: string }).appointmentId;
 
         if (!appointmentId) {
@@ -174,19 +173,20 @@ export const generateCallToken = async (
             otherPartyName: isClient ? appt.lawyerId.name : appt.userId.name,
             otherPartyRole: isClient ? "lawyer" : "client",
         });
-    } catch (err) {
-        console.error("[generateCallToken]", err);
+    } catch (e: unknown) {
+        const error = e instanceof Error ? e : new Error(String(e));
+        console.error("[generateCallToken]", error.message);
         res.status(500).json({ msg: "Server error" });
     }
 };
 
 // verifyCallAccess
 export const verifyCallAccess = async (
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
 ): Promise<void> => {
     try {
-        const userId = (req as AuthenticatedRequest).user._id.toString();
+        const userId = req.user?.id || "";
         const callRoomId = req.params["callRoomId"];
 
         if (!callRoomId) {
@@ -248,19 +248,20 @@ export const verifyCallAccess = async (
                 })),
             ],
         });
-    } catch (err) {
-        console.error("[verifyCallAccess]", err);
+    } catch (e: unknown) {
+        const error = e instanceof Error ? e : new Error(String(e));
+        console.error("[verifyCallAccess]", error.message);
         res.status(500).json({ msg: "Server error", allowed: false });
     }
 };
 
 // markCallCompleted
 export const markCallCompleted = async (
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
 ): Promise<void> => {
     try {
-        const userId = (req as AuthenticatedRequest).user._id.toString();
+        const userId = req.user?.id || "";
         const { appointmentId, callDuration } = req.body as {
             appointmentId?: string;
             callDuration?: number;
@@ -297,19 +298,26 @@ export const markCallCompleted = async (
         await Appointment.findByIdAndUpdate(appointmentId, { $set: updates });
 
         res.status(200).json({ success: true, msg: "Call marked as completed" });
-    } catch (err) {
-        console.error("[markCallCompleted]", err);
+    } catch (e: unknown) {
+        const error = e instanceof Error ? e : new Error(String(e));
+        console.error("[markCallCompleted]", error.message);
         res.status(500).json({ msg: "Server error" });
     }
 };
 
 // addParticipant
 export const addParticipant = async (
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
 ): Promise<void> => {
     try {
-        const requestingUserId = (req as AuthenticatedRequest).user._id.toString();
+        const requestingUserId = req.user?.id;
+
+        if (!requestingUserId) {
+            res.status(401).json({ msg: "Authentication required" });
+            return;
+        }
+
         const { appointmentId, participantId } = req.body as {
             appointmentId?: string;
             participantId?: string;
@@ -337,10 +345,10 @@ export const addParticipant = async (
         }
 
         const currentCount = (appointment.participants ?? []).length + 2; // +2 for client & lawyer
-        const max = appointment.maxParticipants ?? 2;
+        const maxLimit = appointment.maxParticipants ?? 2;
 
-        if (currentCount >= max) {
-            res.status(400).json({ msg: `Call is full (max ${max} participants)` });
+        if (currentCount >= maxLimit) {
+            res.status(400).json({ msg: `Call is full (max ${maxLimit} participants)` });
             return;
         }
 
@@ -367,19 +375,26 @@ export const addParticipant = async (
         });
 
         res.status(200).json({ success: true, msg: "Participant added" });
-    } catch (err) {
-        console.error("[addParticipant]", err);
+    } catch (e: unknown) {
+        const error = e instanceof Error ? e : new Error(String(e));
+        console.error("[addParticipant]", error.message);
         res.status(500).json({ msg: "Server error" });
     }
 };
 
 // removeParticipant
 export const removeParticipant = async (
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
 ): Promise<void> => {
     try {
-        const requestingUserId = (req as AuthenticatedRequest).user._id.toString();
+        const requestingUserId = req.user?.id;
+
+        if (!requestingUserId) {
+            res.status(401).json({ msg: "Authentication required" });
+            return;
+        }
+
         const { appointmentId, participantId } = req.body as {
             appointmentId?: string;
             participantId?: string;
@@ -419,8 +434,9 @@ export const removeParticipant = async (
         });
 
         res.status(200).json({ success: true, msg: "Participant removed" });
-    } catch (err) {
-        console.error("[removeParticipant]", err);
+    } catch (e: unknown) {
+        const error = e instanceof Error ? e : new Error(String(e));
+        console.error("[removeParticipant]", error.message);
         res.status(500).json({ msg: "Server error" });
     }
 };
