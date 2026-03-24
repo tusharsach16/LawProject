@@ -22,6 +22,7 @@ import {
   cacheLawyerStats,
   invalidateAppointmentCaches
 } from '../utils/AppointmentCache';
+import { AuthenticatedRequest } from '../types/express';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID as string,
@@ -117,12 +118,16 @@ async function checkSlotAvailabilityWithTransaction(
   return { isAvailable: true };
 }
 
-export const createPaymentOrder = async (req: Request, res: Response): Promise<void> => {
+export const createPaymentOrder = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const session = await mongoose.startSession();
   let lockAcquired = false;
 
   try {
-    const userId = (req as any).user._id;
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ msg: 'Unauthenticated' });
+      return;
+    }
     const { lawyerId, appointmentTime, duration } = req.body;
     console.log(`[DEBUG] Received appointmentTime:`, appointmentTime);
 
@@ -226,7 +231,8 @@ export const createPaymentOrder = async (req: Request, res: Response): Promise<v
               };
               await sendAppointmentConfirmation(userDTO, lawyerDTO, appointmentDTO);
             }
-          } catch (emailError: any) {
+          } catch (err: unknown) {
+            const emailError = err instanceof Error ? err : new Error(String(err));
             console.error('Email sending failed:', emailError.message);
           }
 
@@ -285,14 +291,15 @@ export const createPaymentOrder = async (req: Request, res: Response): Promise<v
       throw new Error('Transaction completed but no result available');
     }
 
-  } catch (error: any) {
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
     console.error('[Transaction Error]:', error);
 
-    if (error.code === 11000 ||
-      error.errorResponse?.code === 11000 ||
+    if ((error as any).code === 11000 ||
+      (error as any).errorResponse?.code === 11000 ||
       error.message?.includes('E11000') ||
       error.message?.includes('duplicate')) {
-      console.warn(`[Duplicate Booking Prevented] User ${(req as any).user?._id || 'Unknown'} tried to book existing slot.`);
+      console.warn(`[Duplicate Booking Prevented] User ${req.user?.id || 'Unknown'} tried to book existing slot.`);
       res.status(400).json({
         msg: 'This slot was just booked by someone else. Please choose another time.',
         conflict: true
@@ -300,7 +307,7 @@ export const createPaymentOrder = async (req: Request, res: Response): Promise<v
       return;
     }
 
-    if (error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError')) {
+    if ((error as any).hasErrorLabel && (error as any).hasErrorLabel('TransientTransactionError')) {
       console.warn('[Transaction] Transient error, client should retry');
       res.status(409).json({
         msg: 'Booking conflict detected. Please try again.',
@@ -310,7 +317,7 @@ export const createPaymentOrder = async (req: Request, res: Response): Promise<v
       return;
     }
 
-    if (error.message && !error.code) {
+    if (error.message && !(error as any).code) {
       res.status(400).json({ msg: error.message });
       return;
     }
@@ -409,18 +416,22 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
       appointment: updatedAppointment,
     });
 
-  } catch (error) {
-    console.error(error);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error('verifyPayment error:', error.message);
     res.status(500).json({ msg: 'Server error verifying payment' });
   }
 };
 
-export const cancelAppointment = async (req: Request, res: Response): Promise<void> => {
+export const cancelAppointment = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const session = await mongoose.startSession();
 
   try {
     await session.withTransaction(async () => {
-      const requesterId = (req as any).user._id;
+      const requesterId = req.user?.id;
+      if (!requesterId) {
+        throw new Error('Unauthenticated');
+      }
       const { appointmentId, reason } = req.body;
 
       const appointment = await Appointment.findById(appointmentId)
@@ -450,7 +461,7 @@ export const cancelAppointment = async (req: Request, res: Response): Promise<vo
 
       let refundProcessed = false;
 
-      const updates: any = {
+      const updates: Record<string, unknown> = {
         cancelledAt: now,
         cancellationReason: reason || `Cancelled by ${isUser ? 'user' : 'lawyer'}`
       };
@@ -571,10 +582,11 @@ export const cancelAppointment = async (req: Request, res: Response): Promise<vo
     const result = (req as any).transactionResult;
     res.status(200).json(result);
 
-  } catch (error: any) {
-    console.error("Error cancelling appointment:", error);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("Error cancelling appointment:", error.message);
 
-    if (error.message && !error.code) {
+    if (error.message && !(error as any).code) {
       res.status(400).json({ msg: error.message });
       return;
     }
@@ -597,7 +609,8 @@ export const getAvailableSlots = async (req: Request, res: Response): Promise<vo
     let resolvedLawyerId: string;
     try {
       resolvedLawyerId = await resolveToUserId(lawyerId as string);
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
       res.status(404).json({ msg: 'Lawyer not found', slots: [], allSlots: [] });
       return;
     }
@@ -715,9 +728,9 @@ export const getAvailableSlots = async (req: Request, res: Response): Promise<vo
   }
 };
 
-export const setLawyerAvailability = async (req: Request, res: Response): Promise<void> => {
+export const setLawyerAvailability = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const lawyerId = (req as any).user?._id || (req as any).user?.id;
+    const lawyerId = req.user?.id;
 
     if (!lawyerId) {
       res.status(401).json({ msg: 'Unauthorized - No user found' });
@@ -777,8 +790,8 @@ export const setLawyerAvailability = async (req: Request, res: Response): Promis
 
     const lawyerObjectId = new mongoose.Types.ObjectId(lawyerId);
 
-    const filter: any = { lawyerId: lawyerObjectId };
-    const updateData: any = {
+    const filter: Record<string, unknown> = { lawyerId: lawyerObjectId };
+    const updateData: Record<string, unknown> = {
       lawyerId: lawyerObjectId,
       slots,
       isActive: slots.length > 0

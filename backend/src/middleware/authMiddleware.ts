@@ -51,7 +51,7 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
     }
 
     // Store user data with BOTH _id and id for compatibility
-    (req as any).user = {
+    req.user = {
       _id: userId,  // MongoDB style
       id: userId,   // Standard style
       role: decoded.role,
@@ -59,25 +59,31 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
     };
 
     next();
-  } catch (err: any) {
-    console.error('Token validation failed:', err.message);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("Token validation failed:", err.message);
 
-    if (err.name === 'TokenExpiredError') {
-      res.status(401).json({
-        msg: 'Token expired. Please log in again.',
-        error: 'TOKEN_EXPIRED'
-      });
-    } else if (err.name === 'JsonWebTokenError') {
-      res.status(401).json({
-        msg: 'Invalid token.',
-        error: 'INVALID_TOKEN'
-      });
-    } else {
-      res.status(401).json({
-        msg: 'Token verification failed.',
-        error: 'TOKEN_VERIFICATION_FAILED'
-      });
+      if (err.name === "TokenExpiredError") {
+        res.status(401).json({
+          msg: "Token expired. Please log in again.",
+          error: "TOKEN_EXPIRED",
+        });
+        return;
+      }
+
+      if (err.name === "JsonWebTokenError") {
+        res.status(401).json({
+          msg: "Invalid token.",
+          error: "INVALID_TOKEN",
+        });
+        return;
+      }
     }
+
+    res.status(401).json({
+      msg: "Token verification failed.",
+      error: "TOKEN_VERIFICATION_FAILED",
+    });
   }
 };
 

@@ -2,18 +2,8 @@ import { Request, Response } from "express";
 import dotenv from "dotenv";
 import { ChatHistory } from "../models/ChatHistory";
 import { redisGet, redisSet, redisDel, isRedisAvailable } from "../utils/redisClient";
-
+import { AuthenticatedRequest } from "../types/express";
 dotenv.config();
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: string;
-      };
-    }
-  }
-}
 
 const getChatCacheKey = (userId: string): string => {
   return `app:chat:history:user:${userId}`;
@@ -80,10 +70,11 @@ const updateConversationCache = async (
 };
 
 const ALLOWED_LANGUAGES = new Set([
-  'English', 'Hindi', 'Marathi', 'Tamil', 'Telugu', 'Punjabi'
+  'English', 'Hindi', 'Marathi', 'Tamil', 'Telugu', 'Punjabi',
+  'Bengali', 'Gujarati', 'Kannada', 'Malayalam'
 ]);
 
-export const chatbot = async (req: Request, res: Response): Promise<void> => {
+export const chatbot = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { message, language } = req.body;
   const replyLanguage = ALLOWED_LANGUAGES.has(language) ? language : 'English';
   const userId = req.user?.id;
@@ -153,15 +144,16 @@ export const chatbot = async (req: Request, res: Response): Promise<void> => {
     }
 
     res.status(200).json({ reply: botResponseText });
-  } catch (error: any) {
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
     res.status(502).json({
       error: "AI service failed",
-      details: error?.message
+      details: error.message
     });
   }
 };
 
-export const getChatHistory = async (req: Request, res: Response): Promise<void> => {
+export const getChatHistory = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const userId = req.user?.id;
 
   if (!userId) {
@@ -192,12 +184,13 @@ export const getChatHistory = async (req: Request, res: Response): Promise<void>
     } else {
       res.status(200).json([]);
     }
-  } catch {
-    res.status(500).json({ error: "Failed to fetch chat history" });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    res.status(500).json({ error: "Failed to fetch chat history", details: error.message });
   }
 };
 
-export const clearChatHistory = async (req: Request, res: Response): Promise<void> => {
+export const clearChatHistory = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const userId = req.user?.id;
 
   if (!userId) {
@@ -216,7 +209,8 @@ export const clearChatHistory = async (req: Request, res: Response): Promise<voi
     );
 
     res.status(200).json({ message: "Chat history cleared successfully" });
-  } catch {
-    res.status(500).json({ error: "Failed to clear chat history" });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    res.status(500).json({ error: "Failed to clear chat history", details: error.message });
   }
 };

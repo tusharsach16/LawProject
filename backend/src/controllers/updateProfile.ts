@@ -5,12 +5,18 @@ import { User } from '../models/User';
 import { GeneralUser } from '../models/GeneralUser';
 import { LawStudent } from '../models/LawStudent';
 import { Lawyer } from '../models/Lawyer';
+import { AuthenticatedRequest } from '../types/express';
+import { Ilawyer } from '../models/Lawyer';
+import { IGeneralUser } from '../models/GeneralUser';
+import { IStudent } from '../models/LawStudent';
+
+type RoleDocument = Ilawyer | IStudent | IGeneralUser;
 
 const getFullUserProfile = async (userId: string) => {
   const user = await User.findById(userId).select('-password').lean();
   if (!user) return null;
 
-  let roleData: any = {};
+  let roleData: Ilawyer | IGeneralUser | IStudent | null = null;
   switch (user.role) {
     case 'general':
       roleData = await GeneralUser.findOne({ userId: user._id }).lean();
@@ -25,8 +31,8 @@ const getFullUserProfile = async (userId: string) => {
   return { ...user, roleData: roleData || {} };
 };
 
-const pick = (obj: any, keys: string[]) => {
-  const newObj: any = {};
+const pick = <T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> => {
+  const newObj = {} as Pick<T, K>;
   keys.forEach(key => {
     if (obj && Object.prototype.hasOwnProperty.call(obj, key)) {
       newObj[key] = obj[key];
@@ -41,11 +47,11 @@ const roleModelMap = {
   lawyer: Lawyer,
 };
 
-export const updateProfile = async (req: Request, res: Response): Promise<void> => {
+export const updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   console.log("Backend received this data:", JSON.stringify(req.body, null, 2));
   console.log("License Number in payload:", req.body.roleSpecificData?.licenseNumber);
 
-  const userId = (req as any).user?.id;
+  const userId = req.user?.id;
   if (!userId) {
     res.status(401).json({ msg: 'Unauthenticated' });
     return;
@@ -140,8 +146,17 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         console.log('Cleaned areaOfInterest data:', safeRoleData.areaOfInterest);
       }
 
+      if (userRole === 'lawstudent') {
+        if ('enrollmentNumber' in safeRoleData && (safeRoleData.enrollmentNumber === '' || safeRoleData.enrollmentNumber === null)) {
+          delete safeRoleData.enrollmentNumber;
+        }
+        if ('collegeName' in safeRoleData && (safeRoleData.collegeName === '' || safeRoleData.collegeName === null)) {
+          delete safeRoleData.collegeName;
+        }
+      }
+
       if (userRole === 'lawyer') {
-        let existingLawyerCheck = await (RoleModel as mongoose.Model<any>)
+        let existingLawyerCheck = await (RoleModel as mongoose.Model<Ilawyer>)
           .findOne({ userId: new mongoose.Types.ObjectId(userId) })
           .session(session);
 
@@ -170,18 +185,19 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       }
 
       if (Object.keys(safeRoleData).length > 0) {
-        let roleDocument = await (RoleModel as mongoose.Model<any>).findOne({ userId: new mongoose.Types.ObjectId(userId) }).session(session);
+        let roleDocument = await (RoleModel as mongoose.Model<RoleDocument>)
+          .findOne({ userId: new mongoose.Types.ObjectId(userId) })
+          .session(session);
 
         if (roleDocument) {
-          console.log("roleDocument BEFORE update:", roleDocument.toObject());
-          Object.keys(safeRoleData).forEach(key => {
-            roleDocument[key] = safeRoleData[key];
-          });
-          await roleDocument.save({ session });
-          console.log(`Updated existing ${userRole} document.`);
-          console.log("roleDocument AFTER update:", roleDocument.toObject());
+          console.log(`Updating existing ${userRole} document via findOneAndUpdate.`);
+          await (RoleModel as mongoose.Model<RoleDocument>).findOneAndUpdate(
+            { userId: new mongoose.Types.ObjectId(userId) },
+            { $set: safeRoleData },
+            { session, new: true, runValidators: true }
+          );
         } else {
-          await (RoleModel as mongoose.Model<any>).create([{ ...safeRoleData, userId: new mongoose.Types.ObjectId(userId) }], { session });
+          await (RoleModel as mongoose.Model<RoleDocument>).create([{ ...safeRoleData, userId: new mongoose.Types.ObjectId(userId) }], { session });
           console.log(`Created new ${userRole} document.`);
         }
       } else {
@@ -199,10 +215,11 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       user: fullUserProfile
     });
 
-  } catch (error) {
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
     await session.abortTransaction();
     console.error("Error in updateProfile:", error);
-    res.status(500).json({ msg: 'Server error while updating profile', error: (error as Error).message });
+    res.status(500).json({ msg: 'Server error while updating profile', error: error.message });
   } finally {
     session.endSession();
   }

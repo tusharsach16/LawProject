@@ -1,38 +1,41 @@
 import { redisLRem, redisLPop, redisRPush, redisLRange, redisExpire } from "../../utils/redisClient";
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 import { Category } from "../../models/quiz/Category";
 import { MockTrialSituation } from "../../models/Mocktrial/MockSituation";
 import { MockTrial } from "../../models/Mocktrial/Mock";
 import mongoose from "mongoose";
 import { User } from "../../models/User";
-import {geminiModel} from '../../config/gemini';
+import { geminiModel } from '../../config/gemini';
 import { broadcastToTrialRoom, closeTrialRoomConnections } from "../../webSockets";
 import { redisGet, redisSet } from "../../utils/redisClient";
+import { AuthenticatedRequest } from "../../types/express";
 
 export const getMockSituation = async (req: Request, res: Response): Promise<void> => {
   try {
     const id = req.query.id as string;
-    const mockSituation = await MockTrialSituation.find({_id: id}).select('title description');
-    if(mockSituation.length === 0) {
-      res.status(400).json({msg: "Mock situation doesnot exists."});
+    const mockSituation = await MockTrialSituation.find({ _id: id }).select('title description');
+    if (mockSituation.length === 0) {
+      res.status(400).json({ msg: "Mock situation doesnot exists." });
       return;
     }
-    res.status(200).json({mockSituation});
-  } catch(e) {
-    res.status(500).json({msg: "Something went wrong", e});
+    res.status(200).json({ mockSituation });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 }
 
-export const getSituations = async (req: Request, res:Response): Promise<void> => {
+export const getSituations = async (req: Request, res: Response): Promise<void> => {
   try {
     const situations = await MockTrialSituation.find().select('title description');
-    if(situations.length === 0) {
-      res.status(400).json({msg: "Mock situation doesnot exists."});
+    if (situations.length === 0) {
+      res.status(400).json({ msg: "Mock situation doesnot exists." });
       return;
     }
-    res.status(200).json({situations});
-  } catch(e) {
-    res.status(500).json({msg: "Something went wrong", e});
+    res.status(200).json({ situations });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 }
 
@@ -64,9 +67,10 @@ export const getSituationsCat = async (req: Request, res: Response): Promise<voi
     );
 
     res.json({ situations, cached: false });
-  } catch (e) {
-    console.error('getSituationsCat error:', e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error('getSituationsCat error:', error);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
@@ -87,31 +91,32 @@ export const getMockTrialCategories = async (req: Request, res: Response): Promi
     );
 
     res.json({ categories, cached: false });
-  } catch (e) {
-    console.error('getMockTrialCategories error:', e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error('getMockTrialCategories error:', error);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
-export const postMockJoin = async (req: Request, res: Response): Promise<void> => {
+export const postMockJoin = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { situationId, side } = req.body;         
+    const { situationId, side } = req.body;
     const userId = req.user?.id;
-    const role = req.user?.role; 
+    const role = req.user?.role;
 
     if (!situationId || !side || !["plaintiff", "defendant"].includes(side)) {
       res.status(400).json({ msg: "Fields are required" });
       return;
     }
     if (!userId) {
-      res.status(401).json({ msg: "Unauthenticated" });   
+      res.status(401).json({ msg: "Unauthenticated" });
       return;
     }
     if (role !== "lawstudent") {
       res.status(403).json({ msg: "Only law students can participate" });
       return;
     }
-    
+
     const situation = await MockTrialSituation.findById(situationId);
     if (!situation) {
       res.status(404).json({ msg: "Mock trial situation not found" });
@@ -130,12 +135,12 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
         { defendantId: userId }
       ]
     });
-    
+
     if (active) {
-      res.status(403).json({ 
-        msg: "You are already in an active trial", 
+      res.status(403).json({
+        msg: "You are already in an active trial",
         trialId: active._id,
-        alreadyInTrial: true 
+        alreadyInTrial: true
       });
       return;
     }
@@ -161,7 +166,7 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
         categoryId: situation.categoryId,
         situationId: new mongoose.Types.ObjectId(situationId),
         messages: [],
-        status: "active", 
+        status: "active",
         startedAt: new Date()
       });
 
@@ -178,13 +183,14 @@ export const postMockJoin = async (req: Request, res: Response): Promise<void> =
     await redisExpire(waitKey, 120);
 
     res.status(202).json({ waiting: true, msg: "Waiting for opponent" });
-  } catch (e) {
-    console.error("join error", e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("join error", error);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
-export const cancelWaiting = async (req: Request, res: Response): Promise<void> => {
+export const cancelWaiting = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { situationId, side } = req.body;
     const userId = req.user?.id;
@@ -201,18 +207,19 @@ export const cancelWaiting = async (req: Request, res: Response): Promise<void> 
 
     const waitKeyPlaintiff = `waiting:${situationId}:plaintiff`;
     const waitKeyDefendant = `waiting:${situationId}:defendant`;
-    
+
     await redisLRem(waitKeyPlaintiff, 0, userId);
     await redisLRem(waitKeyDefendant, 0, userId);
 
     res.status(200).json({ msg: "Removed from waiting queue" });
-  } catch (e) {
-    console.error("cancelWaiting error:", e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("cancelWaiting error:", error);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
-export const postMockMessage = async (req: Request, res: Response): Promise<void> => {
+export const postMockMessage = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { trialId, text } = req.body;
     const userId = req.user?.id;
@@ -227,12 +234,12 @@ export const postMockMessage = async (req: Request, res: Response): Promise<void
       res.status(404).json({ msg: "Trial not found" });
       return;
     }
-    
-    if(req.user?.role !== "lawstudent") {
-      res.status(403).json({msg: "Only Law student can participate"});
+
+    if (req.user?.role !== "lawstudent") {
+      res.status(403).json({ msg: "Only Law student can participate" });
       return;
     }
-    
+
     if (
       userId !== trial.plaintiffId.toString() &&
       userId !== trial.defendantId?.toString()
@@ -251,23 +258,24 @@ export const postMockMessage = async (req: Request, res: Response): Promise<void
       text,
       timestamp: new Date(),
     };
-    
+
     if (trial.messages.length >= 200) {
       res.status(403).json({ msg: "Trial has reached the maximum number of messages (200)" });
       return;
-    }   
+    }
 
     trial.messages.push(message);
     await trial.save();
 
     res.status(200).json({ msg: "Message sent", message });
-  } catch (e) {
-    console.error("postMockMessage error:", e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("postMockMessage error:", error);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
-export const getMockTrialById = async (req: Request, res: Response): Promise<void> => {
+export const getMockTrialById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { trialId } = req.params;
     const cacheKey = `mock:trial:${trialId}`;
@@ -293,13 +301,14 @@ export const getMockTrialById = async (req: Request, res: Response): Promise<voi
     );
 
     res.json({ trial, cached: false });
-  } catch (e) {
-    console.error('getMockTrialById error:', e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error('getMockTrialById error:', error);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
-export const endMockTrial = async (req: Request, res: Response): Promise<void> => {
+export const endMockTrial = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { trialId } = req.body;
     const userId = req.user?.id;
@@ -314,7 +323,7 @@ export const endMockTrial = async (req: Request, res: Response): Promise<void> =
       res.status(404).json({ msg: "Trial not found" });
       return;
     }
-    
+
     if (trial.plaintiffId.toString() !== userId && trial.defendantId.toString() !== userId) {
       res.status(403).json({ msg: "Not a participant of this trial" });
       return;
@@ -333,13 +342,14 @@ export const endMockTrial = async (req: Request, res: Response): Promise<void> =
 
     res.status(200).json({ msg: "Trial has ended successfully." });
 
-  } catch (e) {
-    console.error("endMockTrial error:", e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("endMockTrial error:", error);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
-export const leaveMockTrial = async (req: Request, res: Response): Promise<void> => {
+export const leaveMockTrial = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { trialId } = req.body;
     const leavingUserId = req.user?.id;
@@ -386,8 +396,8 @@ export const leaveMockTrial = async (req: Request, res: Response): Promise<void>
     broadcastToTrialRoom(trialId, {
       type: 'system',
       message: 'The other participant has left the trial.',
-      data: { 
-        senderId: 'system', 
+      data: {
+        senderId: 'system',
         text: 'The other participant has left the trial.',
         timestamp: new Date().toISOString()
       }
@@ -397,18 +407,19 @@ export const leaveMockTrial = async (req: Request, res: Response): Promise<void>
       closeTrialRoomConnections(trialId, "Trial left");
     }, 1000);
 
-    res.status(200).json({ 
+    res.status(200).json({
       msg: "You have left the trial. The other participant has won.",
-      success: true 
+      success: true
     });
 
-  } catch (e: any) {
-    console.error("CRITICAL ERROR in leaveMockTrial:", e);
-    res.status(500).json({ msg: "Something went wrong", error: e.message });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("CRITICAL ERROR in leaveMockTrial:", error);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
-export const checkMatchStatus = async (req: Request, res: Response): Promise<void> => {
+export const checkMatchStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     const { situationId } = req.params;
@@ -423,7 +434,7 @@ export const checkMatchStatus = async (req: Request, res: Response): Promise<voi
       res.status(400).json({ msg: "Missing required parameters" });
       return;
     }
-    
+
     if (!userId) {
       res.status(401).json({ msg: "Unauthenticated." });
       return;
@@ -437,17 +448,17 @@ export const checkMatchStatus = async (req: Request, res: Response): Promise<voi
         { defendantId: userId }
       ]
     })
-    .populate("plaintiffId", "username name profileImageUrl")
-    .populate("defendantId", "username name profileImageUrl");
+      .populate("plaintiffId", "username name profileImageUrl")
+      .populate("defendantId", "username name profileImageUrl");
 
     if (activeTrial) {
       const waitKeyPlaintiff = `waiting:${situationId}:plaintiff`;
       const waitKeyDefendant = `waiting:${situationId}:defendant`;
       await redisLRem(waitKeyPlaintiff, 0, userId);
       await redisLRem(waitKeyDefendant, 0, userId);
-      
-      res.status(200).json({ 
-        matched: true, 
+
+      res.status(200).json({
+        matched: true,
         trialId: activeTrial._id,
         trial: activeTrial
       });
@@ -464,35 +475,36 @@ export const checkMatchStatus = async (req: Request, res: Response): Promise<voi
       res.status(200).json({ matched: false, waiting: false });
     }
 
-  } catch (e) {
-    console.error("checkMatchStatus error:", e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("checkMatchStatus error:", error);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
 const formatChatLog = (trial: any): string => {
   return trial.messages
-  .map((msg: any) => {
-    const senderRole = msg.senderId.equals(trial.plaintiffId._id) ? 'Plaintiff' : 'Defendant';
-    return `${senderRole}: "${msg.text}"`;
-  })
-  .join('\n');
+    .map((msg: any) => {
+      const senderRole = msg.senderId.equals(trial.plaintiffId._id) ? 'Plaintiff' : 'Defendant';
+      return `${senderRole}: "${msg.text}"`;
+    })
+    .join('\n');
 };
 
-export const analyzeTrialResult = async (req: Request, res: Response): Promise<void> => {
+export const analyzeTrialResult = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const trial = await MockTrial.findById(req.params.trialId)
-    .populate('plaintiffId', 'name')
-    .populate('defendantId', 'name')
-    .populate('situationId', 'title description');
+      .populate('plaintiffId', 'name')
+      .populate('defendantId', 'name')
+      .populate('situationId', 'title description');
 
-    if(!trial) {
-      res.status(404).json({msg: "Trial not found."});
+    if (!trial) {
+      res.status(404).json({ msg: "Trial not found." });
       return;
     }
 
-    if(trial.status === 'ended' && trial.judgementText) {
-      res.status(400).json({msg: "Trial has already been analysed."});
+    if (trial.status === 'ended' && trial.judgementText) {
+      res.status(400).json({ msg: "Trial has already been analysed." });
       return;
     }
 
@@ -524,9 +536,9 @@ export const analyzeTrialResult = async (req: Request, res: Response): Promise<v
     try {
       const match = responseText.match(/```json\n([\s\S]*?)\n```/);
       const jsonString = match ? match[1] : responseText;
-      
+
       analysisResult = JSON.parse(jsonString);
-    } catch(e) {
+    } catch (e) {
       console.error("Gemini did not return valid JSON:", responseText);
       res.status(500).json({ message: "Failed to parse analysis result." });
       return;
@@ -542,13 +554,13 @@ export const analyzeTrialResult = async (req: Request, res: Response): Promise<v
       trial,
     });
 
-  } catch(e) {
+  } catch (e) {
     console.error('Error analyzing trial:', e);
     res.status(500).json({ message: 'Server error during analysis.' });
   }
 }
 
-export const getPastTrials = async (req: Request, res: Response): Promise<void> => {
+export const getPastTrials = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     const cacheKey = `user:${userId}:past-trials`;
@@ -563,27 +575,28 @@ export const getPastTrials = async (req: Request, res: Response): Promise<void> 
       $or: [{ plaintiffId: userId }, { defendantId: userId }],
       status: { $in: ['ended', 'left'] }
     })
-    .populate('plaintiffId', 'name profileImageUrl')
-    .populate('defendantId', 'name profileImageUrl')
-    .populate('situationId', 'title')
-    .sort({ createdAt: -1 })
-    .lean();
+      .populate('plaintiffId', 'name profileImageUrl')
+      .populate('defendantId', 'name profileImageUrl')
+      .populate('situationId', 'title')
+      .sort({ createdAt: -1 })
+      .lean();
 
     redisSet(cacheKey, JSON.stringify(trials), 60).catch(err =>
       console.error('Redis set error:', err)
     );
 
     res.json({ trials, cached: false });
-  } catch (e) {
-    console.error('getPastTrials error:', e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error('getPastTrials error:', error);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
-export const getMockTrialStatistics = async (req: Request, res: Response): Promise<void> => {
+export const getMockTrialStatistics = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id as string;
-    
+
     if (!userId) {
       res.status(401).json({ message: "User not authenticated" });
       return;
@@ -594,9 +607,9 @@ export const getMockTrialStatistics = async (req: Request, res: Response): Promi
     const allTrials = await MockTrial.find({
       $or: [{ plaintiffId: userObjectId }, { defendantId: userObjectId }]
     })
-    .populate('situationId', 'title')
-    .sort({ createdAt: -1 })
-    .lean();
+      .populate('situationId', 'title')
+      .sort({ createdAt: -1 })
+      .lean();
 
     if (allTrials.length === 0) {
       res.status(200).json({
@@ -613,16 +626,16 @@ export const getMockTrialStatistics = async (req: Request, res: Response): Promi
     }
 
     const totalTrials = allTrials.length;
-    const completedTrials = allTrials.filter(trial => 
+    const completedTrials = allTrials.filter(trial =>
       trial.status === 'ended' || trial.status === 'left'
     ).length;
-    
-    const asPlaintiff = allTrials.filter(trial => 
+
+    const asPlaintiff = allTrials.filter(trial =>
       trial.plaintiffId.toString() === userId
     ).length;
     const asDefendant = totalTrials - asPlaintiff;
 
-    const wins = allTrials.filter(trial => 
+    const wins = allTrials.filter(trial =>
       trial.winnerId && trial.winnerId.toString() === userId
     ).length;
     const losses = completedTrials - wins;
@@ -650,8 +663,9 @@ export const getMockTrialStatistics = async (req: Request, res: Response): Promi
       recentTrials
     });
 
-  } catch (err: any) {
-    console.error("Mock trial statistics fetch error:", err.message);
-    res.status(500).json({ message: "Something went wrong", error: err.message });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("Mock trial statistics fetch error:", error.message);
+    res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 };
