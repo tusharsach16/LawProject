@@ -18,9 +18,13 @@ A full-stack legal platform that connects users with expert lawyers, provides AI
 - [Contributing](#contributing)
 - [License](#license)
 
+---
+
 ## Overview
 
 NyaySetu is a full-stack web application designed to bridge the gap between legal professionals and individuals seeking legal guidance in India. The platform supports multiple user roles, provides AI-powered legal assistance via Google Gemini, enables real-time mock trials, allows appointment booking with payment integration, and supports video consultations via WebRTC.
+
+---
 
 ## Features
 
@@ -34,7 +38,8 @@ NyaySetu is a full-stack web application designed to bridge the gap between lega
 ### AI Legal Assistant
 - Powered by Google Gemini API
 - Persistent conversation history stored in MongoDB, cached in Redis
-- Multi-language support including Indian regional languages
+- **Multi-language support across 10 Indian and global languages** (Hindi, English, Tamil, Telugu, Kannada, Malayalam, Marathi, Bengali, Gujarati, Punjabi)
+- Language selection fully respected — responses are always returned in the user's selected language
 - Context-aware responses with automatic legal disclaimers
 
 ### Mock Trials
@@ -50,6 +55,9 @@ NyaySetu is a full-stack web application designed to bridge the gap between lega
 - Redis pub/sub for horizontal scaling across multiple signaling instances
 - Call room access verified via JWT tokens
 - Appointment time-window enforcement (±15 min window)
+- **Distinct Leave Call and End Call behaviors**: Leave allows reconnection; End Call (lawyer-only) permanently concludes the session
+- **Rejoin support**: Users can disconnect and reconnect without leaving the call screen
+- Remote video stream rendering fixed for reliable peer display
 
 ### Quiz System
 - Categorized legal quiz questions with randomized selection
@@ -68,30 +76,33 @@ NyaySetu is a full-stack web application designed to bridge the gap between lega
 - Email notifications via Nodemailer for appointments and password resets
 - API rate limiting for protection against abuse
 - Redis caching across chatbot, quiz, and mock trial systems
+- **Optimized frontend bundle** with lazy-loaded routes and components for fast initial load (reduced LCP)
+
+---
 
 ## Technology Stack
 
 ### Frontend
 - React 19 with TypeScript
-- Vite (build tool and dev server)
+- Vite (build tool and dev server) with **route-level lazy loading**
 - Tailwind CSS 4
 - Redux Toolkit (state management)
 - React Router DOM 7
 - Axios (HTTP client)
-- GSAP (animations)
+- GSAP (animations, tree-shaken for minimal bundle size)
 - Lucide React (icons)
-- Recharts (analytics)
+- Lightweight charting library (replaced Recharts for bundle savings)
 
 ### Backend (REST API)
 - Node.js with Express 5
-- TypeScript
+- **TypeScript with strict type safety** (`AuthenticatedRequest` type across all controllers, `unknown`-typed catch blocks)
 - MongoDB with Mongoose
 - Redis (caching and pub/sub)
 - JWT authentication
 - bcryptjs
 - WebSocket (ws) — mock trial real-time messaging
 - Multer + Cloudinary (file storage)
-- Nodemailer (email)
+- Nodemailer (email via dedicated `emailService`)
 - Razorpay (payments)
 - Google Generative AI (Gemini)
 
@@ -102,18 +113,22 @@ NyaySetu is a full-stack web application designed to bridge the gap between lega
 - JWT verification for call room access
 - Horizontal scaling support via connection manager
 
+---
+
 ## Project Structure
 
 ```
 LawProject/
 ├── backend/                        # REST API server
-│   ├── scripts/                    # Utility and test scripts (not compiled)
+│   ├── scripts/                    # Utility and seed scripts (not compiled)
 │   ├── src/
 │   │   ├── config/                 # Database and service configurations
-│   │   ├── controllers/            # Request handlers
+│   │   ├── controllers/            # Request handlers (strictly typed with AuthenticatedRequest)
 │   │   ├── middleware/             # Auth and rate limiting
 │   │   ├── models/                 # MongoDB schemas
 │   │   ├── routes/                 # API route definitions
+│   │   ├── services/               # Business logic services (e.g., emailService)
+│   │   ├── types/                  # Shared TypeScript types (AuthenticatedRequest, express augmentation)
 │   │   ├── utils/                  # Redis client and helpers
 │   │   ├── webSockets.ts           # Mock trial WebSocket server
 │   │   └── index.ts                # Entry point
@@ -130,17 +145,26 @@ LawProject/
 │   └── package.json
 ├── frontend/                       # React client
 │   ├── src/
+│   │   ├── assets/                 # Static assets
 │   │   ├── components/             # Reusable UI components
+│   │   ├── constants/              # Shared constants
 │   │   ├── hooks/                  # Custom React hooks (useWebRTC)
-│   │   ├── pages/                  # Page components
+│   │   ├── layouts/                # Layout wrapper components
+│   │   ├── lib/                    # Utility libraries
+│   │   ├── pages/                  # Page components (lazy-loaded at route level)
 │   │   ├── redux/                  # Store and slices
+│   │   ├── routes/                 # Route definitions with lazy loading
 │   │   ├── services/               # API and signaling service functions
 │   │   ├── types/                  # TypeScript type definitions
+│   │   ├── utils/                  # Frontend helpers
 │   │   ├── App.tsx
 │   │   └── main.tsx
 │   └── package.json
+├── docker-compose.yml
 └── README.md
 ```
+
+---
 
 ## Prerequisites
 
@@ -155,6 +179,8 @@ LawProject/
 - Razorpay account — payment processing
 - Cloudinary account — file storage
 - SMTP email service — Gmail, SendGrid, etc.
+
+---
 
 ## Installation
 
@@ -180,6 +206,8 @@ npm install
 cd ../frontend
 npm install
 ```
+
+---
 
 ## Configuration
 
@@ -229,7 +257,7 @@ REDIS_URL=redis://localhost:6379
 FRONTEND_URL=http://localhost:5173
 ```
 
-`JWT_SECRET` and `REDIS_URL` must match the values used in the backend.
+> `JWT_SECRET` and `REDIS_URL` must match the values used in the backend.
 
 ### Frontend — `frontend/.env`
 
@@ -239,6 +267,8 @@ VITE_WS_URL=ws://localhost:5000
 
 REACT_APP_RAZORPAY_KEY_ID=your-razorpay-key-id
 ```
+
+---
 
 ## Running the Application
 
@@ -258,11 +288,11 @@ cd frontend
 npm run dev
 ```
 
-| Service | URL |
-|---|---|
-| Frontend | http://localhost:5173 |
-| Backend API | http://localhost:5000 |
-| Signaling Server | ws://localhost:8080 |
+| Service          | URL                    |
+|------------------|------------------------|
+| Frontend         | http://localhost:5173  |
+| Backend API      | http://localhost:5000  |
+| Signaling Server | ws://localhost:8080    |
 
 ### Database Seeding
 
@@ -272,6 +302,8 @@ npm run seed:categories
 npm run seed:questions
 npm run seed:mockTrails
 ```
+
+---
 
 ## API Endpoints
 
@@ -342,6 +374,8 @@ npm run seed:mockTrails
 - `POST /generate-call-token` — Generate call JWT
 - `WS /` — WebSocket connection for WebRTC signaling
 
+---
+
 ## Database Models
 
 ### User
@@ -374,32 +408,19 @@ npm run seed:mockTrails
 - **FriendRequest**: Sender, receiver, status
 - **ChatHistory**: Per-user AI conversation history
 
-## Deployment
+---
+
 
 ### Current Setup
 
-| Service | Platform |
-|---|---|
-| Frontend | Vercel |
-| Backend (REST API) | Render |
-| Backend Signaling | Render (keep-alive via UptimeRobot) |
-| Redis | Upstash (free tier) |
+| Service          | Description                  |
+|------------------|------------------------------|
+| Frontend         | Cloud-hosted (e.g., Vercel)  |
+| Backend API      | Node.js service              |
+| Signaling Server | WebSocket service            |
+| Database         | Managed MongoDB              |
+| Cache            | Managed Redis                |
 
-### Environment Variables for Production
-
-**Backend (Render)**
-- All variables from the development `.env`
-- `CLIENT_URL` — production Vercel URL
-- `SIGNALING_SERVER_URL` / `SIGNALING_WS_URL` — production signaling server URL
-
-**Signaling Server (Render)**
-- `JWT_SECRET` — must match backend
-- `REDIS_URL` — same Redis instance as backend
-- `FRONTEND_URL` — production Vercel URL
-
-**Frontend (Vercel)**
-- `VITE_API_URL` — production backend URL
-- `REACT_APP_RAZORPAY_KEY_ID`
 
 ### Build Commands
 
@@ -416,6 +437,8 @@ npm start
 npm run build
 ```
 
+---
+
 ## Contributing
 
 1. Fork the repository
@@ -424,7 +447,6 @@ npm run build
 4. Push to the branch
 5. Open a Pull Request
 
-Follow TypeScript best practices, use meaningful names, and maintain the existing project structure.
 
 ## License
 
