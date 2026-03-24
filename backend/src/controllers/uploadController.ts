@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { AuthenticatedRequest } from '../types/express';
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
 import streamifier from 'streamifier';
@@ -11,7 +12,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET 
 });
 
-export const uploadImage = async (req: Request, res: Response): Promise<void> => {
+export const uploadImage = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     if (!req.file) {
       res.status(400).json({ msg: 'No file uploaded.' });
