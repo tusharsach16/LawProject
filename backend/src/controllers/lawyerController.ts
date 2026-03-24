@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Lawyer, specializationOptions } from '../models/Lawyer';
 import { User } from '../models/User';
 import { redisGet, redisSet } from '../utils/redisClient';
+import { AuthenticatedRequest } from '../types/express';
 
 export const getAllLawyers = async (req: Request, res: Response): Promise<void> => {
   const startTime = Date.now();
@@ -97,8 +98,9 @@ export const getAllLawyers = async (req: Request, res: Response): Promise<void> 
       dbQueryTime,
       source: 'mongodb'
     });
-  } catch (error) {
-    console.error('Error fetching lawyers:', error);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error('Error fetching lawyers:', error.message);
     res.status(500).json({ msg: 'Server error while fetching lawyers' });
   }
 };
@@ -106,8 +108,9 @@ export const getAllLawyers = async (req: Request, res: Response): Promise<void> 
 export const getSpecializations = async (req: Request, res: Response): Promise<void> => {
   try {
     res.status(200).json(specializationOptions);
-  } catch (error) {
-    console.error('Error fetching specializations:', error);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error('Error fetching specializations:', error.message);
     res.status(500).json({ msg: 'Server error while fetching specializations' });
   }
 };
