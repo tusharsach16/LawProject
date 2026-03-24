@@ -2,12 +2,12 @@ import { Request, Response } from "express";
 import mongoose from "mongoose";
 import { User, Iuser } from "../../models/User";
 import { Friends } from "../../models/FriendReq/FriendRequest";
+import { AuthenticatedRequest } from "../../types/express";
 
-// --- SEND FRIEND REQUEST CONTROLLER ---
-export const sendfriendRequest = async (req: Request, res: Response): Promise<void> => {
+// SEND FRIEND REQUEST
+export const sendfriendRequest = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    // Ensure request is authenticated (middleware should attach req.user)
-    const senderId = (req as any).user?.id as string | undefined;
+    const senderId = req.user?.id;
     const { username } = req.body as { username: string };
 
     if (!username) {
@@ -73,15 +73,16 @@ export const sendfriendRequest = async (req: Request, res: Response): Promise<vo
       msg: "Friend request sent successfully",
       requestId: request._id,
     });
-  } catch (e) {
-    console.error("sendfriendRequest error:", e);
-    res.status(500).json({ msg: "Something went wrong", error: (e as Error).message });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("sendfriendRequest error:", error.message);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
 
 
-export const respondRequest = async (req: Request, res: Response): Promise<void> => {
+export const respondRequest = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { action, requestId } = req.body as { action: string; requestId: string };
     const receiverId = req.user?.id;
@@ -122,17 +123,18 @@ export const respondRequest = async (req: Request, res: Response): Promise<void>
       : "Friend Request Rejected";
 
     res.status(200).json({ msg });
-  } catch (e) {
-    console.error("acceptRequest error:", e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("acceptRequest error:", error.message);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 };
 
 
-export const getFriendRequest = async (req: Request, res: Response): Promise<void> => {
+export const getFriendRequest = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const currentUserId = req.user?.id;
-    if(!currentUserId) {
+    if (!currentUserId) {
       res.status(401).json({ msg: "Unauthenticated" });
       return;
     }
@@ -143,26 +145,27 @@ export const getFriendRequest = async (req: Request, res: Response): Promise<voi
     }).populate('senderId', 'name username profileImageUrl');
     res.status(200).json(pending)
     return;
-  } catch(e) {
-    console.error("Get friend request error:", e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("Get friend request error:", error.message);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 }
 
 
-export const getFriends = async (req: Request, res: Response): Promise<void> =>{
+export const getFriends = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const currentUserId = req.user?.id;
-    if(!currentUserId) {
+    if (!currentUserId) {
       res.status(401).json({ msg: "Unauthenticated" });
       return;
     }
     const user = await User.findById(currentUserId).populate({
       path: "friends",
-      select: "username name role profileImageUrl bio" 
+      select: "username name role profileImageUrl bio"
     });
     const totalFriends = user?.friends.length;
-    if(!user) {
+    if (!user) {
       res.status(401).json({ msg: "User not found" });
       return;
     }
@@ -171,29 +174,30 @@ export const getFriends = async (req: Request, res: Response): Promise<void> =>{
       total: totalFriends,
       friends: user.friends
     })
-  } catch(e) {
-    console.error("acceptRequest error:", e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("acceptRequest error:", error.message);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 }
 
 
-export const removeFriend = async (req: Request, res: Response): Promise<void> => {
+export const removeFriend = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { friendIdToRemove } = req.body;
-    if(!friendIdToRemove) {
-      res.status(400).json({msg: "Id iss required"});
+    if (!friendIdToRemove) {
+      res.status(400).json({ msg: "Id iss required" });
       return;
     }
     const userId = req.user?.id;
-    if(!userId) {
+    if (!userId) {
       res.status(401).json({ msg: "Unauthenticated" });
       return;
     }
 
     const user = await User.findById(userId);
     const friend = await User.findById(friendIdToRemove);
-    if(!user || !friend) {
+    if (!user || !friend) {
       res.status(401).json({ msg: "User or Friend not found" });
       return;
     }
@@ -222,10 +226,11 @@ export const removeFriend = async (req: Request, res: Response): Promise<void> =
       },
       { $set: { status: "unfriended" } }
     );
-    res.status(200).json({msg: "Friend Removed"});
+    res.status(200).json({ msg: "Friend Removed" });
     return;
-  } catch(e) {  
-    console.error("acceptRequest error:", e);
-    res.status(500).json({ msg: "Something went wrong", error: e });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("acceptRequest error:", error.message);
+    res.status(500).json({ msg: "Something went wrong", error: error.message });
   }
 }
