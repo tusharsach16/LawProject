@@ -1,0 +1,70 @@
+name: PR Check
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint-test:
+    name: Lint & Test - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [backend, backend-signaling, frontend]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: './${{ matrix.service }}/package-lock.json'
+
+      - name: Install dependencies
+        run: |
+          cd ${{ matrix.service }}
+          npm ci
+
+      - name: Run Lint
+        run: |
+          cd ${{ matrix.service }}
+          if npm run | grep -q "lint"; then
+            npm run lint
+          else
+            echo "::warning title=Linting skipped::No lint script found for ${{ matrix.service }}"
+          fi
+
+      - name: Run Test
+        run: |
+          cd ${{ matrix.service }}
+          if npm run | grep -q "test"; then
+            npm run test
+          else
+            echo "::warning title=Testing skipped::No test script found for ${{ matrix.service }}"
+          fi
+
+  smoke-build:
+    name: Smoke Build - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [backend, backend-signaling, frontend]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: actions/setup-buildx-action@v3
+
+      - name: Build image (No Push)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ matrix.service }}
+          push: false
+          build-args: |
+            VITE_API_URL=http://localhost:5000
+            VITE_SIGNALING_WS_URL=ws://localhost:8080
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
