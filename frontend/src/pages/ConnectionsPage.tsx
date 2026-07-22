@@ -34,7 +34,7 @@ const ConnectionsPage = () => {
         } else {
           setError('Received invalid data from the server.');
         }
-      } catch (err) {
+      } catch (_err) {
         setError('Failed to load connections.');
       } finally {
         setLoading(false);

@@ -12,7 +12,7 @@ export const useProfileUpdate = () => {
   const handleSaveProfile = async (payload: ProfileUpdatePayload) => {
     setIsSaving(true);
     try {
-      let finalCommonData = { ...payload.commonData };
+      const finalCommonData = { ...payload.commonData };
 
       if (payload.profileImageFile) {
         const res = await uploadProfileImage(payload.profileImageFile);
