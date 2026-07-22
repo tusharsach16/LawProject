@@ -40,7 +40,7 @@ const ForgotPasswordStep = ({ onNext, email, setEmail }: ForgotPasswordStepProps
       } else {
         toast.show(data.message || 'Failed to send OTP', 'error');
       }
-    } catch (error) {
+    } catch (_error) {
       toast.show('Something went wrong. Please try again.', 'error');
     } finally {
       setIsLoading(false);

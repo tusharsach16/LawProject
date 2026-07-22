@@ -17,6 +17,7 @@
         "./src/*"
       ]
     },
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom"],
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

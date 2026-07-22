@@ -56,6 +56,12 @@ export const submitAttempt = async (req: AuthenticatedRequest, res: Response): P
       return;
     }
 
+    if (answers.length > 100) {
+      res.status(400).json({
+        message: "Too many answers submitted"
+      });
+      return;
+    }
     /* 1️⃣  Resolve categoryId (slug → ObjectId) */
     let categoryId: mongoose.Types.ObjectId | undefined;
     if (mongoose.isValidObjectId(category)) {
@@ -73,10 +79,32 @@ export const submitAttempt = async (req: AuthenticatedRequest, res: Response): P
 
     /* 2️⃣  Bulk-fetch all referenced questions once */
     const qIds = answers.map((a) => a.questionId);
-    const questionDocs = await Questions.find({ _id: { $in: qIds } })
-      .select("correctIndex")
+    const uniqueIds = [...new Set(qIds)];
+    if (uniqueIds.length !== qIds.length) {
+      res.status(400).json({
+        message: "Duplicate question IDs are not allowed"
+      });
+      return;
+    }
+    const hasInvalidId = uniqueIds.some((id) => !mongoose.Types.ObjectId.isValid(id));
+    if (hasInvalidId) {
+      res.status(400).json({
+        message: "Some questionIds are invalid or do not belong to the specified category"
+      });
+      return;
+    }
+    const questionDocs = await Questions.find({ 
+      _id: { $in: uniqueIds },
+      categoryId: categoryId
+    })
+      .select("_id correctIndex")
       .lean();
-
+    if(questionDocs.length !== uniqueIds.length) {
+      res.status(400).json({
+        message: "Some questionIds are invalid or do not belong to the specified category"
+      });
+      return;
+    }
     // Map questionId → correctIndex for O(1) lookup
     const correctMap: Record<string, number> = {};
     questionDocs.forEach((q) => {
@@ -170,7 +198,7 @@ export const getQuizCount = async (req: AuthenticatedRequest, res: Response): Pr
 // Get detailed quiz results with questions and answers
 export const getDetailedQuizResults = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const userId = (req.user as any)?.id as string;
+    const userId = req.user?.id as string;
 
     if (!userId) {
       res.status(401).json({ message: "User not authenticated" });

@@ -131,7 +131,7 @@ const TrialRoomPage = () => {
                         setTimeout(() => navigate('/dashboard/mock-trials'), 1000);
                     }
                 };
-            } catch (error) {
+            } catch (_error) {
                 navigate('/dashboard/mock-trials');
             } finally {
                 setLoading(false);
