@@ -15,6 +15,7 @@ lerna-debug.log*
 **/build/
 frontend/.vite/
 frontend/.cache/
+**/coverage/
 
 # ─────────────────────────────
 # Environment / Secrets
