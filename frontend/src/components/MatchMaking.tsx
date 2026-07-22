@@ -18,7 +18,7 @@ const Matchmaking = ({ situation, onClose }: MatchmakingProps) => {
     const [status, setStatus] = useState<'selecting' | 'waiting' | 'paired'>('selecting');
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
-    const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const pollForMatch = async () => {
         if (!side) return;
