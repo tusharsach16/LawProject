@@ -6,6 +6,7 @@ describe('ConnectionManager Unit Tests', () => {
   let mockWs2: any;
 
   beforeEach(() => {
+    jest.useFakeTimers();
     mockWs1 = {
       OPEN: 1,
       readyState: 1, // OPEN
@@ -21,6 +22,10 @@ describe('ConnectionManager Unit Tests', () => {
 
     // Clean connections map
     (connectionManager as any).byUserId.clear();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   test('should add and retrieve connection entries correctly', () => {

@@ -86,6 +86,13 @@ export const submitAttempt = async (req: AuthenticatedRequest, res: Response): P
       });
       return;
     }
+    const hasInvalidId = uniqueIds.some((id) => !mongoose.Types.ObjectId.isValid(id));
+    if (hasInvalidId) {
+      res.status(400).json({
+        message: "Some questionIds are invalid or do not belong to the specified category"
+      });
+      return;
+    }
     const questionDocs = await Questions.find({ 
       _id: { $in: uniqueIds },
       categoryId: categoryId

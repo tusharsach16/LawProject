@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { ToastProvider, useToast } from '../../components/useToast';
 
 const TestComponent = () => {
@@ -17,6 +17,10 @@ const TestComponent = () => {
 };
 
 describe('ToastProvider & useToast', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('renders children correctly', () => {
     render(
       <ToastProvider>
@@ -50,7 +54,5 @@ describe('ToastProvider & useToast', () => {
     });
 
     expect(screen.queryByText('Test Success Message')).not.toBeInTheDocument();
-
-    vi.useRealTimers();
   });
 });
