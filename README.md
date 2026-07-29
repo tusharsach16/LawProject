@@ -12,6 +12,7 @@ A full-stack legal platform that connects users with expert lawyers, provides AI
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Running the Application](#running-the-application)
+- [Running Tests](#running-tests)
 - [API Endpoints](#api-endpoints)
 - [Database Models](#database-models)
 - [Deployment](#deployment)
@@ -22,7 +23,7 @@ A full-stack legal platform that connects users with expert lawyers, provides AI
 
 ## Overview
 
-NyaySetu is a full-stack web application designed to bridge the gap between legal professionals and individuals seeking legal guidance in India. The platform supports multiple user roles, provides AI-powered legal assistance via Google Gemini, enables real-time mock trials, allows appointment booking with payment integration, and supports video consultations via WebRTC.
+NyaySetu is a full-stack web application designed to bridge the gap between legal professionals and individuals seeking legal guidance in India. The platform supports multiple user roles, provides AI-powered legal assistance via Google Gemini, enables real-time mock trials, allows appointment booking with payment integration, supports video consultations via WebRTC, features interactive API documentation (Swagger/ReDoc), and includes comprehensive unit & integration testing.
 
 ---
 
@@ -71,12 +72,15 @@ NyaySetu is a full-stack web application designed to bridge the gap between lega
 - Availability management and time slot selection
 - Refund processing for cancellations
 
-### Platform Features
+### Platform & Infrastructure
+- **Interactive API Documentation**: Swagger UI (`/api-docs`) and ReDoc (`/docs`) for REST API endpoints
+- **Health Monitoring**: Dedicated `/health` check endpoints on REST Backend and Signaling Server
+- **Comprehensive Automated Testing**: Unit and integration test coverage across Backend (Jest), Signaling Server (Jest), and Frontend (Vitest + React Testing Library)
 - File uploads via Cloudinary (profile images and documents)
 - Email notifications via Nodemailer for appointments and password resets
 - API rate limiting for protection against abuse
 - Redis caching across chatbot, quiz, and mock trial systems
-- **Optimized frontend bundle** with lazy-loaded routes and components for fast initial load (reduced LCP)
+- **Optimized frontend bundle** with lazy-loaded routes and components for fast initial load
 
 ---
 
@@ -89,22 +93,23 @@ NyaySetu is a full-stack web application designed to bridge the gap between lega
 - Redux Toolkit (state management)
 - React Router DOM 7
 - Axios (HTTP client)
-- GSAP (animations, tree-shaken for minimal bundle size)
+- GSAP (animations)
 - Lucide React (icons)
-- Lightweight charting library (replaced Recharts for bundle savings)
+- **Vitest + React Testing Library + JSDOM** (unit & component testing)
 
 ### Backend (REST API)
 - Node.js with Express 5
 - **TypeScript with strict type safety** (`AuthenticatedRequest` type across all controllers, `unknown`-typed catch blocks)
 - MongoDB with Mongoose
 - Redis (caching and pub/sub)
-- JWT authentication
-- bcryptjs
+- JWT authentication & bcryptjs
 - WebSocket (ws) — mock trial real-time messaging
 - Multer + Cloudinary (file storage)
-- Nodemailer (email via dedicated `emailService`)
+- Nodemailer (email service)
 - Razorpay (payments)
 - Google Generative AI (Gemini)
+- **Swagger UI (`swagger-ui-express`) & ReDoc (`redoc-express`)**
+- **Jest + `ts-jest` + Supertest** (unit & integration testing)
 
 ### Backend Signaling (WebRTC)
 - Node.js with Express and WebSocket (ws)
@@ -112,6 +117,7 @@ NyaySetu is a full-stack web application designed to bridge the gap between lega
 - Redis pub/sub for cross-instance message routing
 - JWT verification for call room access
 - Horizontal scaling support via connection manager
+- **Jest** (unit testing for TURN credentials & socket management)
 
 ---
 
@@ -119,49 +125,46 @@ NyaySetu is a full-stack web application designed to bridge the gap between lega
 
 ```
 LawProject/
+├── LICENSE                         # MIT License
+├── README.md                       # Documentation
+├── docker-compose.yml
 ├── backend/                        # REST API server
-│   ├── scripts/                    # Utility and seed scripts (not compiled)
+│   ├── scripts/                    # Utility, seed, and docs generation scripts
 │   ├── src/
-│   │   ├── config/                 # Database and service configurations
-│   │   ├── controllers/            # Request handlers (strictly typed with AuthenticatedRequest)
+│   │   ├── config/                 # Database, Swagger, and service configurations
+│   │   ├── controllers/            # Request handlers (strictly typed)
 │   │   ├── middleware/             # Auth and rate limiting
 │   │   ├── models/                 # MongoDB schemas
 │   │   ├── routes/                 # API route definitions
-│   │   ├── services/               # Business logic services (e.g., emailService)
-│   │   ├── types/                  # Shared TypeScript types (AuthenticatedRequest, express augmentation)
+│   │   ├── services/               # Business logic services
+│   │   ├── types/                  # Shared TypeScript types
 │   │   ├── utils/                  # Redis client and helpers
 │   │   ├── webSockets.ts           # Mock trial WebSocket server
-│   │   └── index.ts                # Entry point
+│   │   └── index.ts                # Entry point (Express + Swagger/ReDoc + Health)
+│   ├── __tests__/                  # Unit & integration tests
+│   ├── jest.config.ts              # Jest configuration
 │   └── package.json
 ├── backend-signaling/              # WebRTC signaling server
 │   ├── src/
-│   │   ├── services/
-│   │   │   ├── connectionManager.ts  # Per-instance WebSocket registry
-│   │   │   └── redisService.ts       # Redis pub/sub helpers
-│   │   ├── types/
-│   │   │   └── signalling.ts         # Message type definitions
-│   │   ├── turn.ts                   # ICE server configuration
-│   │   └── index.ts                  # Entry point (HTTP + WebSocket + Redis)
+│   │   ├── services/               # Connection manager & Redis service
+│   │   ├── types/                  # Signalling message types
+│   │   ├── turn.ts                 # ICE server configuration
+│   │   └── index.ts                # Entry point (HTTP + WebSocket + Redis + Health)
+│   ├── __tests__/                  # Unit tests (TURN credentials, socket manager)
+│   ├── jest.config.js              # Jest configuration
 │   └── package.json
-├── frontend/                       # React client
-│   ├── src/
-│   │   ├── assets/                 # Static assets
-│   │   ├── components/             # Reusable UI components
-│   │   ├── constants/              # Shared constants
-│   │   ├── hooks/                  # Custom React hooks (useWebRTC)
-│   │   ├── layouts/                # Layout wrapper components
-│   │   ├── lib/                    # Utility libraries
-│   │   ├── pages/                  # Page components (lazy-loaded at route level)
-│   │   ├── redux/                  # Store and slices
-│   │   ├── routes/                 # Route definitions with lazy loading
-│   │   ├── services/               # API and signaling service functions
-│   │   ├── types/                  # TypeScript type definitions
-│   │   ├── utils/                  # Frontend helpers
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   └── package.json
-├── docker-compose.yml
-└── README.md
+└── frontend/                       # React client
+    ├── src/
+    │   ├── assets/                 # Static assets
+    │   ├── components/             # Reusable UI components
+    │   ├── hooks/                  # Custom React hooks (useWebRTC, etc.)
+    │   ├── pages/                  # Page components (lazy-loaded)
+    │   ├── redux/                  # Store and slices
+    │   ├── services/               # API and signaling service functions
+    │   ├── __tests__/              # Vitest component & hook tests
+    │   └── main.tsx
+    ├── vitest.config.ts            # Vitest configuration
+    └── package.json
 ```
 
 ---
@@ -288,24 +291,61 @@ cd frontend
 npm run dev
 ```
 
-| Service          | URL                    |
-|------------------|------------------------|
-| Frontend         | http://localhost:5173  |
-| Backend API      | http://localhost:5000  |
-| Signaling Server | ws://localhost:8080    |
+| Service                | URL                    |
+|------------------------|------------------------|
+| Frontend               | http://localhost:5173  |
+| Backend API            | http://localhost:5000  |
+| API Documentation (Swagger) | http://localhost:5000/api-docs |
+| API Documentation (ReDoc)   | http://localhost:5000/docs     |
+| Signaling Server       | ws://localhost:8080    |
 
-### Database Seeding
+### Database Seeding & Docs Generation
 
 ```bash
 cd backend
 npm run seed:categories
 npm run seed:questions
 npm run seed:mockTrails
+
+# Export OpenAPI Documentation JSON
+npm run docs:export
+```
+
+---
+
+## Running Tests
+
+The application includes automated test suites across all three sub-projects:
+
+### Backend Tests (Jest)
+```bash
+cd backend
+npm test                # Run all backend unit & integration tests
+npm run test:coverage   # Generate test coverage report
+```
+
+### Signaling Server Tests (Jest)
+```bash
+cd backend-signaling
+npm test                # Run signaling unit tests
+```
+
+### Frontend Tests (Vitest)
+```bash
+cd frontend
+npm test                # Run all component & hook tests once
+npm run test:watch      # Run tests in watch mode
 ```
 
 ---
 
 ## API Endpoints
+
+### System & Documentation
+- `GET /health` — Backend health check & uptime status
+- `GET /api-docs` — Interactive Swagger UI documentation
+- `GET /docs` — ReDoc API documentation
+- `GET /api-docs.json` — OpenAPI JSON specification schema
 
 ### Authentication
 - `POST /api/signup` — Register
@@ -368,7 +408,7 @@ npm run seed:mockTrails
 - `POST /api/upload` — Upload image/banner (protected)
 
 ### Signaling Server Endpoints
-- `GET /health` — Health check
+- `GET /health` — Signaling server health check
 - `GET /ice` — Get ICE server configuration
 - `POST /cache-call` — Cache call room data (called by backend)
 - `POST /generate-call-token` — Generate call JWT
@@ -410,6 +450,7 @@ npm run seed:mockTrails
 
 ---
 
+## Deployment
 
 ### Current Setup
 
@@ -420,7 +461,6 @@ npm run seed:mockTrails
 | Signaling Server | WebSocket service            |
 | Database         | Managed MongoDB              |
 | Cache            | Managed Redis                |
-
 
 ### Build Commands
 
@@ -447,7 +487,9 @@ npm run build
 4. Push to the branch
 5. Open a Pull Request
 
+---
 
 ## License
 
-This project is licensed under the ISC License.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.  
+Copyright (c) 2026 Tushar.
