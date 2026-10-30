@@ -21,6 +21,7 @@ import './models/Mocktrial/Mock';
 import chatbotRoutes from './routes/chatbotRoutes';
 import appointmentRoutes from './routes/appointmentRoutes';
 import { initRedis, isRedisAvailable } from './utils/redisClient';
+import { validateEncryptionKey } from './utils/cryptoUtils';
 
 
 
@@ -98,6 +99,7 @@ app.get(
 
 const startServer = async () => {
   try {
+    validateEncryptionKey();
     await connectDB();
 
     // Initialize Redis non-blocking

@@ -12,7 +12,8 @@
     "seed:questions": "ts-node src/scripts/seedQuestions.ts",
     "seed:categories": "ts-node src/scripts/seedCategories.ts",
     "seed:mockTrails": "ts-node src/scripts/seedMockTrial.ts",
-    "docs:export": "ts-node src/scripts/generate-docs.ts"
+    "docs:export": "ts-node src/scripts/generate-docs.ts",
+    "migrate:chat-encryption": "ts-node src/scripts/migrateChatEncryption.ts"
   },
   "keywords": [],
   "author": "",

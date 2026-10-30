@@ -1,8 +1,9 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface IMessage {
+export interface IMessage {
   sender: 'user' | 'bot';
   content: string;
+  encryptionVersion?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -10,6 +11,7 @@ interface IMessage {
 export interface IChatHistory extends Document {
   userId: mongoose.Types.ObjectId;
   messages: IMessage[];
+  historyVersion?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -23,9 +25,13 @@ const messageSchema = new Schema({
   content: { 
     type: String, 
     required: true 
+  },
+  encryptionVersion: {
+    type: String,
+    required: false
   }
 }, { 
-  timestamps: true,  // This automatically adds createdAt and updatedAt
+  timestamps: true,
   _id: false 
 });
 
@@ -36,9 +42,14 @@ const chatHistorySchema = new Schema({
     required: true, 
     index: true 
   },
-  messages: [messageSchema]
+  messages: [messageSchema],
+  historyVersion: {
+    type: Number,
+    required: false,
+    default: 1
+  }
 }, { 
-  timestamps: true  // This adds createdAt and updatedAt to the ChatHistory document
+  timestamps: true
 });
 
 export const ChatHistory = mongoose.model<IChatHistory>('ChatHistory', chatHistorySchema);

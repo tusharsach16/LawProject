@@ -3,70 +3,80 @@ import dotenv from "dotenv";
 import { ChatHistory } from "../models/ChatHistory";
 import { redisGet, redisSet, redisDel, isRedisAvailable } from "../utils/redisClient";
 import { AuthenticatedRequest } from "../types/express";
+import {
+  encryptMessage,
+  decryptMessage,
+  resolveStoredMessage,
+  ENCRYPTION_VERSION
+} from "../utils/cryptoUtils";
 dotenv.config();
 
-const getChatCacheKey = (userId: string): string => {
-  return `app:chat:history:user:${userId}`;
+const getChatCacheKey = (userId: string, version: number): string => {
+  return `app:chat:v3:history:user:${userId}:${version}`;
 };
 
 const getConversationHistory = async (
   userId: string
 ): Promise<Array<{ role: string; parts: Array<{ text: string }> }>> => {
   try {
+    const versionDoc = await ChatHistory.findOne({ userId }, { historyVersion: 1 });
+    if (!versionDoc) {
+      return [];
+    }
+
+    const currentVersion = versionDoc.historyVersion ?? 0;
+
     if (isRedisAvailable()) {
-      const cached = await redisGet(getChatCacheKey(userId));
+      const cacheKey = getChatCacheKey(userId, currentVersion);
+      const cached = await redisGet(cacheKey);
       if (cached) {
-        const messages = JSON.parse(cached);
-        return messages.map((msg: any) => ({
-          role: msg.sender === "user" ? "user" : "model",
-          parts: [{ text: msg.content }]
-        }));
+        try {
+          const decryptedPayload = decryptMessage(cached);
+          const messages = JSON.parse(decryptedPayload);
+          return messages.map((msg: any) => ({
+            role: msg.sender === "user" ? "user" : "model",
+            parts: [{ text: msg.content }]
+          }));
+        } catch (err: unknown) {
+          const error = err instanceof Error ? err : new Error(String(err));
+          console.error("Failed to decrypt conversation cache from Redis; clearing invalid key:", error.message);
+          await redisDel(cacheKey);
+        }
       }
     }
 
     const chatHistory = await ChatHistory.findOne({ userId });
 
     if (chatHistory?.messages?.length) {
-      if (isRedisAvailable()) {
+      const decryptedMessages = chatHistory.messages.map((msg: any) => ({
+        sender: msg.sender,
+        content: resolveStoredMessage(msg),
+        createdAt: msg.createdAt,
+        updatedAt: msg.updatedAt
+      }));
+
+      const docVersion = chatHistory.historyVersion ?? 0;
+      if (isRedisAvailable() && docVersion === currentVersion) {
+        const encryptedCache = encryptMessage(JSON.stringify(decryptedMessages));
         await redisSet(
-          getChatCacheKey(userId),
-          JSON.stringify(chatHistory.messages),
+          getChatCacheKey(userId, docVersion),
+          encryptedCache,
           3600
         );
       }
 
-      return chatHistory.messages.map((msg: any) => ({
+      return decryptedMessages.map((msg: any) => ({
         role: msg.sender === "user" ? "user" : "model",
         parts: [{ text: msg.content }]
       }));
     }
 
     return [];
-  } catch {
-    return [];
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.error("Conversation history retrieval failed:", error.message);
+    throw error;
   }
-};
-
-const updateConversationCache = async (
-  userId: string,
-  userMessage: { sender: string; content: string },
-  botMessage: { sender: string; content: string }
-): Promise<void> => {
-  if (!isRedisAvailable()) return;
-
-  const cached = await redisGet(getChatCacheKey(userId));
-  let messages = cached ? JSON.parse(cached) : [];
-
-  messages.push(userMessage, botMessage);
-
-  const MAX_MESSAGES = 50;
-  messages = messages.slice(-MAX_MESSAGES);
-
-  await redisSet(
-    getChatCacheKey(userId),
-    JSON.stringify(messages),
-    3600
-  );
 };
 
 const ALLOWED_LANGUAGES = new Set([
@@ -128,27 +138,40 @@ export const chatbot = async (req: AuthenticatedRequest, res: Response): Promise
     const botResponseText = data.candidates[0].content.parts[0].text;
 
     if (userId) {
-      const userMessage = { sender: "user", content: message };
-      const botMessage = { sender: "bot", content: botResponseText };
+      const encryptedUserMessage = {
+        sender: "user",
+        content: encryptMessage(message),
+        encryptionVersion: ENCRYPTION_VERSION
+      };
+      const encryptedBotMessage = {
+        sender: "bot",
+        content: encryptMessage(botResponseText),
+        encryptionVersion: ENCRYPTION_VERSION
+      };
 
-      await updateConversationCache(userId, userMessage, botMessage);
-
-      await ChatHistory.findOneAndUpdate(
+      const updatedHistory = await ChatHistory.findOneAndUpdate(
         { userId },
         {
-          $push: { messages: { $each: [userMessage, botMessage] } },
+          $push: { messages: { $each: [encryptedUserMessage, encryptedBotMessage] } },
+          $inc: { historyVersion: 1 },
           $setOnInsert: { userId }
         },
         { upsert: true, new: true }
       );
+
+      if (isRedisAvailable() && updatedHistory) {
+        const newVersion = updatedHistory.historyVersion ?? 1;
+        const previousVersion = newVersion - 1;
+        await redisDel(getChatCacheKey(userId, previousVersion));
+      }
     }
 
     res.status(200).json({ reply: botResponseText });
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error(String(err));
+    console.error("Chatbot operation failed:", error.message);
     res.status(502).json({
-      error: "AI service failed",
-      details: error.message
+      error: "AI service failed"
     });
   }
 };
@@ -162,31 +185,64 @@ export const getChatHistory = async (req: AuthenticatedRequest, res: Response): 
   }
 
   try {
+    const versionDoc = await ChatHistory.findOne({ userId }, { historyVersion: 1 });
+    if (!versionDoc) {
+      res.status(200).json([]);
+      return;
+    }
+
+    const currentVersion = versionDoc.historyVersion ?? 0;
+
     if (isRedisAvailable()) {
-      const cached = await redisGet(getChatCacheKey(userId));
+      const cacheKey = getChatCacheKey(userId, currentVersion);
+      const cached = await redisGet(cacheKey);
       if (cached) {
-        res.status(200).json(JSON.parse(cached));
-        return;
+        try {
+          const decryptedPayload = decryptMessage(cached);
+          const messages = JSON.parse(decryptedPayload);
+          const sanitizedMessages = messages.map((msg: any) => ({
+            sender: msg.sender,
+            content: msg.content,
+            createdAt: msg.createdAt,
+            updatedAt: msg.updatedAt
+          }));
+          res.status(200).json(sanitizedMessages);
+          return;
+        } catch (err: unknown) {
+          const error = err instanceof Error ? err : new Error(String(err));
+          console.error("Failed to decrypt chat history cache from Redis; clearing invalid key:", error.message);
+          await redisDel(cacheKey);
+        }
       }
     }
 
     const history = await ChatHistory.findOne({ userId });
 
     if (history?.messages) {
-      if (isRedisAvailable()) {
+      const decryptedMessages = history.messages.map((msg: any) => ({
+        sender: msg.sender,
+        content: resolveStoredMessage(msg),
+        createdAt: msg.createdAt,
+        updatedAt: msg.updatedAt
+      }));
+
+      const docVersion = history.historyVersion ?? 0;
+      if (isRedisAvailable() && docVersion === currentVersion) {
+        const encryptedCache = encryptMessage(JSON.stringify(decryptedMessages));
         await redisSet(
-          getChatCacheKey(userId),
-          JSON.stringify(history.messages),
+          getChatCacheKey(userId, docVersion),
+          encryptedCache,
           3600
         );
       }
-      res.status(200).json(history.messages);
+      res.status(200).json(decryptedMessages);
     } else {
       res.status(200).json([]);
     }
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error(String(err));
-    res.status(500).json({ error: "Failed to fetch chat history", details: error.message });
+    console.error("Chat history retrieval failed:", error.message);
+    res.status(500).json({ error: "Failed to fetch chat history" });
   }
 };
 
@@ -199,18 +255,26 @@ export const clearChatHistory = async (req: AuthenticatedRequest, res: Response)
   }
 
   try {
-    if (isRedisAvailable()) {
-      await redisDel(getChatCacheKey(userId));
-    }
-
-    await ChatHistory.findOneAndUpdate(
+    const updatedHistory = await ChatHistory.findOneAndUpdate(
       { userId },
-      { $set: { messages: [] } }
+      {
+        $set: { messages: [] },
+        $inc: { historyVersion: 1 }
+      },
+      { new: true }
     );
+
+    if (isRedisAvailable() && updatedHistory) {
+      const newVersion = updatedHistory.historyVersion ?? 1;
+      const previousVersion = newVersion - 1;
+      await redisDel(getChatCacheKey(userId, previousVersion));
+      await redisDel(getChatCacheKey(userId, newVersion));
+    }
 
     res.status(200).json({ message: "Chat history cleared successfully" });
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error(String(err));
-    res.status(500).json({ error: "Failed to clear chat history", details: error.message });
+    console.error("Failed to clear chat history:", error.message);
+    res.status(500).json({ error: "Failed to clear chat history" });
   }
 };

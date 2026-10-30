@@ -4,6 +4,7 @@ import { Questions, IQuiz } from "../models/quiz/Question";
 import { Attempts } from "../models/quiz/userQuizAttempt";
 import { MockTrial } from "../models/Mocktrial/Mock";
 import { ChatHistory } from "../models/ChatHistory";
+import { resolveStoredMessage } from "../utils/cryptoUtils";
 import mongoose from "mongoose";
 import { redisGet, redisSet } from "../utils/redisClient";
 import { AuthenticatedRequest } from "../types/express";
@@ -148,7 +149,7 @@ export const submitAttempt = async (req: AuthenticatedRequest, res: Response): P
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error(String(err));
     console.error("submitAttempt error:", error.message);
-    res.status(500).json({ message: "Something went wrong", error: error.message });
+    res.status(500).json({ message: "Something went wrong" });
     return;
   }
 };
@@ -168,7 +169,7 @@ export const result = async (req: AuthenticatedRequest, res: Response): Promise<
   } catch (e: unknown) {
     const error = e instanceof Error ? e : new Error(String(e));
     console.error("Result fetch error ➜", error.message);
-    res.status(500).json({ msg: "Something went wrong", error: error.message });
+    res.status(500).json({ msg: "Something went wrong" });
   }
 };
 
@@ -191,7 +192,7 @@ export const getQuizCount = async (req: AuthenticatedRequest, res: Response): Pr
   } catch (e: unknown) {
     const error = e instanceof Error ? e : new Error(String(e));
     console.error("Quiz count fetch error ➜", error.message);
-    res.status(500).json({ message: "Something went wrong", error: error.message });
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
@@ -247,7 +248,7 @@ export const getDetailedQuizResults = async (req: AuthenticatedRequest, res: Res
   } catch (e: unknown) {
     const error = e instanceof Error ? e : new Error(String(e));
     console.error("Detailed quiz results fetch error ➜", error.message);
-    res.status(500).json({ message: "Something went wrong", error: error.message });
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
@@ -313,7 +314,7 @@ export const getQuizStatistics = async (req: AuthenticatedRequest, res: Response
 
   } catch (err: any) {
     console.error("Quiz statistics fetch error ➜", err.message);
-    res.status(500).json({ message: "Something went wrong", error: err.message });
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
@@ -394,10 +395,11 @@ export const getRecentActivities = async (req: AuthenticatedRequest, res: Respon
       console.log(`[RecentActivities] Found ${topUserMessages.length} user chat messages.`);
 
       topUserMessages.forEach((msg: any) => {
+        const decryptedContent = resolveStoredMessage(msg);
         activities.push({
           type: 'chat',
           title: 'AI Consultation',
-          description: msg.content.substring(0, 50) + (msg.content.length > 50 ? '...' : ''),
+          description: decryptedContent.substring(0, 50) + (decryptedContent.length > 50 ? '...' : ''),
           timestamp: msg.createdAt,
           _id: msg._id || new mongoose.Types.ObjectId()
         });
@@ -410,12 +412,12 @@ export const getRecentActivities = async (req: AuthenticatedRequest, res: Respon
     // Return top activities based on limit
     const topActivities = activities.slice(0, limit);
 
-    console.log("[RecentActivities] Data being sent to frontend:", topActivities);
+    console.log(`[RecentActivities] Sending ${topActivities.length} activities to frontend`);
 
     res.status(200).json({ activities: topActivities });
 
   } catch (err: any) {
     console.error("Recent activities fetch error ➜", err.message);
-    res.status(500).json({ message: "Something went wrong", error: err.message });
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
