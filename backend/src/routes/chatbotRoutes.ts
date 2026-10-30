@@ -1,5 +1,5 @@
 import express from 'express';
-import { chatbot, getChatHistory } from '../controllers/chatbotcontroller';
+import { chatbot, getChatHistory, clearChatHistory } from '../controllers/chatbotcontroller';
 import authMiddleware from '../middleware/authMiddleware';
 
 const router = express.Router();
@@ -42,5 +42,6 @@ const router = express.Router();
  */
 router.post('/chat', authMiddleware, chatbot);
 router.get('/chat', authMiddleware, getChatHistory);
+router.delete('/chat', authMiddleware, clearChatHistory);
 
 export default router;
